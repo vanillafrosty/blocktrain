@@ -7,14 +7,18 @@
     <link href="stylesheets/main.css" rel="stylesheet">
   </head>
   <body>
-    <div class="game">
-      <audio id="megaman" controls loop src="./music/dr-wily.mp3">
-        Your browser does not support the <code>audio</code> element.
-      </audio>
+    <div class="app-container">
+      <div class="game">
+      </div>
+      <div class="sidebar">
+        <audio id="megaman" controls loop src="./music/dr-wily.mp3">
+          Your browser does not support the <code>audio</code> element.
+        </audio>
 
-      <!-- <button onclick="playAudio()" type="button">Play Audio</button>
-      <button onclick="pauseAudio()" type="button">Pause Audio</button> -->
-      <button id="toggleAudio" type="button">Toggle Audio</button>
+        <!-- <button onclick="playAudio()" type="button">Play Audio</button>
+        <button onclick="pauseAudio()" type="button">Pause Audio</button> -->
+        <button id="toggleAudio" type="button">Toggle Audio</button>
+      </div>
     </div>
   </body>
   <script src="src/game.js"></script>
