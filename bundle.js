@@ -105,17 +105,20 @@ document.addEventListener('DOMContentLoaded', function () {
   var canvas = document.getElementById("canvas");
   canvas.width = 300;
   canvas.height = 720;
+  var square_width = canvas.width / 10;
   var ctx = canvas.getContext('2d');
-  // ctx.fillStyle = 'rgb(200,0,0)';
-  // ctx.fillRect(0, 0, 700, 700);
 
-  ctx.beginPath();
-  ctx.strokeStyle = 'blue';
-  ctx.arc(100, 100, 50, 0, 360);
-  ctx.lineWidth = 2;
-  ctx.fillStyle = 'rgb(200,0,0)';
-  ctx.fill();
-  ctx.stroke();
+  var piece = [[0, 0, 0], [1, 1, 1], [0, 1, 0]];
+
+  var offset = 4;
+  for (var i = 0; i < piece.length; i++) {
+    for (var j = 0; j < piece[0].length; j++) {
+      if (piece[i][j] !== 0) {
+        ctx.fillStyle = 'rgb(200,0,0)';
+        ctx.fillRect((offset + j) * square_width, (offset + i) * square_width, square_width, square_width);
+      }
+    }
+  }
 });
 
 /***/ }),
