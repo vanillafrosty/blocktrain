@@ -34,8 +34,16 @@ document.addEventListener('DOMContentLoaded', () => {
       if (piece[i][j] !== 0) {
         ctx.fillStyle = 'rgb(200,0,0)';
         ctx.strokeStyle = '#000000';
-        ctx.fillRect((offset+j)*square_width, (offset+i)*square_width, square_width, square_width);
-        ctx.strokeRect((offset+j)*square_width, (offset+i)*square_width, square_width, square_width);
+        ctx.lineWidth = 2;
+        let x = (offset+j)*square_width;
+        let y = (offset+i)*square_width;
+        ctx.fillRect(x, y, square_width, square_width);
+        ctx.strokeRect(x, y, square_width, square_width);
+        ctx.beginPath();
+        ctx.moveTo(x+square_width/4, y+square_width*(3/4));
+        ctx.lineTo(x+square_width/4, y+square_width/4);
+        ctx.lineTo(x+square_width*(3/4), y+square_width/4);
+        ctx.stroke();
       }
     }
   }
