@@ -4,28 +4,46 @@
     <meta charset="utf-8">
     <title>Blocktrain</title>
     <link href="https://fonts.googleapis.com/css?family=Geo" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.css">
     <link href="stylesheets/reset.css" rel="stylesheet">
     <link href="stylesheets/main.css" rel="stylesheet">
   </head>
   <body>
-    <div class="title">
-      <div class="title-text">Blocktrain</div>
-    </div>
-    <div class="app-container">
-      <div class="links">
+    <div class="game-container">
+      <div class="title">
+        <div class="title-text">Blocktrain</div>
       </div>
-      <canvas id="canvas"></canvas>
-      <div class="sidebar">
-        <audio id="title-theme" autoplay src="./music/intro.mp3">
-          Your browser does not support the <code>audio</code> element.
-        </audio>
-        <audio id="megaman-theme" loop src="./music/dr-wily.mp3">
-          Your browser does not support the <code>audio</code> element.
-        </audio>
+      <div class="app-container">
+        <div class="links">
+          <form class="links-form" action="https://github.com/vanillafrosty">
+            <button class="button-link" type="submit">
+              <i class="icon-social-github"></i>
+            </button>
+          </form>
+          <form class="links-form" action="https://www.linkedin.com/in/daviddwu/">
+            <button class="button-link" type="submit">
+              <i class="icon-social-linkedin"></i>
+            </button>
+          </form>
+          <form class="links-form" action="http://dwu.space">
+            <button class="button-link" type="submit">
+              <i class="icon-user"></i>
+            </button>
+          </form>
+        </div>
+        <canvas id="canvas"></canvas>
+        <div class="sidebar">
+          <audio id="title-theme" autoplay src="./music/intro.mp3">
+            Your browser does not support the <code>audio</code> element.
+          </audio>
+          <audio id="megaman-theme" loop src="./music/dr-wily.mp3">
+            Your browser does not support the <code>audio</code> element.
+          </audio>
 
-        <!-- <button onclick="playAudio()" type="button">Play Audio</button>
-        <button onclick="pauseAudio()" type="button">Pause Audio</button> -->
-        <!-- <button id="toggleAudio" type="button">Toggle Audio</button> -->
+          <!-- <button onclick="playAudio()" type="button">Play Audio</button>
+          <button onclick="pauseAudio()" type="button">Pause Audio</button> -->
+          <!-- <button id="toggleAudio" type="button">Toggle Audio</button> -->
+        </div>
       </div>
     </div>
   </body>

@@ -2,6 +2,15 @@ body {
   background-color: #000000;
 }
 
+.game-container {
+  background-image: url("../sprites/megaman-intro.jpg");
+  background-size: 1000px 100vh;
+  background-position: 0 0;
+  width: 700px;
+  height: 100vh;
+  margin: auto;
+}
+
 .title-text {
   color: #F9F9F9;
   font-size: 48px;
@@ -10,14 +19,13 @@ body {
   margin: 50px;
 }
 
+
+
 .app-container {
   display: flex;
   justify-content: space-between;
-  background-image: url("../sprites/megaman-intro.jpg");
-  background-size: 1000px 100vh;
-  background-position: 0 0;
   width: 700px;
-  height: 100vh;
+  height: 720px;
   margin: auto;
 }
 
@@ -33,13 +41,38 @@ body {
   height: 360px;
   background-color: #000000;
   opacity: .75;
-  margin-top: 10vh;
 }
 
-.links {
-  width: 100px;
-  height: 200px;
-  background-color: #000000;
-  opacity: .75;
+.links-form {
+  margin: 20px;
+}
 
+
+.icon-social-github {
+  color: #000000;
+  font-size: 28px;
+  transition: background-color 0.15s ease-in-out;
+  padding-left: 2px;
+}
+
+.icon-social-linkedin {
+  color: #000000;
+  font-size: 28px;
+  transition: background-color 0.15s ease-in-out;
+  padding-left: 2px;
+}
+
+.icon-user {
+  color: #000000;
+  font-size: 28px;
+  transition: background-color 0.15s ease-in-out;
+  padding-left: 2px;
+}
+
+.button-link {
+  text-align: center;
+  height: 44px;
+  width: 44px;
+  border-radius: 22px;
+  background-color: #F9F9F9;
 }
