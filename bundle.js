@@ -91,8 +91,13 @@ document.addEventListener('DOMContentLoaded', function () {
   console.log('hey');
   var game = new _game2.default();
   // debugger;
-  var toggleButton = document.getElementById("toggleAudio");
-  toggleButton.addEventListener("click", game.toggleAudio);
+  document.addEventListener("keypress", function (event) {
+    if (event.key === 'm') {
+      game.toggleAudio();
+    }
+  });
+  // const toggleButton = document.getElementById("toggleAudio");
+  // toggleButton.addEventListener("click", game.toggleAudio);
   var titleAudio = document.getElementById("title-theme");
   titleAudio.addEventListener("ended", function () {
     game.titleEnded = true;
