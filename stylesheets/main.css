@@ -37,10 +37,13 @@ body {
 }
 
 .sidebar {
+  font-size: 24px;
+  font-family: 'Geo', sans-serif;
+  color: #F9F9F9;
   width: 150px;
   height: 360px;
   background-color: #000000;
-  opacity: .75;
+  opacity: .9;
 }
 
 .links-form {
