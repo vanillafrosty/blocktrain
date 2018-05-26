@@ -4,25 +4,29 @@ body {
 
 .app-container {
   display: flex;
+  justify-content: space-between;
   background-image: url("../sprites/megaman-intro.jpg");
-  background-size: 1250px 100vh;
+  background-size: 1000px 100vh;
   background-position: 0 0;
-  width: 950px;
+  width: 700px;
   height: 100vh;
   margin: auto;
 }
 
-.game {
-  width: 700px;
-  height: 80%;
+#canvas {
+  width: 300px;
+  height: 720px;
   background-color: #000000;
   opacity: .75;
-  margin-top: 10vh;
 }
 
 .sidebar {
-  width: 250px;
-  height: 80%;
-  background-color: #F9F9F9;
+  width: 150px;
+  height: 360px;
+  background-color: #000000;
   margin-top: 10vh;
+}
+
+.links {
+
 }
