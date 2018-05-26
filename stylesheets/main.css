@@ -2,6 +2,14 @@ body {
   background-color: #000000;
 }
 
+.title-text {
+  color: #F9F9F9;
+  font-size: 48px;
+  text-align: center;
+  font-family: 'Geo', sans-serif;
+  margin: 50px;
+}
+
 .app-container {
   display: flex;
   justify-content: space-between;
@@ -24,9 +32,14 @@ body {
   width: 150px;
   height: 360px;
   background-color: #000000;
+  opacity: .75;
   margin-top: 10vh;
 }
 
 .links {
+  width: 100px;
+  height: 200px;
+  background-color: #000000;
+  opacity: .75;
 
 }
