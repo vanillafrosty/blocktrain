@@ -1,33 +1,15 @@
-function playAudio() {
-  document.getElementById("megaman").play();
-}
-
-function pauseAudio() {
-  document.getElementById("megaman").pause();
-}
-
 const toggleButton = document.getElementById("toggleAudio");
 
-// const toggleAudio = () => {
-//   let megamanPlaying = false;
-//   return (e) => {
-//     e.preventDefault();
-//     const megaman = document.getElementById("megaman");
-//     if (!megamanPlaying) {
-//       megaman.play();
-//       megamanPlaying = true;
-//     } else {
-//       megaman.pause();
-//       megamanPlaying = false;
-//     }
-//   }
-// };
 
 const toggleAudio = () => {
   let megamanPlaying = false;
+  let titlePlaying = true;
   return (e) => {
     e.preventDefault();
-    megamanPlaying = toggleMegaman(megamanPlaying);
+    if (titlePlaying || megamanPlaying) {
+      megamanPlaying = toggleMegaman(megamanPlaying);
+
+    }
   }
 };
 
@@ -44,10 +26,3 @@ const toggleMegaman = (playing) => {
     return false;
   }
 };
-
-
-// const titlePlaying = true;
-//
-// const toggleTitle = () => {
-//
-// }

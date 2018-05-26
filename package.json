@@ -1,0 +1,31 @@
+{
+  "name": "blocktrain",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Javascript OOP implementation of the classic Tetris game in the browser",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack": "webpack --mode=development",
+    "webpack:w": "webpack --mode=development --watch",
+    "postinstall": "webpack"
+  },
+  "dependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "webpack": "^4.7.0"
+  },
+  "devDependencies": {
+    "webpack-cli": "^2.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vanillafrosty/blocktrain.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "homepage": "https://github.com/vanillafrosty/blocktrain#readme"
+}
