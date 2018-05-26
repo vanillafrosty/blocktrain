@@ -33,7 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let j=0; j<piece[0].length; j++) {
       if (piece[i][j] !== 0) {
         ctx.fillStyle = 'rgb(200,0,0)';
+        ctx.strokeStyle = '#000000';
         ctx.fillRect((offset+j)*square_width, (offset+i)*square_width, square_width, square_width);
+        ctx.strokeRect((offset+j)*square_width, (offset+i)*square_width, square_width, square_width);
       }
     }
   }
