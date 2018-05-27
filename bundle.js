@@ -111,7 +111,14 @@ document.addEventListener('DOMContentLoaded', function () {
     game.titleEnded = true;
   });
 
-  game.play();
+  document.addEventListener("keypress", function (event) {
+    if (event.key === 'p') {
+      game.play();
+    }
+  });
+
+  // game.play();
+
 });
 
 /***/ }),
@@ -388,27 +395,37 @@ var Game = function () {
     value: function play() {
       var _this2 = this;
 
-      this.addKeyListeners();
+      if (this.playingGame) {
+        return true;
+      } else {
+        this.playingGame = true;
+        this.titleAudio.pause();
+        this.titlePlaying = false;
+        this.megamanAudio.play();
+        this.megamanPlaying = true;
 
-      var render = function render(timestamp) {
-        _this2.resetTime += timestamp - _this2.startTime;
-        if (_this2.resetTime > 1000) {
-          _this2.resetTime = 0;
-          _this2.offset.y += 1;
-          if (_this2.board.update(_this2.piece, _this2.offset)) {
-            _this2.offset.y = 0;
+        this.addKeyListeners();
+
+        var render = function render(timestamp) {
+          _this2.resetTime += timestamp - _this2.startTime;
+          if (_this2.resetTime > 1000) {
+            _this2.resetTime = 0;
+            _this2.offset.y += 1;
+            if (_this2.board.update(_this2.piece, _this2.offset)) {
+              _this2.offset.y = 0;
+            }
+            _this2.boardStep();
           }
-          _this2.boardStep();
-        }
-        _this2.startTime = timestamp;
-        requestAnimationFrame(render);
-      };
+          _this2.startTime = timestamp;
+          requestAnimationFrame(render);
+        };
 
-      requestAnimationFrame(function (timestamp) {
-        _this2.startTime = timestamp;
-        _this2.board.drawPiece(_this2.piece, _this2.offset);
-        render(timestamp);
-      });
+        requestAnimationFrame(function (timestamp) {
+          _this2.startTime = timestamp;
+          _this2.board.drawPiece(_this2.piece, _this2.offset);
+          render(timestamp);
+        });
+      }
     }
   }]);
 

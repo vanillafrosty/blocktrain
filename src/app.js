@@ -21,7 +21,13 @@ document.addEventListener('DOMContentLoaded', () => {
     game.titleEnded = true;
   });
 
-  game.play();
+  document.addEventListener("keypress", (event) => {
+    if (event.key === 'p'){
+      game.play();
+    }
+  });
+  
+  // game.play();
 
 
 });

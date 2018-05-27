@@ -82,27 +82,37 @@ export default class Game {
 
 
   play() {
-    this.addKeyListeners();
+    if (this.playingGame) {
+      return true;
+    } else {
+      this.playingGame = true;
+      this.titleAudio.pause();
+      this.titlePlaying = false;
+      this.megamanAudio.play();
+      this.megamanPlaying = true;
+      
+      this.addKeyListeners();
 
-    const render = (timestamp) => {
-      this.resetTime += timestamp-this.startTime;
-      if (this.resetTime > 1000) {
-        this.resetTime = 0;
-        this.offset.y += 1;
-        if (this.board.update(this.piece, this.offset)){
-          this.offset.y = 0;
+      const render = (timestamp) => {
+        this.resetTime += timestamp-this.startTime;
+        if (this.resetTime > 1000) {
+          this.resetTime = 0;
+          this.offset.y += 1;
+          if (this.board.update(this.piece, this.offset)){
+            this.offset.y = 0;
+          }
+          this.boardStep();
         }
-        this.boardStep();
+        this.startTime = timestamp;
+        requestAnimationFrame(render);
       }
-      this.startTime = timestamp;
-      requestAnimationFrame(render);
-    }
 
-    requestAnimationFrame((timestamp) => {
-      this.startTime = timestamp;
-      this.board.drawPiece(this.piece, this.offset);
-      render(timestamp);
-    });
+      requestAnimationFrame((timestamp) => {
+        this.startTime = timestamp;
+        this.board.drawPiece(this.piece, this.offset);
+        render(timestamp);
+      });
+    }
   }
 
 }
