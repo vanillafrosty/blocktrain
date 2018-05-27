@@ -95,33 +95,6 @@ var _cache2 = _interopRequireDefault(_cache);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// const piecesObj = {
-//   'I': [[0,1,0,0],
-//         [0,1,0,0],
-//         [0,1,0,0],
-//         [0,1,0,0]],
-//   'O': [[0,0,0,0],
-//         [0,2,2,0],
-//         [0,2,2,0],
-//         [0,0,0,0]],
-//   'T': [[0,0,0],
-//         [3,3,3],
-//         [0,3,0]],
-//   'L': [[0,4,0],
-//         [0,4,0],
-//         [0,4,4]],
-//   'J': [[0,5,0],
-//         [0,5,0],
-//         [5,5,0]],
-//   'Z': [[0,0,0],
-//         [6,6,0],
-//         [0,6,6]],
-//   'S': [[0,0,0],
-//         [0,7,7],
-//         [7,7,0]]
-// };
-// window.lru = new LRUCache(3, piecesObj);
-
 //transpose a square matrix with space considerations
 var transpose = function transpose(matrix) {
   var temp = void 0;
@@ -162,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var board = new _board2.default(canvas.width, canvas.height, ctx);
   var game = new _game2.default(board);
-  // debugger;
+
   document.addEventListener("keypress", function (event) {
     if (event.key === 'm') {
       game.toggleAudio();
@@ -419,6 +392,41 @@ var Game = function () {
         }
       }
     }
+
+    //transpose a square matrix with space considerations
+
+  }, {
+    key: "transpose",
+    value: function transpose(matrix) {
+      var temp = void 0;
+      for (var i = 0; i < matrix.length; i++) {
+        for (var j = i + 1; j < matrix.length; j++) {
+          temp = matrix[i][j];
+          matrix[i][j] = matrix[j][i];
+          matrix[j][i] = temp;
+        }
+      }
+      return matrix;
+    }
+
+    //we are prioritizing space over time complexity here. creating a new
+    //matrix should give us faster time complexity, but both ways are still O(n^2)
+
+  }, {
+    key: "rotate",
+    value: function rotate(matrix) {
+      var temp = void 0;
+      var transposed = this.transpose(matrix);
+      //reverse the columns
+      for (var i = 0; i < matrix.length; i++) {
+        for (var j = 0; j < Math.floor(matrix.length / 2); j++) {
+          temp = matrix[i][j];
+          matrix[i][j] = matrix[i][matrix.length - 1 - j];
+          matrix[i][matrix.length - 1 - j] = temp;
+        }
+      }
+      return matrix;
+    }
   }, {
     key: "boardStep",
     value: function boardStep() {
@@ -431,6 +439,7 @@ var Game = function () {
       var _this = this;
 
       document.addEventListener('keydown', function (e) {
+        e.preventDefault();
         switch (e.key) {
           case 'ArrowRight':
             _this.offset.x += 1;
@@ -457,6 +466,9 @@ var Game = function () {
             }
             _this.resetTime = 0;
             _this.boardStep();
+            break;
+          case 'ArrowUp':
+            _this.currentPiece = _this.rotate(_this.currentPiece);
             break;
         }
       });
@@ -731,7 +743,6 @@ var Pieces = function () {
                         piece = this.shuffle()[0];
                   }
                   this.lru.get(piece);
-                  console.log(piece);
                   return this.lru.map[piece].val;
             }
       }]);

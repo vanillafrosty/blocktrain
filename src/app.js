@@ -2,32 +2,6 @@ import Game from './game';
 import Board from './board';
 import LRUCache from './lru/cache';
 
-// const piecesObj = {
-//   'I': [[0,1,0,0],
-//         [0,1,0,0],
-//         [0,1,0,0],
-//         [0,1,0,0]],
-//   'O': [[0,0,0,0],
-//         [0,2,2,0],
-//         [0,2,2,0],
-//         [0,0,0,0]],
-//   'T': [[0,0,0],
-//         [3,3,3],
-//         [0,3,0]],
-//   'L': [[0,4,0],
-//         [0,4,0],
-//         [0,4,4]],
-//   'J': [[0,5,0],
-//         [0,5,0],
-//         [5,5,0]],
-//   'Z': [[0,0,0],
-//         [6,6,0],
-//         [0,6,6]],
-//   'S': [[0,0,0],
-//         [0,7,7],
-//         [7,7,0]]
-// };
-// window.lru = new LRUCache(3, piecesObj);
 
 //transpose a square matrix with space considerations
 const transpose = (matrix) => {
@@ -70,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let board = new Board(canvas.width, canvas.height, ctx);
   let game = new Game(board);
-  // debugger;
+
   document.addEventListener("keypress", (event) => {
     if (event.key === 'm'){
       game.toggleAudio();

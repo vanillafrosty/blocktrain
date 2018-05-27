@@ -50,7 +50,6 @@ export default class Pieces {
       piece = this.shuffle()[0];
     }
     this.lru.get(piece);
-    console.log(piece);
     return this.lru.map[piece].val;
   }
 
