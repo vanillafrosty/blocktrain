@@ -156,9 +156,6 @@ document.addEventListener('DOMContentLoaded', function () {
       game.play();
     }
   });
-
-  // game.play();
-
 });
 
 /***/ }),
@@ -341,6 +338,12 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _pieces = __webpack_require__(/*! ./pieces */ "./src/pieces.js");
+
+var _pieces2 = _interopRequireDefault(_pieces);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Game = function () {
@@ -352,7 +355,8 @@ var Game = function () {
       x: 4,
       y: 0
     };
-    this.piece = [[0, 0, 0], [1, 1, 1], [0, 1, 0]];
+    this.pieces = new _pieces2.default();
+    this.currentPiece = this.pieces.currentPiece;
     this.startTime;
     this.resetTime = 0;
     this.titlePlaying = true;
@@ -388,7 +392,7 @@ var Game = function () {
     key: "boardStep",
     value: function boardStep() {
       this.board.render();
-      this.board.drawPiece(this.piece, this.offset);
+      this.board.drawPiece(this.currentPiece, this.offset);
     }
   }, {
     key: "addKeyListeners",
@@ -399,7 +403,7 @@ var Game = function () {
         switch (e.key) {
           case 'ArrowRight':
             _this.offset.x += 1;
-            if (_this.board.validPos(_this.piece, _this.offset)) {
+            if (_this.board.validPos(_this.currentPiece, _this.offset)) {
               _this.boardStep();
             } else {
               _this.offset.x -= 1;
@@ -407,7 +411,7 @@ var Game = function () {
             break;
           case 'ArrowLeft':
             _this.offset.x -= 1;
-            if (_this.board.validPos(_this.piece, _this.offset)) {
+            if (_this.board.validPos(_this.currentPiece, _this.offset)) {
               _this.boardStep();
             } else {
               _this.offset.x += 1;
@@ -415,7 +419,7 @@ var Game = function () {
             break;
           case 'ArrowDown':
             _this.offset.y += 1;
-            if (_this.board.update(_this.piece, _this.offset)) {
+            if (_this.board.update(_this.currentPiece, _this.offset)) {
               _this.offset.y = 0;
             }
             _this.resetTime = 0;
@@ -445,7 +449,7 @@ var Game = function () {
           if (_this2.resetTime > 1000) {
             _this2.resetTime = 0;
             _this2.offset.y += 1;
-            if (_this2.board.update(_this2.piece, _this2.offset)) {
+            if (_this2.board.update(_this2.currentPiece, _this2.offset)) {
               _this2.offset.y = 0;
             }
             _this2.boardStep();
@@ -456,7 +460,7 @@ var Game = function () {
 
         requestAnimationFrame(function (timestamp) {
           _this2.startTime = timestamp;
-          _this2.board.drawPiece(_this2.piece, _this2.offset);
+          _this2.board.drawPiece(_this2.currentPiece, _this2.offset);
           render(timestamp);
         });
       }
@@ -467,6 +471,66 @@ var Game = function () {
 }();
 
 exports.default = Game;
+
+/***/ }),
+
+/***/ "./src/pieces.js":
+/*!***********************!*\
+  !*** ./src/pieces.js ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+      value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Pieces = function () {
+      function Pieces() {
+            _classCallCheck(this, Pieces);
+
+            this.pieces = {
+                  'I': [[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]],
+                  'O': [[0, 0, 0, 0], [0, 2, 2, 0], [0, 2, 2, 0], [0, 0, 0, 0]],
+                  'T': [[0, 0, 0], [3, 3, 3], [0, 3, 0]],
+                  'L': [[0, 4, 0], [0, 4, 0], [0, 4, 4]],
+                  'J': [[0, 5, 0], [0, 5, 0], [5, 5, 0]],
+                  'Z': [[0, 0, 0], [6, 6, 0], [0, 6, 6]],
+                  'S': [[0, 0, 0], [0, 7, 7], [7, 7, 0]]
+            };
+            this.bag = ['I', 'O', 'T', 'L', 'J', 'Z', 'S'];
+            this.currentPiece = this.pieces[this.shuffle()[0]];
+      }
+
+      //the fisher-yates shuffle
+
+
+      _createClass(Pieces, [{
+            key: 'shuffle',
+            value: function shuffle() {
+                  var randomIndex = void 0,
+                      current = void 0;
+                  for (var i = this.bag.length - 1; i >= 0; i--) {
+                        randomIndex = Math.floor(Math.random() * (i + 1));
+                        current = this.bag[i];
+                        this.bag[i] = this.bag[randomIndex];
+                        this.bag[randomIndex] = current;
+                  }
+                  return this.bag;
+            }
+      }]);
+
+      return Pieces;
+}();
+
+exports.default = Pieces;
 
 /***/ })
 

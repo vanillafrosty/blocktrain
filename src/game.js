@@ -1,3 +1,5 @@
+import Pieces from './pieces';
+
 export default class Game {
 
   constructor(board) {
@@ -6,11 +8,8 @@ export default class Game {
       x: 4,
       y: 0
     };
-    this.piece = [
-      [0,0,0],
-      [1,1,1],
-      [0,1,0]
-    ];
+    this.pieces = new Pieces();
+    this.currentPiece = this.pieces.currentPiece;
     this.startTime;
     this.resetTime = 0;
     this.titlePlaying = true;
@@ -43,7 +42,7 @@ export default class Game {
 
   boardStep() {
     this.board.render();
-    this.board.drawPiece(this.piece, this.offset);
+    this.board.drawPiece(this.currentPiece, this.offset);
   }
 
   addKeyListeners() {
@@ -51,7 +50,7 @@ export default class Game {
       switch(e.key) {
         case 'ArrowRight':
           this.offset.x += 1;
-          if (this.board.validPos(this.piece, this.offset)) {
+          if (this.board.validPos(this.currentPiece, this.offset)) {
             this.boardStep();
           } else {
             this.offset.x -= 1;
@@ -59,7 +58,7 @@ export default class Game {
           break;
         case 'ArrowLeft':
           this.offset.x -= 1;
-          if (this.board.validPos(this.piece, this.offset)){
+          if (this.board.validPos(this.currentPiece, this.offset)){
             this.boardStep();
           } else {
             this.offset.x += 1;
@@ -67,7 +66,7 @@ export default class Game {
           break;
         case 'ArrowDown':
           this.offset.y += 1;
-          if (this.board.update(this.piece, this.offset)) {
+          if (this.board.update(this.currentPiece, this.offset)) {
             this.offset.y = 0;
           }
           this.resetTime = 0;
@@ -96,7 +95,7 @@ export default class Game {
         if (this.resetTime > 1000) {
           this.resetTime = 0;
           this.offset.y += 1;
-          if (this.board.update(this.piece, this.offset)){
+          if (this.board.update(this.currentPiece, this.offset)){
             this.offset.y = 0;
           }
           this.boardStep();
@@ -107,7 +106,7 @@ export default class Game {
 
       requestAnimationFrame((timestamp) => {
         this.startTime = timestamp;
-        this.board.drawPiece(this.piece, this.offset);
+        this.board.drawPiece(this.currentPiece, this.offset);
         render(timestamp);
       });
     }

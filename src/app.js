@@ -1,6 +1,7 @@
 import Game from './game';
 import Board from './board';
 
+
 //transpose a square matrix with space considerations
 const transpose = (matrix) => {
   let temp;
@@ -72,7 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // game.play();
 
 
 });

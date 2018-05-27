@@ -27,8 +27,10 @@ export default class Pieces {
             [7,7,0]]
     };
     this.bag = ['I','O','T','L','J','Z','S'];
+    this.currentPiece = this.pieces[this.shuffle()[0]];
   }
 
+  //the fisher-yates shuffle
   shuffle() {
     let randomIndex, current;
     for (let i=this.bag.length-1; i>=0; i--) {
@@ -37,6 +39,7 @@ export default class Pieces {
       this.bag[i] = this.bag[randomIndex];
       this.bag[randomIndex] = current;
     }
+    return this.bag;
   }
 
 }
