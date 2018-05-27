@@ -32,9 +32,26 @@ document.addEventListener('DOMContentLoaded', () => {
     x: 4,
     y: 0
   };
-
   let startTime;
   let resetTime = 0;
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') {
+      offset.x += 1;
+      board.render(ctx);
+      board.drawPiece(piece, offset, ctx);
+    } else if (e.key === 'ArrowLeft') {
+      offset.x -= 1;
+      board.render(ctx);
+      board.drawPiece(piece, offset, ctx);
+    } else if (e.key === 'ArrowDown') {
+      offset.y += 1;
+      resetTime = 0;
+      board.render(ctx);
+      board.drawPiece(piece, offset, ctx);
+    }
+  });
+
   const render = (timestamp) => {
     resetTime += timestamp-startTime;
     if (resetTime > 1000) {

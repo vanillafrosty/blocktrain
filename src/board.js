@@ -92,7 +92,6 @@ export default class Board {
     for (let i=0; i<piece.length; i++) {
       for (let j=0; j<piece[0].length; j++) {
         if (piece[i][j] !== 0) {
-          debugger;
           this.grid[y+i][x+j] = piece[i][j];
         }
       }

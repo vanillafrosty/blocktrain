@@ -118,9 +118,26 @@ document.addEventListener('DOMContentLoaded', function () {
     x: 4,
     y: 0
   };
-
   var startTime = void 0;
   var resetTime = 0;
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight') {
+      offset.x += 1;
+      board.render(ctx);
+      board.drawPiece(piece, offset, ctx);
+    } else if (e.key === 'ArrowLeft') {
+      offset.x -= 1;
+      board.render(ctx);
+      board.drawPiece(piece, offset, ctx);
+    } else if (e.key === 'ArrowDown') {
+      offset.y += 1;
+      resetTime = 0;
+      board.render(ctx);
+      board.drawPiece(piece, offset, ctx);
+    }
+  });
+
   var render = function render(timestamp) {
     resetTime += timestamp - startTime;
     if (resetTime > 1000) {
@@ -264,7 +281,6 @@ var Board = function () {
       for (var i = 0; i < piece.length; i++) {
         for (var j = 0; j < piece[0].length; j++) {
           if (piece[i][j] !== 0) {
-            debugger;
             this.grid[y + i][x + j] = piece[i][j];
           }
         }
