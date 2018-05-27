@@ -24,6 +24,7 @@ export default class Board {
       7: '#F3C73D'
     };
     this.render = this.render.bind(this);
+    this.drawPiece = this.drawPiece.bind(this);
   }
 
   render(ctx) {
@@ -49,6 +50,27 @@ export default class Board {
     }
   }
 
+  drawPiece(piece, ctx) {
+    let s_w = this.square_width;
+    for (let i=0; i<piece.length; i++) {
+      for (let j=0; j<piece[0].length; j++) {
+        if (piece[i][j] !== 0) {
+          ctx.fillStyle = 'rgb(200,0,0)';
+          ctx.strokeStyle = '#000000';
+          ctx.lineWidth = 2;
+          let x = (this.offset.x+j)*s_w;
+          let y = (this.offset.y+i)*s_w;
+          ctx.fillRect(x, y, s_w, s_w);
+          ctx.strokeRect(x, y, s_w, s_w);
+          ctx.beginPath();
+          ctx.moveTo(x+s_w/4, y+s_w*(3/4));
+          ctx.lineTo(x+s_w/4, y+s_w/4);
+          ctx.lineTo(x+s_w*(3/4), y+s_w/4);
+          ctx.stroke();
+        }
+      }
+    }
+  }
 
 
 
