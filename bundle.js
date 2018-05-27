@@ -110,25 +110,55 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var piece = [[0, 0, 0], [1, 1, 1], [0, 1, 0]];
 
-  var offset = 4;
-  for (var i = 0; i < piece.length; i++) {
-    for (var j = 0; j < piece[0].length; j++) {
-      if (piece[i][j] !== 0) {
-        ctx.fillStyle = 'rgb(200,0,0)';
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 2;
-        var x = (offset + j) * square_width;
-        var y = (offset + i) * square_width;
-        ctx.fillRect(x, y, square_width, square_width);
-        ctx.strokeRect(x, y, square_width, square_width);
-        ctx.beginPath();
-        ctx.moveTo(x + square_width / 4, y + square_width * (3 / 4));
-        ctx.lineTo(x + square_width / 4, y + square_width / 4);
-        ctx.lineTo(x + square_width * (3 / 4), y + square_width / 4);
-        ctx.stroke();
+  var offset = {
+    x: 4,
+    y: 0
+  };
+  var draw = function draw(piece, offset, ctx) {
+    for (var i = 0; i < piece.length; i++) {
+      for (var j = 0; j < piece[0].length; j++) {
+        if (piece[i][j] !== 0) {
+          ctx.fillStyle = 'rgb(200,0,0)';
+          ctx.strokeStyle = '#000000';
+          ctx.lineWidth = 2;
+          var x = (offset.x + j) * square_width;
+          var y = (offset.y + i) * square_width;
+          ctx.fillRect(x, y, square_width, square_width);
+          ctx.strokeRect(x, y, square_width, square_width);
+          ctx.beginPath();
+          ctx.moveTo(x + square_width / 4, y + square_width * (3 / 4));
+          ctx.lineTo(x + square_width / 4, y + square_width / 4);
+          ctx.lineTo(x + square_width * (3 / 4), y + square_width / 4);
+          ctx.stroke();
+        }
       }
     }
-  }
+  };
+
+  var clearBoard = function clearBoard(ctx) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  var startTime = void 0;
+  var resetTime = 0;
+  var render = function render(timestamp) {
+    resetTime += timestamp - startTime;
+    if (resetTime > 1000) {
+      resetTime = 0;
+      offset.y += 1;
+      console.log(timestamp - startTime);
+      clearBoard(ctx);
+      draw(piece, offset, ctx);
+    }
+    startTime = timestamp;
+    requestAnimationFrame(render);
+  };
+
+  requestAnimationFrame(function (timestamp) {
+    startTime = timestamp;
+    draw(piece, offset, ctx);
+    render(timestamp);
+  });
 });
 
 /***/ }),
