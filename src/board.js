@@ -23,6 +23,7 @@ export default class Board {
     this.render = this.render.bind(this);
     this.drawPiece = this.drawPiece.bind(this);
     this.update = this.update.bind(this);
+    this.validPos = this.validPos.bind(this);
   }
 
   render(ctx) {
@@ -96,6 +97,33 @@ export default class Board {
         }
       }
     }
+  }
+
+  //checks that a number is between a lower and higher bound (inclusive)
+  between(num, low, high) {
+    if (num < low || num > high) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  validPos(piece, offset) {
+    for (let i=0; i<piece.length; i++) {
+      for (let j=0; j<piece[0].length; j++) {
+        if (piece[i][j] !== 0) {
+          let x = offset.x+j;
+          let y = offset.y+i;
+          if (!this.between(x, 0, this.cols-1) || !this.between(y, 0, this.rows-1)) {
+            return false;
+          }
+          if (typeof(this.grid[y][x]) !== 'undefined') {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
   }
 
 

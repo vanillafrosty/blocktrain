@@ -38,12 +38,20 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') {
       offset.x += 1;
-      board.render(ctx);
-      board.drawPiece(piece, offset, ctx);
+      if (board.validPos(piece, offset)) {
+        board.render(ctx);
+        board.drawPiece(piece, offset, ctx);
+      } else {
+        offset.x -= 1;
+      }
     } else if (e.key === 'ArrowLeft') {
       offset.x -= 1;
-      board.render(ctx);
-      board.drawPiece(piece, offset, ctx);
+      if (board.validPos(piece, offset)){
+        board.render(ctx);
+        board.drawPiece(piece, offset, ctx);
+      } else {
+        offset.x += 1;
+      }
     } else if (e.key === 'ArrowDown') {
       offset.y += 1;
       if (board.update(piece, offset)) {

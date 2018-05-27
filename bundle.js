@@ -124,12 +124,20 @@ document.addEventListener('DOMContentLoaded', function () {
   document.addEventListener('keydown', function (e) {
     if (e.key === 'ArrowRight') {
       offset.x += 1;
-      board.render(ctx);
-      board.drawPiece(piece, offset, ctx);
+      if (board.validPos(piece, offset)) {
+        board.render(ctx);
+        board.drawPiece(piece, offset, ctx);
+      } else {
+        offset.x -= 1;
+      }
     } else if (e.key === 'ArrowLeft') {
       offset.x -= 1;
-      board.render(ctx);
-      board.drawPiece(piece, offset, ctx);
+      if (board.validPos(piece, offset)) {
+        board.render(ctx);
+        board.drawPiece(piece, offset, ctx);
+      } else {
+        offset.x += 1;
+      }
     } else if (e.key === 'ArrowDown') {
       offset.y += 1;
       if (board.update(piece, offset)) {
@@ -209,6 +217,7 @@ var Board = function () {
     this.render = this.render.bind(this);
     this.drawPiece = this.drawPiece.bind(this);
     this.update = this.update.bind(this);
+    this.validPos = this.validPos.bind(this);
   }
 
   _createClass(Board, [{
@@ -288,6 +297,37 @@ var Board = function () {
           }
         }
       }
+    }
+
+    //checks that a number is between a lower and higher bound (inclusive)
+
+  }, {
+    key: 'between',
+    value: function between(num, low, high) {
+      if (num < low || num > high) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+  }, {
+    key: 'validPos',
+    value: function validPos(piece, offset) {
+      for (var i = 0; i < piece.length; i++) {
+        for (var j = 0; j < piece[0].length; j++) {
+          if (piece[i][j] !== 0) {
+            var x = offset.x + j;
+            var y = offset.y + i;
+            if (!this.between(x, 0, this.cols - 1) || !this.between(y, 0, this.rows - 1)) {
+              return false;
+            }
+            if (typeof this.grid[y][x] !== 'undefined') {
+              return false;
+            }
+          }
+        }
+      }
+      return true;
     }
   }]);
 
