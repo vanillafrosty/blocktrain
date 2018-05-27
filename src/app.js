@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const square_width = canvas.width/10;
   var ctx = canvas.getContext('2d');
 
-  let board = new Board(canvas.width, canvas.height);
+  let board = new Board(canvas.width, canvas.height, ctx);
 
   const piece = [
     [0,0,0],
@@ -39,16 +39,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'ArrowRight') {
       offset.x += 1;
       if (board.validPos(piece, offset)) {
-        board.render(ctx);
-        board.drawPiece(piece, offset, ctx);
+        board.render();
+        board.drawPiece(piece, offset);
       } else {
         offset.x -= 1;
       }
     } else if (e.key === 'ArrowLeft') {
       offset.x -= 1;
       if (board.validPos(piece, offset)){
-        board.render(ctx);
-        board.drawPiece(piece, offset, ctx);
+        board.render();
+        board.drawPiece(piece, offset);
       } else {
         offset.x += 1;
       }
@@ -58,8 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
         offset.y = 0;
       }
       resetTime = 0;
-      board.render(ctx);
-      board.drawPiece(piece, offset, ctx);
+      board.render();
+      board.drawPiece(piece, offset);
     }
   });
 
@@ -71,8 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (board.update(piece, offset)){
         offset.y = 0;
       }
-      board.render(ctx);
-      board.drawPiece(piece, offset, ctx);
+      board.render();
+      board.drawPiece(piece, offset);
     }
     startTime = timestamp;
     requestAnimationFrame(render);
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   requestAnimationFrame((timestamp) => {
     startTime = timestamp;
-    board.drawPiece(piece, offset, ctx);
+    board.drawPiece(piece, offset);
     render(timestamp);
   });
 

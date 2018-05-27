@@ -8,11 +8,9 @@ export default class Game {
     this.megamanAudio = document.getElementById("megaman-theme");
     this.titleAudio = document.getElementById("title-theme");
     this.toggleAudio = this.toggleAudio.bind(this);
-    // debugger;
   }
 
   toggleAudio(){
-    // debugger;
     if (!this.playingGame && !this.titleEnded) {
       if (this.titlePlaying){
         this.titleAudio.pause();

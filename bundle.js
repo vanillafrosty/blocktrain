@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var square_width = canvas.width / 10;
   var ctx = canvas.getContext('2d');
 
-  var board = new _board2.default(canvas.width, canvas.height);
+  var board = new _board2.default(canvas.width, canvas.height, ctx);
 
   var piece = [[0, 0, 0], [1, 1, 1], [0, 1, 0]];
 
@@ -125,16 +125,16 @@ document.addEventListener('DOMContentLoaded', function () {
     if (e.key === 'ArrowRight') {
       offset.x += 1;
       if (board.validPos(piece, offset)) {
-        board.render(ctx);
-        board.drawPiece(piece, offset, ctx);
+        board.render();
+        board.drawPiece(piece, offset);
       } else {
         offset.x -= 1;
       }
     } else if (e.key === 'ArrowLeft') {
       offset.x -= 1;
       if (board.validPos(piece, offset)) {
-        board.render(ctx);
-        board.drawPiece(piece, offset, ctx);
+        board.render();
+        board.drawPiece(piece, offset);
       } else {
         offset.x += 1;
       }
@@ -144,8 +144,8 @@ document.addEventListener('DOMContentLoaded', function () {
         offset.y = 0;
       }
       resetTime = 0;
-      board.render(ctx);
-      board.drawPiece(piece, offset, ctx);
+      board.render();
+      board.drawPiece(piece, offset);
     }
   });
 
@@ -157,8 +157,8 @@ document.addEventListener('DOMContentLoaded', function () {
       if (board.update(piece, offset)) {
         offset.y = 0;
       }
-      board.render(ctx);
-      board.drawPiece(piece, offset, ctx);
+      board.render();
+      board.drawPiece(piece, offset);
     }
     startTime = timestamp;
     requestAnimationFrame(render);
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   requestAnimationFrame(function (timestamp) {
     startTime = timestamp;
-    board.drawPiece(piece, offset, ctx);
+    board.drawPiece(piece, offset);
     render(timestamp);
   });
 });
@@ -192,9 +192,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Board = function () {
-  function Board(width, height) {
+  function Board(width, height, ctx) {
     _classCallCheck(this, Board);
 
+    this.ctx = ctx;
     this.width = width;
     this.height = height;
     this.rows = 24;
@@ -222,47 +223,47 @@ var Board = function () {
 
   _createClass(Board, [{
     key: 'render',
-    value: function render(ctx) {
-      ctx.clearRect(0, 0, this.width, this.height);
+    value: function render() {
+      this.ctx.clearRect(0, 0, this.width, this.height);
       var s_w = this.square_width;
       for (var i = 0; i < this.rows; i++) {
         for (var j = 0; j < this.cols; j++) {
           if (typeof this.grid[i][j] !== 'undefined') {
-            ctx.fillStyle = this.colors[this.grid[i][j]];
-            ctx.strokeStyle = this.strokeStyle;
-            ctx.lineWidth = 2;
+            this.ctx.fillStyle = this.colors[this.grid[i][j]];
+            this.ctx.strokeStyle = this.strokeStyle;
+            this.ctx.lineWidth = 2;
             var x = j * s_w;
             var y = i * s_w;
-            ctx.fillRect(x, y, s_w, s_w);
-            ctx.strokeRect(x, y, s_w, s_w);
-            ctx.beginPath();
-            ctx.moveTo(x + s_w / 4, y + s_w * (3 / 4));
-            ctx.lineTo(x + s_w / 4, y + s_w / 4);
-            ctx.lineTo(x + s_w * (3 / 4), y + s_w / 4);
-            ctx.stroke();
+            this.ctx.fillRect(x, y, s_w, s_w);
+            this.ctx.strokeRect(x, y, s_w, s_w);
+            this.ctx.beginPath();
+            this.ctx.moveTo(x + s_w / 4, y + s_w * (3 / 4));
+            this.ctx.lineTo(x + s_w / 4, y + s_w / 4);
+            this.ctx.lineTo(x + s_w * (3 / 4), y + s_w / 4);
+            this.ctx.stroke();
           }
         }
       }
     }
   }, {
     key: 'drawPiece',
-    value: function drawPiece(piece, offset, ctx) {
+    value: function drawPiece(piece, offset) {
       var s_w = this.square_width;
       for (var i = 0; i < piece.length; i++) {
         for (var j = 0; j < piece[0].length; j++) {
           if (piece[i][j] !== 0) {
-            ctx.fillStyle = this.colors[piece[i][j]];
-            ctx.strokeStyle = this.strokeStyle;
-            ctx.lineWidth = 2;
+            this.ctx.fillStyle = this.colors[piece[i][j]];
+            this.ctx.strokeStyle = this.strokeStyle;
+            this.ctx.lineWidth = 2;
             var x = (offset.x + j) * s_w;
             var y = (offset.y + i) * s_w;
-            ctx.fillRect(x, y, s_w, s_w);
-            ctx.strokeRect(x, y, s_w, s_w);
-            ctx.beginPath();
-            ctx.moveTo(x + s_w / 4, y + s_w * (3 / 4));
-            ctx.lineTo(x + s_w / 4, y + s_w / 4);
-            ctx.lineTo(x + s_w * (3 / 4), y + s_w / 4);
-            ctx.stroke();
+            this.ctx.fillRect(x, y, s_w, s_w);
+            this.ctx.strokeRect(x, y, s_w, s_w);
+            this.ctx.beginPath();
+            this.ctx.moveTo(x + s_w / 4, y + s_w * (3 / 4));
+            this.ctx.lineTo(x + s_w / 4, y + s_w / 4);
+            this.ctx.lineTo(x + s_w * (3 / 4), y + s_w / 4);
+            this.ctx.stroke();
           }
         }
       }
@@ -367,13 +368,11 @@ var Game = function () {
     this.megamanAudio = document.getElementById("megaman-theme");
     this.titleAudio = document.getElementById("title-theme");
     this.toggleAudio = this.toggleAudio.bind(this);
-    // debugger;
   }
 
   _createClass(Game, [{
     key: "toggleAudio",
     value: function toggleAudio() {
-      // debugger;
       if (!this.playingGame && !this.titleEnded) {
         if (this.titlePlaying) {
           this.titleAudio.pause();
