@@ -85,6 +85,10 @@ var _game = __webpack_require__(/*! ./game */ "./src/game.js");
 
 var _game2 = _interopRequireDefault(_game);
 
+var _board = __webpack_require__(/*! ./board */ "./src/board.js");
+
+var _board2 = _interopRequireDefault(_board);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -107,6 +111,8 @@ document.addEventListener('DOMContentLoaded', function () {
   canvas.height = 720;
   var square_width = canvas.width / 10;
   var ctx = canvas.getContext('2d');
+
+  var board = new _board2.default(canvas.width, canvas.height);
 
   var piece = [[0, 0, 0], [1, 1, 1], [0, 1, 0]];
 
@@ -135,9 +141,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   };
 
-  var clearBoard = function clearBoard(ctx) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  };
+  // const clearBoard = (ctx) => {
+  //   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // }
 
   var startTime = void 0;
   var resetTime = 0;
@@ -147,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
       resetTime = 0;
       offset.y += 1;
       console.log(timestamp - startTime);
-      clearBoard(ctx);
+      board.render(ctx);
       draw(piece, offset, ctx);
     }
     startTime = timestamp;
@@ -160,6 +166,86 @@ document.addEventListener('DOMContentLoaded', function () {
     render(timestamp);
   });
 });
+
+/***/ }),
+
+/***/ "./src/board.js":
+/*!**********************!*\
+  !*** ./src/board.js ***!
+  \**********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Board = function () {
+  function Board(width, height) {
+    _classCallCheck(this, Board);
+
+    this.width = width;
+    this.height = height;
+    this.rows = 24;
+    this.cols = 10;
+    this.grid = [];
+    this.offset = {
+      x: 4,
+      y: 0
+    };
+    this.square_width = width / this.cols;
+    for (var i = 0; i < this.rows; i++) {
+      this.grid[i] = new Array(this.cols);
+    }
+    this.colors = {
+      1: '#E24242',
+      2: '#F5DC41',
+      3: '#CC41F5',
+      4: '#3E4AE8',
+      5: '#3EE0E8',
+      6: '#3EE848',
+      7: '#F3C73D'
+    };
+    this.render = this.render.bind(this);
+  }
+
+  _createClass(Board, [{
+    key: 'render',
+    value: function render(ctx) {
+      ctx.clearRect(0, 0, this.width, this.height);
+      var s_w = this.square_width;
+      for (var i = 0; i < this.rows; i++) {
+        for (var j = 0; j < this.cols; j++) {
+          if (typeof this.grid[i][j] !== 'undefined') {
+            ctx.fillStyle = 'rgb(200,0,0)';
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            var x = (this.offset.x + j) * s_w;
+            var y = (this.offset.y + i) * s_w;
+            ctx.fillRect(x, y, s_w, s_w);
+            ctx.strokeRect(x, y, s_w, s_w);
+            ctx.beginPath();
+            ctx.moveTo(x + s_w / 4, y + s_w * (3 / 4));
+            ctx.lineTo(x + s_w / 4, y + s_w / 4);
+            ctx.lineTo(x + s_w * (3 / 4), y + s_w / 4);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+  }]);
+
+  return Board;
+}();
+
+exports.default = Board;
 
 /***/ }),
 

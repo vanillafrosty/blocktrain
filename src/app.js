@@ -1,5 +1,5 @@
 import Game from './game';
-
+import Board from './board';
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('hey');
@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
   canvas.height = 720;
   const square_width = canvas.width/10;
   var ctx = canvas.getContext('2d');
+
+  let board = new Board(canvas.width, canvas.height);
 
   const piece = [
     [0,0,0],
@@ -53,9 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  const clearBoard = (ctx) => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
+  // const clearBoard = (ctx) => {
+  //   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // }
 
   let startTime;
   let resetTime = 0;
@@ -65,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
       resetTime = 0;
       offset.y += 1;
       console.log(timestamp-startTime);
-      clearBoard(ctx);
+      board.render(ctx);
       draw(piece, offset, ctx);
     }
     startTime = timestamp;
