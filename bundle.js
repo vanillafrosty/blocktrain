@@ -344,6 +344,12 @@ var Game = function () {
       }
     }
   }, {
+    key: "boardStep",
+    value: function boardStep() {
+      this.board.render();
+      this.board.drawPiece(this.piece, this.offset);
+    }
+  }, {
     key: "addKeyListeners",
     value: function addKeyListeners() {
       var _this = this;
@@ -353,8 +359,7 @@ var Game = function () {
           case 'ArrowRight':
             _this.offset.x += 1;
             if (_this.board.validPos(_this.piece, _this.offset)) {
-              _this.board.render();
-              _this.board.drawPiece(_this.piece, _this.offset);
+              _this.boardStep();
             } else {
               _this.offset.x -= 1;
             }
@@ -362,8 +367,7 @@ var Game = function () {
           case 'ArrowLeft':
             _this.offset.x -= 1;
             if (_this.board.validPos(_this.piece, _this.offset)) {
-              _this.board.render();
-              _this.board.drawPiece(_this.piece, _this.offset);
+              _this.boardStep();
             } else {
               _this.offset.x += 1;
             }
@@ -374,8 +378,7 @@ var Game = function () {
               _this.offset.y = 0;
             }
             _this.resetTime = 0;
-            _this.board.render();
-            _this.board.drawPiece(_this.piece, _this.offset);
+            _this.boardStep();
             break;
         }
       });
@@ -395,8 +398,7 @@ var Game = function () {
           if (_this2.board.update(_this2.piece, _this2.offset)) {
             _this2.offset.y = 0;
           }
-          _this2.board.render();
-          _this2.board.drawPiece(_this2.piece, _this2.offset);
+          _this2.boardStep();
         }
         _this2.startTime = timestamp;
         requestAnimationFrame(render);

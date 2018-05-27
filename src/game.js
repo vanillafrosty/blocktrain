@@ -43,14 +43,18 @@ export default class Game {
     }
   }
 
+  boardStep() {
+    this.board.render();
+    this.board.drawPiece(this.piece, this.offset);
+  }
+
   addKeyListeners() {
     document.addEventListener('keydown', (e) => {
       switch(e.key) {
         case 'ArrowRight':
           this.offset.x += 1;
           if (this.board.validPos(this.piece, this.offset)) {
-            this.board.render();
-            this.board.drawPiece(this.piece, this.offset);
+            this.boardStep();
           } else {
             this.offset.x -= 1;
           }
@@ -58,8 +62,7 @@ export default class Game {
         case 'ArrowLeft':
           this.offset.x -= 1;
           if (this.board.validPos(this.piece, this.offset)){
-            this.board.render();
-            this.board.drawPiece(this.piece, this.offset);
+            this.boardStep();
           } else {
             this.offset.x += 1;
           }
@@ -70,12 +73,12 @@ export default class Game {
             this.offset.y = 0;
           }
           this.resetTime = 0;
-          this.board.render();
-          this.board.drawPiece(this.piece, this.offset);
+          this.boardStep();
           break;
       }
     });
   }
+
 
 
   play() {
@@ -89,8 +92,7 @@ export default class Game {
         if (this.board.update(this.piece, this.offset)){
           this.offset.y = 0;
         }
-        this.board.render();
-        this.board.drawPiece(this.piece, this.offset);
+        this.boardStep();
       }
       this.startTime = timestamp;
       requestAnimationFrame(render);
