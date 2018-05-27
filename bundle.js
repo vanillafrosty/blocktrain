@@ -89,7 +89,38 @@ var _board = __webpack_require__(/*! ./board */ "./src/board.js");
 
 var _board2 = _interopRequireDefault(_board);
 
+var _cache = __webpack_require__(/*! ./lru/cache */ "./src/lru/cache.js");
+
+var _cache2 = _interopRequireDefault(_cache);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// const piecesObj = {
+//   'I': [[0,1,0,0],
+//         [0,1,0,0],
+//         [0,1,0,0],
+//         [0,1,0,0]],
+//   'O': [[0,0,0,0],
+//         [0,2,2,0],
+//         [0,2,2,0],
+//         [0,0,0,0]],
+//   'T': [[0,0,0],
+//         [3,3,3],
+//         [0,3,0]],
+//   'L': [[0,4,0],
+//         [0,4,0],
+//         [0,4,4]],
+//   'J': [[0,5,0],
+//         [0,5,0],
+//         [5,5,0]],
+//   'Z': [[0,0,0],
+//         [6,6,0],
+//         [0,6,6]],
+//   'S': [[0,0,0],
+//         [0,7,7],
+//         [7,7,0]]
+// };
+// window.lru = new LRUCache(3, piecesObj);
 
 //transpose a square matrix with space considerations
 var transpose = function transpose(matrix) {
@@ -200,7 +231,7 @@ var Board = function () {
       4: '#3E4AE8',
       5: '#3EE0E8',
       6: '#3EE848',
-      7: '#F3C73D'
+      7: '#F14D17'
     };
   }
 
@@ -356,7 +387,7 @@ var Game = function () {
       y: 0
     };
     this.pieces = new _pieces2.default();
-    this.currentPiece = this.pieces.currentPiece;
+    this.currentPiece = this.pieces.newPiece();
     this.startTime;
     this.resetTime = 0;
     this.titlePlaying = true;
@@ -421,6 +452,8 @@ var Game = function () {
             _this.offset.y += 1;
             if (_this.board.update(_this.currentPiece, _this.offset)) {
               _this.offset.y = 0;
+              _this.offset.x = 4;
+              _this.currentPiece = _this.pieces.newPiece();
             }
             _this.resetTime = 0;
             _this.boardStep();
@@ -451,6 +484,8 @@ var Game = function () {
             _this2.offset.y += 1;
             if (_this2.board.update(_this2.currentPiece, _this2.offset)) {
               _this2.offset.y = 0;
+              _this2.offset.x = 4;
+              _this2.currentPiece = _this2.pieces.newPiece();
             }
             _this2.boardStep();
           }
@@ -474,6 +509,163 @@ exports.default = Game;
 
 /***/ }),
 
+/***/ "./src/lru/cache.js":
+/*!**************************!*\
+  !*** ./src/lru/cache.js ***!
+  \**************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _linkedList = __webpack_require__(/*! ./linkedList */ "./src/lru/linkedList.js");
+
+var _linkedList2 = _interopRequireDefault(_linkedList);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var LRUCache = function () {
+  function LRUCache(maxCount, pieceValues) {
+    _classCallCheck(this, LRUCache);
+
+    this.count = 0;
+    this.max = maxCount;
+    this.map = {};
+    this.list = new _linkedList2.default();
+    this.pieceValues = pieceValues;
+  }
+
+  _createClass(LRUCache, [{
+    key: 'get',
+    value: function get(key) {
+      if (this.map[key] !== undefined) {
+        var node = this.map[key];
+        node.remove();
+        var newNode = this.list.add(node.key, node.val);
+        this.map[key] = newNode;
+      } else if (this.count < this.max) {
+        var _newNode = this.list.add(key, this.pieceValues[key]);
+        this.count += 1;
+        this.map[key] = _newNode;
+      } else {
+        var oldestNode = this.list.oldest();
+        oldestNode.remove();
+        delete this.map[oldestNode.key];
+        var _newNode2 = this.list.add(key, this.pieceValues[key]);
+        this.map[key] = _newNode2;
+      }
+    }
+  }]);
+
+  return LRUCache;
+}();
+
+exports.default = LRUCache;
+
+/***/ }),
+
+/***/ "./src/lru/linkedList.js":
+/*!*******************************!*\
+  !*** ./src/lru/linkedList.js ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Node = function () {
+  function Node(key, val) {
+    _classCallCheck(this, Node);
+
+    this.key = key;
+    this.val = val;
+    this.next = null;
+    this.last = null;
+  }
+
+  _createClass(Node, [{
+    key: "remove",
+    value: function remove() {
+      if (this.next) {
+        this.next.last = this.last;
+      }
+      if (this.last) {
+        this.last.next = this.next;
+      }
+      this.next = null;
+      this.last = null;
+    }
+  }]);
+
+  return Node;
+}();
+
+var LinkedList = function () {
+  function LinkedList() {
+    _classCallCheck(this, LinkedList);
+
+    //head node is the MRU, tail is the LRU to be ejected
+    this.head = new Node();
+    this.tail = new Node();
+    this.head.last = this.tail;
+    this.tail.next = this.head;
+  }
+
+  _createClass(LinkedList, [{
+    key: "add",
+    value: function add(key, val) {
+      var node = new Node(key, val);
+      node.next = this.head;
+      node.last = this.head.last;
+      this.head.last.next = node;
+      this.head.last = node;
+      return node;
+    }
+  }, {
+    key: "oldest",
+    value: function oldest() {
+      if (this.head.last === this.tail) {
+        return null;
+      } else {
+        return this.tail.next;
+      }
+    }
+
+    // newest() {
+    //   if (this.head.last === this.tail) {
+    //     return null;
+    //   } else {
+    //     return this.head.last;
+    //   }
+    // }
+
+  }]);
+
+  return LinkedList;
+}();
+
+exports.default = LinkedList;
+
+/***/ }),
+
 /***/ "./src/pieces.js":
 /*!***********************!*\
   !*** ./src/pieces.js ***!
@@ -489,6 +681,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _cache = __webpack_require__(/*! ./lru/cache */ "./src/lru/cache.js");
+
+var _cache2 = _interopRequireDefault(_cache);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -506,7 +704,7 @@ var Pieces = function () {
                   'S': [[0, 0, 0], [0, 7, 7], [7, 7, 0]]
             };
             this.bag = ['I', 'O', 'T', 'L', 'J', 'Z', 'S'];
-            this.currentPiece = this.pieces[this.shuffle()[0]];
+            this.lru = new _cache2.default(3, this.pieces);
       }
 
       //the fisher-yates shuffle
@@ -524,6 +722,17 @@ var Pieces = function () {
                         this.bag[randomIndex] = current;
                   }
                   return this.bag;
+            }
+      }, {
+            key: 'newPiece',
+            value: function newPiece() {
+                  var piece = this.shuffle()[0];
+                  while (this.lru.map[piece] !== undefined) {
+                        piece = this.shuffle()[0];
+                  }
+                  this.lru.get(piece);
+                  console.log(piece);
+                  return this.lru.map[piece].val;
             }
       }]);
 

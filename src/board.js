@@ -19,7 +19,7 @@ export default class Board {
       4: '#3E4AE8',
       5: '#3EE0E8',
       6: '#3EE848',
-      7: '#F3C73D'
+      7: '#F14D17'
     };
   }
 

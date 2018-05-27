@@ -1,3 +1,5 @@
+import LRUCache from './lru/cache';
+
 export default class Pieces {
 
   constructor() {
@@ -27,7 +29,7 @@ export default class Pieces {
             [7,7,0]]
     };
     this.bag = ['I','O','T','L','J','Z','S'];
-    this.currentPiece = this.pieces[this.shuffle()[0]];
+    this.lru = new LRUCache(3, this.pieces);
   }
 
   //the fisher-yates shuffle
@@ -40,6 +42,16 @@ export default class Pieces {
       this.bag[randomIndex] = current;
     }
     return this.bag;
+  }
+
+  newPiece() {
+    let piece = this.shuffle()[0];
+    while (this.lru.map[piece] !== undefined) {
+      piece = this.shuffle()[0];
+    }
+    this.lru.get(piece);
+    console.log(piece);
+    return this.lru.map[piece].val;
   }
 
 }

@@ -9,7 +9,7 @@ export default class Game {
       y: 0
     };
     this.pieces = new Pieces();
-    this.currentPiece = this.pieces.currentPiece;
+    this.currentPiece = this.pieces.newPiece();
     this.startTime;
     this.resetTime = 0;
     this.titlePlaying = true;
@@ -68,6 +68,8 @@ export default class Game {
           this.offset.y += 1;
           if (this.board.update(this.currentPiece, this.offset)) {
             this.offset.y = 0;
+            this.offset.x = 4;
+            this.currentPiece = this.pieces.newPiece();
           }
           this.resetTime = 0;
           this.boardStep();
@@ -97,6 +99,8 @@ export default class Game {
           this.offset.y += 1;
           if (this.board.update(this.currentPiece, this.offset)){
             this.offset.y = 0;
+            this.offset.x = 4;
+            this.currentPiece = this.pieces.newPiece();
           }
           this.boardStep();
         }
