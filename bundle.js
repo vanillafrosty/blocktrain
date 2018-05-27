@@ -100,8 +100,6 @@ document.addEventListener('DOMContentLoaded', function () {
       game.toggleAudio();
     }
   });
-  // const toggleButton = document.getElementById("toggleAudio");
-  // toggleButton.addEventListener("click", game.toggleAudio);
   var titleAudio = document.getElementById("title-theme");
   titleAudio.addEventListener("ended", function () {
     game.titleEnded = true;
@@ -120,30 +118,6 @@ document.addEventListener('DOMContentLoaded', function () {
     x: 4,
     y: 0
   };
-  var draw = function draw(piece, offset, ctx) {
-    for (var i = 0; i < piece.length; i++) {
-      for (var j = 0; j < piece[0].length; j++) {
-        if (piece[i][j] !== 0) {
-          ctx.fillStyle = 'rgb(200,0,0)';
-          ctx.strokeStyle = '#000000';
-          ctx.lineWidth = 2;
-          var x = (offset.x + j) * square_width;
-          var y = (offset.y + i) * square_width;
-          ctx.fillRect(x, y, square_width, square_width);
-          ctx.strokeRect(x, y, square_width, square_width);
-          ctx.beginPath();
-          ctx.moveTo(x + square_width / 4, y + square_width * (3 / 4));
-          ctx.lineTo(x + square_width / 4, y + square_width / 4);
-          ctx.lineTo(x + square_width * (3 / 4), y + square_width / 4);
-          ctx.stroke();
-        }
-      }
-    }
-  };
-
-  // const clearBoard = (ctx) => {
-  //   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  // }
 
   var startTime = void 0;
   var resetTime = 0;
@@ -154,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
       offset.y += 1;
       console.log(timestamp - startTime);
       board.render(ctx);
-      draw(piece, offset, ctx);
+      board.drawPiece(piece, offset, ctx);
     }
     startTime = timestamp;
     requestAnimationFrame(render);
@@ -162,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   requestAnimationFrame(function (timestamp) {
     startTime = timestamp;
-    draw(piece, offset, ctx);
+    board.drawPiece(piece, offset, ctx);
     render(timestamp);
   });
 });
@@ -196,10 +170,7 @@ var Board = function () {
     this.rows = 24;
     this.cols = 10;
     this.grid = [];
-    this.offset = {
-      x: 4,
-      y: 0
-    };
+    this.strokeStyle = '#000000';
     this.square_width = width / this.cols;
     for (var i = 0; i < this.rows; i++) {
       this.grid[i] = new Array(this.cols);
@@ -214,6 +185,7 @@ var Board = function () {
       7: '#F3C73D'
     };
     this.render = this.render.bind(this);
+    this.drawPiece = this.drawPiece.bind(this);
   }
 
   _createClass(Board, [{
@@ -224,11 +196,34 @@ var Board = function () {
       for (var i = 0; i < this.rows; i++) {
         for (var j = 0; j < this.cols; j++) {
           if (typeof this.grid[i][j] !== 'undefined') {
-            ctx.fillStyle = 'rgb(200,0,0)';
-            ctx.strokeStyle = '#000000';
+            ctx.fillStyle = this.colors[this.grid[i][j]];
+            ctx.strokeStyle = this.strokeStyle;
             ctx.lineWidth = 2;
             var x = (this.offset.x + j) * s_w;
             var y = (this.offset.y + i) * s_w;
+            ctx.fillRect(x, y, s_w, s_w);
+            ctx.strokeRect(x, y, s_w, s_w);
+            ctx.beginPath();
+            ctx.moveTo(x + s_w / 4, y + s_w * (3 / 4));
+            ctx.lineTo(x + s_w / 4, y + s_w / 4);
+            ctx.lineTo(x + s_w * (3 / 4), y + s_w / 4);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+  }, {
+    key: 'drawPiece',
+    value: function drawPiece(piece, offset, ctx) {
+      var s_w = this.square_width;
+      for (var i = 0; i < piece.length; i++) {
+        for (var j = 0; j < piece[0].length; j++) {
+          if (piece[i][j] !== 0) {
+            ctx.fillStyle = this.colors[piece[i][j]];
+            ctx.strokeStyle = this.strokeStyle;
+            ctx.lineWidth = 2;
+            var x = (offset.x + j) * s_w;
+            var y = (offset.y + i) * s_w;
             ctx.fillRect(x, y, s_w, s_w);
             ctx.strokeRect(x, y, s_w, s_w);
             ctx.beginPath();

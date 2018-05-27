@@ -28,6 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
     [0,1,0]
   ];
 
+  let offset = {
+    x: 4,
+    y: 0
+  };
+
   let startTime;
   let resetTime = 0;
   const render = (timestamp) => {
@@ -37,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
       offset.y += 1;
       console.log(timestamp-startTime);
       board.render(ctx);
-      board.drawPiece(piece, ctx);
+      board.drawPiece(piece, offset, ctx);
     }
     startTime = timestamp;
     requestAnimationFrame(render);
@@ -45,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   requestAnimationFrame((timestamp) => {
     startTime = timestamp;
-    board.drawPiece(piece, ctx);
+    board.drawPiece(piece, offset, ctx);
     render(timestamp);
   });
 
