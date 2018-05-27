@@ -21,12 +21,25 @@ document.addEventListener('DOMContentLoaded', () => {
     game.titleEnded = true;
   });
 
+  const tracks = [
+    "./music/metal-man.mp3",
+    "./music/crash-man.mp3",
+    "./music/dr-wily.mp3"
+  ];
+  let tracksIndex = 0;
+  const megamanAudio = document.getElementById("megaman-theme");
+  megamanAudio.addEventListener("ended", () => {
+    tracksIndex = (tracksIndex+1) % tracks.length;
+    megamanAudio.src = tracks[tracksIndex];
+    megamanAudio.play();
+  });
+
   document.addEventListener("keypress", (event) => {
     if (event.key === 'p'){
       game.play();
     }
   });
-  
+
   // game.play();
 
 

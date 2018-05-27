@@ -111,6 +111,15 @@ document.addEventListener('DOMContentLoaded', function () {
     game.titleEnded = true;
   });
 
+  var tracks = ["./music/metal-man.mp3", "./music/crash-man.mp3", "./music/dr-wily.mp3"];
+  var tracksIndex = 0;
+  var megamanAudio = document.getElementById("megaman-theme");
+  megamanAudio.addEventListener("ended", function () {
+    tracksIndex = (tracksIndex + 1) % tracks.length;
+    megamanAudio.src = tracks[tracksIndex];
+    megamanAudio.play();
+  });
+
   document.addEventListener("keypress", function (event) {
     if (event.key === 'p') {
       game.play();
