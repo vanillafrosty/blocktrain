@@ -3,7 +3,14 @@ import Board from './board';
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('hey');
-  let game = new Game();
+  const canvas = document.getElementById("canvas");
+  canvas.width = 300;
+  canvas.height = 720;
+  const square_width = canvas.width/10;
+  var ctx = canvas.getContext('2d');
+
+  let board = new Board(canvas.width, canvas.height, ctx);
+  let game = new Game(board);
   // debugger;
   document.addEventListener("keypress", (event) => {
     if (event.key === 'm'){
@@ -14,75 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
   titleAudio.addEventListener("ended", () => {
     game.titleEnded = true;
   });
-  const canvas = document.getElementById("canvas");
-  canvas.width = 300;
-  canvas.height = 720;
-  const square_width = canvas.width/10;
-  var ctx = canvas.getContext('2d');
 
-  let board = new Board(canvas.width, canvas.height, ctx);
-
-  const piece = [
-    [0,0,0],
-    [1,1,1],
-    [0,1,0]
-  ];
-
-  let offset = {
-    x: 4,
-    y: 0
-  };
-  let startTime;
-  let resetTime = 0;
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight') {
-      offset.x += 1;
-      if (board.validPos(piece, offset)) {
-        board.render();
-        board.drawPiece(piece, offset);
-      } else {
-        offset.x -= 1;
-      }
-    } else if (e.key === 'ArrowLeft') {
-      offset.x -= 1;
-      if (board.validPos(piece, offset)){
-        board.render();
-        board.drawPiece(piece, offset);
-      } else {
-        offset.x += 1;
-      }
-    } else if (e.key === 'ArrowDown') {
-      offset.y += 1;
-      if (board.update(piece, offset)) {
-        offset.y = 0;
-      }
-      resetTime = 0;
-      board.render();
-      board.drawPiece(piece, offset);
-    }
-  });
-
-  const render = (timestamp) => {
-    resetTime += timestamp-startTime;
-    if (resetTime > 1000) {
-      resetTime = 0;
-      offset.y += 1;
-      if (board.update(piece, offset)){
-        offset.y = 0;
-      }
-      board.render();
-      board.drawPiece(piece, offset);
-    }
-    startTime = timestamp;
-    requestAnimationFrame(render);
-  }
-
-  requestAnimationFrame((timestamp) => {
-    startTime = timestamp;
-    board.drawPiece(piece, offset);
-    render(timestamp);
-  });
+  game.play();
 
 
 });

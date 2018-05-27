@@ -93,7 +93,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 document.addEventListener('DOMContentLoaded', function () {
   console.log('hey');
-  var game = new _game2.default();
+  var canvas = document.getElementById("canvas");
+  canvas.width = 300;
+  canvas.height = 720;
+  var square_width = canvas.width / 10;
+  var ctx = canvas.getContext('2d');
+
+  var board = new _board2.default(canvas.width, canvas.height, ctx);
+  var game = new _game2.default(board);
   // debugger;
   document.addEventListener("keypress", function (event) {
     if (event.key === 'm') {
@@ -104,71 +111,8 @@ document.addEventListener('DOMContentLoaded', function () {
   titleAudio.addEventListener("ended", function () {
     game.titleEnded = true;
   });
-  var canvas = document.getElementById("canvas");
-  canvas.width = 300;
-  canvas.height = 720;
-  var square_width = canvas.width / 10;
-  var ctx = canvas.getContext('2d');
 
-  var board = new _board2.default(canvas.width, canvas.height, ctx);
-
-  var piece = [[0, 0, 0], [1, 1, 1], [0, 1, 0]];
-
-  var offset = {
-    x: 4,
-    y: 0
-  };
-  var startTime = void 0;
-  var resetTime = 0;
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'ArrowRight') {
-      offset.x += 1;
-      if (board.validPos(piece, offset)) {
-        board.render();
-        board.drawPiece(piece, offset);
-      } else {
-        offset.x -= 1;
-      }
-    } else if (e.key === 'ArrowLeft') {
-      offset.x -= 1;
-      if (board.validPos(piece, offset)) {
-        board.render();
-        board.drawPiece(piece, offset);
-      } else {
-        offset.x += 1;
-      }
-    } else if (e.key === 'ArrowDown') {
-      offset.y += 1;
-      if (board.update(piece, offset)) {
-        offset.y = 0;
-      }
-      resetTime = 0;
-      board.render();
-      board.drawPiece(piece, offset);
-    }
-  });
-
-  var render = function render(timestamp) {
-    resetTime += timestamp - startTime;
-    if (resetTime > 1000) {
-      resetTime = 0;
-      offset.y += 1;
-      if (board.update(piece, offset)) {
-        offset.y = 0;
-      }
-      board.render();
-      board.drawPiece(piece, offset);
-    }
-    startTime = timestamp;
-    requestAnimationFrame(render);
-  };
-
-  requestAnimationFrame(function (timestamp) {
-    startTime = timestamp;
-    board.drawPiece(piece, offset);
-    render(timestamp);
-  });
+  game.play();
 });
 
 /***/ }),
@@ -358,9 +302,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Game = function () {
-  function Game() {
+  function Game(board) {
     _classCallCheck(this, Game);
 
+    this.board = board;
     this.titlePlaying = true;
     this.titleEnded = false;
     this.megamanPlaying = false;
@@ -368,6 +313,7 @@ var Game = function () {
     this.megamanAudio = document.getElementById("megaman-theme");
     this.titleAudio = document.getElementById("title-theme");
     this.toggleAudio = this.toggleAudio.bind(this);
+    this.play = this.play.bind(this);
   }
 
   _createClass(Game, [{
@@ -390,6 +336,67 @@ var Game = function () {
           this.megamanPlaying = true;
         }
       }
+    }
+  }, {
+    key: "play",
+    value: function play() {
+      var _this = this;
+
+      var piece = [[0, 0, 0], [1, 1, 1], [0, 1, 0]];
+
+      var offset = {
+        x: 4,
+        y: 0
+      };
+      var startTime = void 0;
+      var resetTime = 0;
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight') {
+          offset.x += 1;
+          if (_this.board.validPos(piece, offset)) {
+            _this.board.render();
+            _this.board.drawPiece(piece, offset);
+          } else {
+            offset.x -= 1;
+          }
+        } else if (e.key === 'ArrowLeft') {
+          offset.x -= 1;
+          if (_this.board.validPos(piece, offset)) {
+            _this.board.render();
+            _this.board.drawPiece(piece, offset);
+          } else {
+            offset.x += 1;
+          }
+        } else if (e.key === 'ArrowDown') {
+          offset.y += 1;
+          if (_this.board.update(piece, offset)) {
+            offset.y = 0;
+          }
+          resetTime = 0;
+          _this.board.render();
+          _this.board.drawPiece(piece, offset);
+        }
+      });
+      var render = function render(timestamp) {
+        resetTime += timestamp - startTime;
+        if (resetTime > 1000) {
+          resetTime = 0;
+          offset.y += 1;
+          if (_this.board.update(piece, offset)) {
+            offset.y = 0;
+          }
+          _this.board.render();
+          _this.board.drawPiece(piece, offset);
+        }
+        startTime = timestamp;
+        requestAnimationFrame(render);
+      };
+
+      requestAnimationFrame(function (timestamp) {
+        startTime = timestamp;
+        _this.board.drawPiece(piece, offset);
+        render(timestamp);
+      });
     }
   }]);
 
