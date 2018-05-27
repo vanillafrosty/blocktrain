@@ -92,7 +92,6 @@ var _board2 = _interopRequireDefault(_board);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 document.addEventListener('DOMContentLoaded', function () {
-  console.log('hey');
   var canvas = document.getElementById("canvas");
   canvas.width = 300;
   canvas.height = 720;
@@ -306,6 +305,13 @@ var Game = function () {
     _classCallCheck(this, Game);
 
     this.board = board;
+    this.offset = {
+      x: 4,
+      y: 0
+    };
+    this.piece = [[0, 0, 0], [1, 1, 1], [0, 1, 0]];
+    this.startTime;
+    this.resetTime = 0;
     this.titlePlaying = true;
     this.titleEnded = false;
     this.megamanPlaying = false;
@@ -338,63 +344,67 @@ var Game = function () {
       }
     }
   }, {
-    key: "play",
-    value: function play() {
+    key: "addKeyListeners",
+    value: function addKeyListeners() {
       var _this = this;
 
-      var piece = [[0, 0, 0], [1, 1, 1], [0, 1, 0]];
-
-      var offset = {
-        x: 4,
-        y: 0
-      };
-      var startTime = void 0;
-      var resetTime = 0;
       document.addEventListener('keydown', function (e) {
-        if (e.key === 'ArrowRight') {
-          offset.x += 1;
-          if (_this.board.validPos(piece, offset)) {
+        switch (e.key) {
+          case 'ArrowRight':
+            _this.offset.x += 1;
+            if (_this.board.validPos(_this.piece, _this.offset)) {
+              _this.board.render();
+              _this.board.drawPiece(_this.piece, _this.offset);
+            } else {
+              _this.offset.x -= 1;
+            }
+            break;
+          case 'ArrowLeft':
+            _this.offset.x -= 1;
+            if (_this.board.validPos(_this.piece, _this.offset)) {
+              _this.board.render();
+              _this.board.drawPiece(_this.piece, _this.offset);
+            } else {
+              _this.offset.x += 1;
+            }
+            break;
+          case 'ArrowDown':
+            _this.offset.y += 1;
+            if (_this.board.update(_this.piece, _this.offset)) {
+              _this.offset.y = 0;
+            }
+            _this.resetTime = 0;
             _this.board.render();
-            _this.board.drawPiece(piece, offset);
-          } else {
-            offset.x -= 1;
-          }
-        } else if (e.key === 'ArrowLeft') {
-          offset.x -= 1;
-          if (_this.board.validPos(piece, offset)) {
-            _this.board.render();
-            _this.board.drawPiece(piece, offset);
-          } else {
-            offset.x += 1;
-          }
-        } else if (e.key === 'ArrowDown') {
-          offset.y += 1;
-          if (_this.board.update(piece, offset)) {
-            offset.y = 0;
-          }
-          resetTime = 0;
-          _this.board.render();
-          _this.board.drawPiece(piece, offset);
+            _this.board.drawPiece(_this.piece, _this.offset);
+            break;
         }
       });
+    }
+  }, {
+    key: "play",
+    value: function play() {
+      var _this2 = this;
+
+      this.addKeyListeners();
+
       var render = function render(timestamp) {
-        resetTime += timestamp - startTime;
-        if (resetTime > 1000) {
-          resetTime = 0;
-          offset.y += 1;
-          if (_this.board.update(piece, offset)) {
-            offset.y = 0;
+        _this2.resetTime += timestamp - _this2.startTime;
+        if (_this2.resetTime > 1000) {
+          _this2.resetTime = 0;
+          _this2.offset.y += 1;
+          if (_this2.board.update(_this2.piece, _this2.offset)) {
+            _this2.offset.y = 0;
           }
-          _this.board.render();
-          _this.board.drawPiece(piece, offset);
+          _this2.board.render();
+          _this2.board.drawPiece(_this2.piece, _this2.offset);
         }
-        startTime = timestamp;
+        _this2.startTime = timestamp;
         requestAnimationFrame(render);
       };
 
       requestAnimationFrame(function (timestamp) {
-        startTime = timestamp;
-        _this.board.drawPiece(piece, offset);
+        _this2.startTime = timestamp;
+        _this2.board.drawPiece(_this2.piece, _this2.offset);
         render(timestamp);
       });
     }

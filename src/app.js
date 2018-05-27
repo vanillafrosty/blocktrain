@@ -2,7 +2,6 @@ import Game from './game';
 import Board from './board';
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('hey');
   const canvas = document.getElementById("canvas");
   canvas.width = 300;
   canvas.height = 720;
