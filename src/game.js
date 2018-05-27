@@ -19,8 +19,6 @@ export default class Game {
     this.playingGame = false;
     this.megamanAudio = document.getElementById("megaman-theme");
     this.titleAudio = document.getElementById("title-theme");
-    this.toggleAudio = this.toggleAudio.bind(this);
-    this.play = this.play.bind(this);
   }
 
   toggleAudio(){
@@ -90,7 +88,7 @@ export default class Game {
       this.titlePlaying = false;
       this.megamanAudio.play();
       this.megamanPlaying = true;
-      
+
       this.addKeyListeners();
 
       const render = (timestamp) => {

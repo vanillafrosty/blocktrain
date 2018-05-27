@@ -91,6 +91,37 @@ var _board2 = _interopRequireDefault(_board);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//transpose a square matrix with space considerations
+var transpose = function transpose(matrix) {
+  var temp = void 0;
+  for (var i = 0; i < matrix.length; i++) {
+    for (var j = i + 1; j < matrix.length; j++) {
+      temp = matrix[i][j];
+      matrix[i][j] = matrix[j][i];
+      matrix[j][i] = temp;
+    }
+  }
+  return matrix;
+};
+
+//we are prioritizing space over time complexity here. creating a new
+//matrix should give us faster time complexity, but both ways are still O(n^2)
+var rotate = function rotate(matrix) {
+  var temp = void 0;
+  var transposed = transpose(matrix);
+  //reverse the columns
+  for (var i = 0; i < matrix.length; i++) {
+    for (var j = 0; j < Math.floor(matrix.length / 2); j++) {
+      temp = matrix[i][j];
+      matrix[i][j] = matrix[i][matrix.length - 1 - j];
+      matrix[i][matrix.length - 1 - j] = temp;
+    }
+  }
+  return matrix;
+};
+
+window.rotate = rotate;
+
 document.addEventListener('DOMContentLoaded', function () {
   var canvas = document.getElementById("canvas");
   canvas.width = 300;
@@ -174,10 +205,6 @@ var Board = function () {
       6: '#3EE848',
       7: '#F3C73D'
     };
-    this.render = this.render.bind(this);
-    this.drawPiece = this.drawPiece.bind(this);
-    this.update = this.update.bind(this);
-    this.validPos = this.validPos.bind(this);
   }
 
   _createClass(Board, [{
@@ -334,8 +361,6 @@ var Game = function () {
     this.playingGame = false;
     this.megamanAudio = document.getElementById("megaman-theme");
     this.titleAudio = document.getElementById("title-theme");
-    this.toggleAudio = this.toggleAudio.bind(this);
-    this.play = this.play.bind(this);
   }
 
   _createClass(Game, [{

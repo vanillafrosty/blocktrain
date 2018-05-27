@@ -21,10 +21,6 @@ export default class Board {
       6: '#3EE848',
       7: '#F3C73D'
     };
-    this.render = this.render.bind(this);
-    this.drawPiece = this.drawPiece.bind(this);
-    this.update = this.update.bind(this);
-    this.validPos = this.validPos.bind(this);
   }
 
   render() {
