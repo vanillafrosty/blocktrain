@@ -40,7 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (resetTime > 1000) {
       resetTime = 0;
       offset.y += 1;
-      console.log(timestamp-startTime);
+      if (board.update(piece, offset)){
+        offset.y = 0;
+      }
       board.render(ctx);
       board.drawPiece(piece, offset, ctx);
     }

@@ -22,6 +22,7 @@ export default class Board {
     };
     this.render = this.render.bind(this);
     this.drawPiece = this.drawPiece.bind(this);
+    this.update = this.update.bind(this);
   }
 
   render(ctx) {
@@ -33,8 +34,8 @@ export default class Board {
           ctx.fillStyle = this.colors[this.grid[i][j]];
           ctx.strokeStyle = this.strokeStyle;
           ctx.lineWidth = 2;
-          let x = (this.offset.x+j)*s_w;
-          let y = (this.offset.y+i)*s_w;
+          let x = j*s_w;
+          let y = i*s_w;
           ctx.fillRect(x, y, s_w, s_w);
           ctx.strokeRect(x, y, s_w, s_w);
           ctx.beginPath();
@@ -64,6 +65,35 @@ export default class Board {
           ctx.lineTo(x+s_w/4, y+s_w/4);
           ctx.lineTo(x+s_w*(3/4), y+s_w/4);
           ctx.stroke();
+        }
+      }
+    }
+  }
+
+  update(piece, offset) {
+    for (let i=0; i<piece.length; i++) {
+      for (let j=0; j<piece[0].length; j++) {
+        if (piece[i][j] !== 0) {
+          let x = offset.x+j;
+          let y = offset.y+i;
+          if (y >= this.rows || typeof(this.grid[y][x]) !== 'undefined') {
+            this.setPiece(piece, offset.x, offset.y-1);
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+
+  //updates the grid with the piece values
+  setPiece(piece, x, y) {
+    for (let i=0; i<piece.length; i++) {
+      for (let j=0; j<piece[0].length; j++) {
+        if (piece[i][j] !== 0) {
+          debugger;
+          this.grid[y+i][x+j] = piece[i][j];
         }
       }
     }
