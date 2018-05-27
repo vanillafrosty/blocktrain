@@ -132,6 +132,9 @@ document.addEventListener('DOMContentLoaded', function () {
       board.drawPiece(piece, offset, ctx);
     } else if (e.key === 'ArrowDown') {
       offset.y += 1;
+      if (board.update(piece, offset)) {
+        offset.y = 0;
+      }
       resetTime = 0;
       board.render(ctx);
       board.drawPiece(piece, offset, ctx);
