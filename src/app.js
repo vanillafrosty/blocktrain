@@ -32,7 +32,22 @@ const rotate = (matrix) => {
   return matrix;
 }
 
+const rotateCounter = (matrix) => {
+  let temp;
+  let transposed = transpose(matrix);
+  //reverse the rows
+  for (let i=0; i<Math.floor(matrix.length/2); i++) {
+    for (let j=0; j<matrix.length; j++){
+      temp = matrix[i][j];
+      matrix[i][j] = matrix[matrix.length-1-i][j];
+      matrix[matrix.length-1-i][j] = temp;
+    }
+  }
+  return matrix;
+}
+
 window.rotate = rotate;
+window.rotateCounter = rotateCounter;
 
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -8,6 +8,7 @@ export default class Game {
       x: 4,
       y: 0
     };
+    this.totalRotations = 0;
     this.pieces = new Pieces();
     this.currentPiece = this.pieces.newPiece();
     this.startTime;
@@ -69,10 +70,44 @@ export default class Game {
     return matrix;
   }
 
+  rotateCounter(matrix) {
+    let temp;
+    let transposed = this.transpose(matrix);
+    //reverse the rows
+    for (let i=0; i<Math.floor(matrix.length/2); i++) {
+      for (let j=0; j<matrix.length; j++){
+        temp = matrix[i][j];
+        matrix[i][j] = matrix[matrix.length-1-i][j];
+        matrix[matrix.length-1-i][j] = temp;
+      }
+    }
+    return matrix;
+  }
+
+  handleRotate(piece) {
+    switch(piece.type) {
+      case 'T':
+      case 'O':
+      case 'J':
+      case 'L':
+        piece.matrix = this.rotate(piece.matrix);
+        return piece;
+      case 'Z':
+      case 'S':
+      case 'I':
+        this.totalRotations += 1;
+        if (this.totalRotations % 2 !== 0) {
+          piece.matrix = this.rotate(piece.matrix);
+        } else {
+          piece.matrix = this.rotateCounter(piece.matrix);
+        }
+        return piece;
+    }
+  }
 
   boardStep() {
     this.board.render();
-    this.board.drawPiece(this.currentPiece, this.offset);
+    this.board.drawPiece(this.currentPiece.matrix, this.offset);
   }
 
   addKeyListeners() {
@@ -81,7 +116,7 @@ export default class Game {
       switch(e.key) {
         case 'ArrowRight':
           this.offset.x += 1;
-          if (this.board.validPos(this.currentPiece, this.offset)) {
+          if (this.board.validPos(this.currentPiece.matrix, this.offset)) {
             this.boardStep();
           } else {
             this.offset.x -= 1;
@@ -89,7 +124,7 @@ export default class Game {
           break;
         case 'ArrowLeft':
           this.offset.x -= 1;
-          if (this.board.validPos(this.currentPiece, this.offset)){
+          if (this.board.validPos(this.currentPiece.matrix, this.offset)){
             this.boardStep();
           } else {
             this.offset.x += 1;
@@ -97,16 +132,17 @@ export default class Game {
           break;
         case 'ArrowDown':
           this.offset.y += 1;
-          if (this.board.update(this.currentPiece, this.offset)) {
+          if (this.board.update(this.currentPiece.matrix, this.offset)) {
             this.offset.y = 0;
             this.offset.x = 4;
+            this.totalRotations = 0;
             this.currentPiece = this.pieces.newPiece();
           }
           this.resetTime = 0;
           this.boardStep();
           break;
         case 'ArrowUp':
-          this.currentPiece = this.rotate(this.currentPiece);
+          this.currentPiece = this.handleRotate(this.currentPiece);
           break;
       }
     });
@@ -131,9 +167,10 @@ export default class Game {
         if (this.resetTime > 1000) {
           this.resetTime = 0;
           this.offset.y += 1;
-          if (this.board.update(this.currentPiece, this.offset)){
+          if (this.board.update(this.currentPiece.matrix, this.offset)){
             this.offset.y = 0;
             this.offset.x = 4;
+            this.totalRotations = 0;
             this.currentPiece = this.pieces.newPiece();
           }
           this.boardStep();
@@ -144,7 +181,7 @@ export default class Game {
 
       requestAnimationFrame((timestamp) => {
         this.startTime = timestamp;
-        this.board.drawPiece(this.currentPiece, this.offset);
+        this.board.drawPiece(this.currentPiece.matrix, this.offset);
         render(timestamp);
       });
     }

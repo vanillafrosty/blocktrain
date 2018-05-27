@@ -124,7 +124,22 @@ var rotate = function rotate(matrix) {
   return matrix;
 };
 
+var rotateCounter = function rotateCounter(matrix) {
+  var temp = void 0;
+  var transposed = transpose(matrix);
+  //reverse the rows
+  for (var i = 0; i < Math.floor(matrix.length / 2); i++) {
+    for (var j = 0; j < matrix.length; j++) {
+      temp = matrix[i][j];
+      matrix[i][j] = matrix[matrix.length - 1 - i][j];
+      matrix[matrix.length - 1 - i][j] = temp;
+    }
+  }
+  return matrix;
+};
+
 window.rotate = rotate;
+window.rotateCounter = rotateCounter;
 
 document.addEventListener('DOMContentLoaded', function () {
   var canvas = document.getElementById("canvas");
@@ -359,6 +374,7 @@ var Game = function () {
       x: 4,
       y: 0
     };
+    this.totalRotations = 0;
     this.pieces = new _pieces2.default();
     this.currentPiece = this.pieces.newPiece();
     this.startTime;
@@ -428,10 +444,47 @@ var Game = function () {
       return matrix;
     }
   }, {
+    key: "rotateCounter",
+    value: function rotateCounter(matrix) {
+      var temp = void 0;
+      var transposed = this.transpose(matrix);
+      //reverse the rows
+      for (var i = 0; i < Math.floor(matrix.length / 2); i++) {
+        for (var j = 0; j < matrix.length; j++) {
+          temp = matrix[i][j];
+          matrix[i][j] = matrix[matrix.length - 1 - i][j];
+          matrix[matrix.length - 1 - i][j] = temp;
+        }
+      }
+      return matrix;
+    }
+  }, {
+    key: "handleRotate",
+    value: function handleRotate(piece) {
+      switch (piece.type) {
+        case 'T':
+        case 'O':
+        case 'J':
+        case 'L':
+          piece.matrix = this.rotate(piece.matrix);
+          return piece;
+        case 'Z':
+        case 'S':
+        case 'I':
+          this.totalRotations += 1;
+          if (this.totalRotations % 2 !== 0) {
+            piece.matrix = this.rotate(piece.matrix);
+          } else {
+            piece.matrix = this.rotateCounter(piece.matrix);
+          }
+          return piece;
+      }
+    }
+  }, {
     key: "boardStep",
     value: function boardStep() {
       this.board.render();
-      this.board.drawPiece(this.currentPiece, this.offset);
+      this.board.drawPiece(this.currentPiece.matrix, this.offset);
     }
   }, {
     key: "addKeyListeners",
@@ -443,7 +496,7 @@ var Game = function () {
         switch (e.key) {
           case 'ArrowRight':
             _this.offset.x += 1;
-            if (_this.board.validPos(_this.currentPiece, _this.offset)) {
+            if (_this.board.validPos(_this.currentPiece.matrix, _this.offset)) {
               _this.boardStep();
             } else {
               _this.offset.x -= 1;
@@ -451,7 +504,7 @@ var Game = function () {
             break;
           case 'ArrowLeft':
             _this.offset.x -= 1;
-            if (_this.board.validPos(_this.currentPiece, _this.offset)) {
+            if (_this.board.validPos(_this.currentPiece.matrix, _this.offset)) {
               _this.boardStep();
             } else {
               _this.offset.x += 1;
@@ -459,16 +512,17 @@ var Game = function () {
             break;
           case 'ArrowDown':
             _this.offset.y += 1;
-            if (_this.board.update(_this.currentPiece, _this.offset)) {
+            if (_this.board.update(_this.currentPiece.matrix, _this.offset)) {
               _this.offset.y = 0;
               _this.offset.x = 4;
+              _this.totalRotations = 0;
               _this.currentPiece = _this.pieces.newPiece();
             }
             _this.resetTime = 0;
             _this.boardStep();
             break;
           case 'ArrowUp':
-            _this.currentPiece = _this.rotate(_this.currentPiece);
+            _this.currentPiece = _this.handleRotate(_this.currentPiece);
             break;
         }
       });
@@ -494,9 +548,10 @@ var Game = function () {
           if (_this2.resetTime > 1000) {
             _this2.resetTime = 0;
             _this2.offset.y += 1;
-            if (_this2.board.update(_this2.currentPiece, _this2.offset)) {
+            if (_this2.board.update(_this2.currentPiece.matrix, _this2.offset)) {
               _this2.offset.y = 0;
               _this2.offset.x = 4;
+              _this2.totalRotations = 0;
               _this2.currentPiece = _this2.pieces.newPiece();
             }
             _this2.boardStep();
@@ -507,7 +562,7 @@ var Game = function () {
 
         requestAnimationFrame(function (timestamp) {
           _this2.startTime = timestamp;
-          _this2.board.drawPiece(_this2.currentPiece, _this2.offset);
+          _this2.board.drawPiece(_this2.currentPiece.matrix, _this2.offset);
           render(timestamp);
         });
       }
@@ -689,7 +744,7 @@ exports.default = LinkedList;
 
 
 Object.defineProperty(exports, "__esModule", {
-      value: true
+  value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -703,51 +758,54 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Pieces = function () {
-      function Pieces() {
-            _classCallCheck(this, Pieces);
+  function Pieces() {
+    _classCallCheck(this, Pieces);
 
-            this.pieces = {
-                  'I': [[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]],
-                  'O': [[0, 0, 0, 0], [0, 2, 2, 0], [0, 2, 2, 0], [0, 0, 0, 0]],
-                  'T': [[0, 0, 0], [3, 3, 3], [0, 3, 0]],
-                  'L': [[0, 4, 0], [0, 4, 0], [0, 4, 4]],
-                  'J': [[0, 5, 0], [0, 5, 0], [5, 5, 0]],
-                  'Z': [[0, 0, 0], [6, 6, 0], [0, 6, 6]],
-                  'S': [[0, 0, 0], [0, 7, 7], [7, 7, 0]]
-            };
-            this.bag = ['I', 'O', 'T', 'L', 'J', 'Z', 'S'];
-            this.lru = new _cache2.default(3, this.pieces);
+    this.pieces = {
+      'I': [[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]],
+      'O': [[0, 0, 0, 0], [0, 2, 2, 0], [0, 2, 2, 0], [0, 0, 0, 0]],
+      'T': [[0, 0, 0], [3, 3, 3], [0, 3, 0]],
+      'L': [[0, 4, 0], [0, 4, 0], [0, 4, 4]],
+      'J': [[0, 5, 0], [0, 5, 0], [5, 5, 0]],
+      'Z': [[0, 0, 0], [6, 6, 0], [0, 6, 6]],
+      'S': [[0, 0, 0], [0, 7, 7], [7, 7, 0]]
+    };
+    this.bag = ['I', 'O', 'T', 'L', 'J', 'Z', 'S'];
+    this.lru = new _cache2.default(3, this.pieces);
+  }
+
+  //the fisher-yates shuffle
+
+
+  _createClass(Pieces, [{
+    key: 'shuffle',
+    value: function shuffle() {
+      var randomIndex = void 0,
+          current = void 0;
+      for (var i = this.bag.length - 1; i >= 0; i--) {
+        randomIndex = Math.floor(Math.random() * (i + 1));
+        current = this.bag[i];
+        this.bag[i] = this.bag[randomIndex];
+        this.bag[randomIndex] = current;
       }
+      return this.bag;
+    }
+  }, {
+    key: 'newPiece',
+    value: function newPiece() {
+      var piece = this.shuffle()[0];
+      while (this.lru.map[piece] !== undefined) {
+        piece = this.shuffle()[0];
+      }
+      this.lru.get(piece);
+      return {
+        type: piece,
+        matrix: this.lru.map[piece].val
+      };
+    }
+  }]);
 
-      //the fisher-yates shuffle
-
-
-      _createClass(Pieces, [{
-            key: 'shuffle',
-            value: function shuffle() {
-                  var randomIndex = void 0,
-                      current = void 0;
-                  for (var i = this.bag.length - 1; i >= 0; i--) {
-                        randomIndex = Math.floor(Math.random() * (i + 1));
-                        current = this.bag[i];
-                        this.bag[i] = this.bag[randomIndex];
-                        this.bag[randomIndex] = current;
-                  }
-                  return this.bag;
-            }
-      }, {
-            key: 'newPiece',
-            value: function newPiece() {
-                  var piece = this.shuffle()[0];
-                  while (this.lru.map[piece] !== undefined) {
-                        piece = this.shuffle()[0];
-                  }
-                  this.lru.get(piece);
-                  return this.lru.map[piece].val;
-            }
-      }]);
-
-      return Pieces;
+  return Pieces;
 }();
 
 exports.default = Pieces;
