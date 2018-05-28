@@ -95,56 +95,11 @@ var _cache2 = _interopRequireDefault(_cache);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//transpose a square matrix with space considerations
-var transpose = function transpose(matrix) {
-  var temp = void 0;
-  for (var i = 0; i < matrix.length; i++) {
-    for (var j = i + 1; j < matrix.length; j++) {
-      temp = matrix[i][j];
-      matrix[i][j] = matrix[j][i];
-      matrix[j][i] = temp;
-    }
-  }
-  return matrix;
-};
-
-//we are prioritizing space over time complexity here. creating a new
-//matrix should give us faster time complexity, but both ways are still O(n^2)
-var rotate = function rotate(matrix) {
-  var temp = void 0;
-  var transposed = transpose(matrix);
-  //reverse the columns
-  for (var i = 0; i < matrix.length; i++) {
-    for (var j = 0; j < Math.floor(matrix.length / 2); j++) {
-      temp = matrix[i][j];
-      matrix[i][j] = matrix[i][matrix.length - 1 - j];
-      matrix[i][matrix.length - 1 - j] = temp;
-    }
-  }
-  return matrix;
-};
-
-var rotateCounter = function rotateCounter(matrix) {
-  var temp = void 0;
-  var transposed = transpose(matrix);
-  //reverse the rows
-  for (var i = 0; i < Math.floor(matrix.length / 2); i++) {
-    for (var j = 0; j < matrix.length; j++) {
-      temp = matrix[i][j];
-      matrix[i][j] = matrix[matrix.length - 1 - i][j];
-      matrix[matrix.length - 1 - i][j] = temp;
-    }
-  }
-  return matrix;
-};
-
-window.rotate = rotate;
-window.rotateCounter = rotateCounter;
-
 document.addEventListener('DOMContentLoaded', function () {
   var canvas = document.getElementById("canvas");
   canvas.width = 300;
-  canvas.height = 720;
+  // canvas.height = 720;
+  canvas.height = 600;
   var square_width = canvas.width / 10;
   var ctx = canvas.getContext('2d');
 
@@ -204,7 +159,8 @@ var Board = function () {
     this.ctx = ctx;
     this.width = width;
     this.height = height;
-    this.rows = 24;
+    // this.rows = 24;
+    this.rows = 20;
     this.cols = 10;
     this.grid = [];
     this.strokeStyle = '#000000';
@@ -478,6 +434,7 @@ var Game = function () {
   _createClass(Game, [{
     key: "toggleAudio",
     value: function toggleAudio() {
+      debugger;
       if (!this.playingGame && !this.titleEnded) {
         if (this.titlePlaying) {
           this.titleAudio.pause();
@@ -604,7 +561,6 @@ var Game = function () {
       var _this = this;
 
       document.addEventListener('keydown', function (e) {
-        e.preventDefault();
         switch (e.key) {
           case 'ArrowRight':
             _this.offset.x += 1;
@@ -623,6 +579,7 @@ var Game = function () {
             }
             break;
           case 'ArrowDown':
+            e.preventDefault();
             _this.offset.y += 1;
             if (_this.board.update(_this.currentPiece.matrix, _this.offset)) {
               // this.offset.y = 0;
@@ -635,6 +592,7 @@ var Game = function () {
             _this.boardStep();
             break;
           case 'ArrowUp':
+            e.preventDefault();
             _this.currentPiece = _this.handleRotate(_this.currentPiece);
             var response = _this.board.validateRotate(_this.currentPiece.matrix, _this.offset);
             if (response.reRotate) {

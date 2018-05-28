@@ -22,6 +22,7 @@ export default class Game {
   }
 
   toggleAudio(){
+    debugger;
     if (!this.playingGame && !this.titleEnded) {
       if (this.titlePlaying){
         this.titleAudio.pause();
@@ -135,7 +136,6 @@ export default class Game {
 
   addKeyListeners() {
     document.addEventListener('keydown', (e) => {
-      e.preventDefault();
       switch(e.key) {
         case 'ArrowRight':
           this.offset.x += 1;
@@ -154,6 +154,7 @@ export default class Game {
           }
           break;
         case 'ArrowDown':
+          e.preventDefault();
           this.offset.y += 1;
           if (this.board.update(this.currentPiece.matrix, this.offset)) {
             // this.offset.y = 0;
@@ -166,6 +167,7 @@ export default class Game {
           this.boardStep();
           break;
         case 'ArrowUp':
+          e.preventDefault();
           this.currentPiece = this.handleRotate(this.currentPiece);
           let response = this.board.validateRotate(this.currentPiece.matrix, this.offset);
           if (response.reRotate) {
