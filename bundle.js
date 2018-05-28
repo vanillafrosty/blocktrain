@@ -332,6 +332,44 @@ var Board = function () {
       }
       return true;
     }
+
+    //helper method for validateRotate
+
+  }, {
+    key: 'handleResponse',
+    value: function handleResponse(piece, offset, newOffset) {
+      if (this.validPos(piece, newOffset)) {
+        return {
+          reRotate: false,
+          offset: newOffset
+        };
+      } else {
+        return {
+          reRotate: true,
+          offset: offset
+        };
+      }
+    }
+
+    //helper method for validateRotate
+
+  }, {
+    key: 'handleX',
+    value: function handleX(x, piece, offset) {
+      var newOffset = {
+        x: offset.x,
+        y: offset.y
+      };
+      if (this.between(x, 0, this.cols - 1)) {
+        return null;
+      } else if (x < 0) {
+        newOffset.x += 1;
+        return this.handleResponse(piece, offset, newOffset);
+      } else if (x > this.cols - 1) {
+        newOffset.x -= 1;
+        return this.handleResponse(piece, offset, newOffset);
+      }
+    }
   }, {
     key: 'validateRotate',
     value: function validateRotate(piece, offset) {
@@ -339,37 +377,15 @@ var Board = function () {
         x: offset.x,
         y: offset.y
       };
+      var handledX = void 0;
       for (var i = 0; i < piece.length; i++) {
         for (var j = 0; j < piece[0].length; j++) {
           if (piece[i][j] !== 0) {
             var x = offset.x + j;
             var y = offset.y + i;
-            if (x < 0) {
-              newOffset.x += 1;
-              if (this.validPos(piece, newOffset)) {
-                return {
-                  reRotate: false,
-                  offset: newOffset
-                };
-              } else {
-                return {
-                  reRotate: true,
-                  offset: offset
-                };
-              }
-            } else if (x > this.cols - 1) {
-              newOffset.x -= 1;
-              if (this.validPos(piece, newOffset)) {
-                return {
-                  reRotate: false,
-                  offset: newOffset
-                };
-              } else {
-                return {
-                  reRotate: true,
-                  offset: offset
-                };
-              }
+            handledX = this.handleX(x, piece, offset);
+            if (handledX) {
+              return handledX;
             }
           }
         }

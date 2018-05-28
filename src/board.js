@@ -123,44 +123,56 @@ export default class Board {
     return true;
   }
 
+  //helper method for validateRotate
+  handleResponse(piece, offset, newOffset) {
+    if (this.validPos(piece, newOffset)) {
+      return {
+        reRotate: false,
+        offset: newOffset
+      };
+    } else {
+      return {
+        reRotate: true,
+        offset: offset
+      };
+    }
+  }
+
+  //helper method for validateRotate
+  handleX(x, piece, offset) {
+    let newOffset = {
+      x: offset.x,
+      y: offset.y
+    };
+    if (this.between(x, 0, this.cols-1)) {
+      return null;
+    }
+    else if (x < 0) {
+      newOffset.x += 1;
+      return this.handleResponse(piece, offset, newOffset);
+    }
+    else if (x > (this.cols-1)) {
+      newOffset.x -=1;
+      return this.handleResponse(piece, offset, newOffset);
+    }
+  }
+
   validateRotate(piece, offset) {
     let newOffset = {
       x: offset.x,
       y: offset.y
     };
+    let handledX;
     for (let i=0; i<piece.length; i++) {
       for (let j=0; j<piece[0].length; j++) {
         if (piece[i][j] !== 0) {
           let x = offset.x+j;
           let y = offset.y+i;
-          if (x < 0) {
-            newOffset.x += 1;
-            if (this.validPos(piece, newOffset)) {
-              return {
-                reRotate: false,
-                offset: newOffset
-              };
-            } else {
-              return {
-                reRotate: true,
-                offset: offset
-              };
-            }
+          handledX = this.handleX(x, piece, offset)
+          if (handledX) {
+            return handledX;
           }
-          else if (x > (this.cols-1)) {
-            newOffset.x -=1;
-            if (this.validPos(piece, newOffset)){
-              return {
-                reRotate: false,
-                offset: newOffset
-              };
-            } else {
-              return {
-                reRotate: true,
-                offset: offset
-              }
-            }
-          }
+
         }
       }
     }
