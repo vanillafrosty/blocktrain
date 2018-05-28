@@ -22,7 +22,8 @@ body {
 .sidebar-container {
   display: flex;
   flex-direction: column;
-  margin-right: 100px;
+  margin-right: 60px;
+  width: 130px;
 }
 
 .app-container {
@@ -36,14 +37,14 @@ body {
   width: 300px;
   height: 600px;
   background: rgba(0, 0, 0, 0.75);
+  border: 10px solid #D3D3D3;
+  border-radius: 5px;
 }
 
 .sidebar {
   font-size: 24px;
   font-family: 'Geo', sans-serif;
   color: #F9F9F9;
-  /* width: 170px;
-  height: 360px; */
   background-color: #000000;
   opacity: .9;
 }
