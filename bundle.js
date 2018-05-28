@@ -467,6 +467,26 @@ var Board = function () {
       this.setPiece(piece, offset.x, offset.y - 1);
       this.clearRows(piece.length, offset.y - 1);
     }
+  }, {
+    key: 'checkGameOver',
+    value: function checkGameOver(piece, offset) {
+      if (offset.y !== 0) {
+        return false;
+      }
+      if (!this.validPos(piece, offset)) {
+        console.log('game ova son');
+        // this.endGame();
+        return true;
+      }
+      // for (let j=0; j<this.grid[0].length; j++) {
+      //   if (this.grid[0][j] !== undefined) {
+      //     console.log("game ova");
+      //     return true;
+      //   }
+      // }
+      // return false;
+      return false;
+    }
   }]);
 
   return Board;
@@ -504,10 +524,11 @@ var Game = function () {
   function Game(board) {
     _classCallCheck(this, Game);
 
+    this.animationFrame = null;
     this.board = board;
     this.offset = {
       x: 4,
-      y: -2
+      y: 0
     };
     this.totalRotations = 0;
     this.pieces = new _pieces2.default();
@@ -518,6 +539,7 @@ var Game = function () {
     this.titleEnded = false;
     this.megamanPlaying = false;
     this.playingGame = false;
+    this.gameOver = false;
     this.megamanAudio = document.getElementById("megaman-theme");
     this.titleAudio = document.getElementById("title-theme");
   }
@@ -652,7 +674,6 @@ var Game = function () {
       var _this = this;
 
       document.addEventListener('keydown', function (e) {
-        console.log(e.key);
         switch (e.key) {
           case 'ArrowRight':
             _this.offset.x += 1;
@@ -675,13 +696,17 @@ var Game = function () {
             _this.offset.y += 1;
             if (_this.board.update(_this.currentPiece.matrix, _this.offset)) {
               // this.offset.y = 0;
-              _this.offset.y = -2;
+              _this.offset.y = 0;
               _this.offset.x = 4;
               _this.totalRotations = 0;
               _this.currentPiece = _this.pieces.newPiece();
             }
             _this.resetTime = 0;
             _this.boardStep();
+            _this.gameOver = _this.board.checkGameOver(_this.currentPiece.matrix, _this.offset);
+            if (_this.gameOver) {
+              cancelAnimationFrame(_this.animationFrame);
+            }
             break;
           case 'ArrowUp':
             e.preventDefault();
@@ -697,7 +722,7 @@ var Game = function () {
           case ' ':
             e.preventDefault();
             _this.board.handleDrop(_this.currentPiece.matrix, _this.offset);
-            _this.offset.y = -2;
+            _this.offset.y = 0;
             _this.offset.x = 4;
             _this.totalRotations = 0;
             _this.currentPiece = _this.pieces.newPiece();
@@ -728,18 +753,23 @@ var Game = function () {
             _this2.offset.y += 1;
             if (_this2.board.update(_this2.currentPiece.matrix, _this2.offset)) {
               // this.offset.y = 0;
-              _this2.offset.y = -2;
+              _this2.offset.y = 0;
               _this2.offset.x = 4;
               _this2.totalRotations = 0;
               _this2.currentPiece = _this2.pieces.newPiece();
             }
             _this2.boardStep();
+            _this2.gameOver = _this2.board.checkGameOver(_this2.currentPiece.matrix, _this2.offset);
+            if (_this2.gameOver) {
+              cancelAnimationFrame(_this2.animationFrame);
+              return true;
+            }
           }
           _this2.startTime = timestamp;
-          requestAnimationFrame(render);
+          _this2.animationFrame = requestAnimationFrame(render);
         };
 
-        requestAnimationFrame(function (timestamp) {
+        this.animationFrame = requestAnimationFrame(function (timestamp) {
           _this2.startTime = timestamp;
           _this2.board.drawPiece(_this2.currentPiece.matrix, _this2.offset);
           render(timestamp);

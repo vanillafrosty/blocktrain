@@ -3,10 +3,11 @@ import Pieces from './pieces';
 export default class Game {
 
   constructor(board) {
+    this.animationFrame = null;
     this.board = board;
     this.offset = {
       x: 4,
-      y: -2
+      y: 0
     };
     this.totalRotations = 0;
     this.pieces = new Pieces();
@@ -17,6 +18,7 @@ export default class Game {
     this.titleEnded = false;
     this.megamanPlaying = false;
     this.playingGame = false;
+    this.gameOver = false;
     this.megamanAudio = document.getElementById("megaman-theme");
     this.titleAudio = document.getElementById("title-theme");
   }
@@ -136,7 +138,6 @@ export default class Game {
 
   addKeyListeners() {
     document.addEventListener('keydown', (e) => {
-      console.log(e.key);
       switch(e.key) {
         case 'ArrowRight':
           this.offset.x += 1;
@@ -159,13 +160,17 @@ export default class Game {
           this.offset.y += 1;
           if (this.board.update(this.currentPiece.matrix, this.offset)) {
             // this.offset.y = 0;
-            this.offset.y = -2;
+            this.offset.y = 0;
             this.offset.x = 4;
             this.totalRotations = 0;
             this.currentPiece = this.pieces.newPiece();
           }
           this.resetTime = 0;
           this.boardStep();
+          this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
+          if (this.gameOver) {
+            cancelAnimationFrame(this.animationFrame);
+          }
           break;
         case 'ArrowUp':
           e.preventDefault();
@@ -181,7 +186,7 @@ export default class Game {
         case ' ':
           e.preventDefault();
           this.board.handleDrop(this.currentPiece.matrix, this.offset);
-          this.offset.y = -2;
+          this.offset.y = 0;
           this.offset.x = 4;
           this.totalRotations = 0;
           this.currentPiece = this.pieces.newPiece();
@@ -211,18 +216,23 @@ export default class Game {
           this.offset.y += 1;
           if (this.board.update(this.currentPiece.matrix, this.offset)){
             // this.offset.y = 0;
-            this.offset.y = -2;
+            this.offset.y = 0;
             this.offset.x = 4;
             this.totalRotations = 0;
             this.currentPiece = this.pieces.newPiece();
           }
           this.boardStep();
+          this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
+          if (this.gameOver) {
+            cancelAnimationFrame(this.animationFrame);
+            return true;
+          }
         }
         this.startTime = timestamp;
-        requestAnimationFrame(render);
+        this.animationFrame = requestAnimationFrame(render);
       }
 
-      requestAnimationFrame((timestamp) => {
+      this.animationFrame = requestAnimationFrame((timestamp) => {
         this.startTime = timestamp;
         this.board.drawPiece(this.currentPiece.matrix, this.offset);
         render(timestamp);

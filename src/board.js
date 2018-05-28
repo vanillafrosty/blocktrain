@@ -291,6 +291,21 @@ export default class Board {
     this.clearRows(piece.length, offset.y-1);
   }
 
-
+  checkGameOver(piece, offset) {
+    if (offset.y !== 0) { return false; }
+    if (!this.validPos(piece, offset)) {
+      console.log('game ova son');
+      // this.endGame();
+      return true;
+    }
+    // for (let j=0; j<this.grid[0].length; j++) {
+    //   if (this.grid[0][j] !== undefined) {
+    //     console.log("game ova");
+    //     return true;
+    //   }
+    // }
+    // return false;
+    return false;
+  }
 
 }
