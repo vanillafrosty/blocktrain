@@ -289,6 +289,7 @@ var Board = function () {
   }, {
     key: 'setPiece',
     value: function setPiece(piece, x, y) {
+      // debugger;
       for (var i = 0; i < piece.length; i++) {
         for (var j = 0; j < piece[0].length; j++) {
           if (piece[i][j] !== 0) {
@@ -442,6 +443,29 @@ var Board = function () {
     value: function rightOrLeft(piece, x) {
       var middle = Math.floor(piece.length / 2);
       return x < middle ? 'left' : 'right';
+    }
+  }, {
+    key: 'handleDrop',
+    value: function handleDrop(piece, offset) {
+      var minDelta = void 0,
+          dy = void 0;
+      for (var i = 0; i < piece.length; i++) {
+        for (var j = 0; j < piece[0].length; j++) {
+          if (piece[i][j] !== 0) {
+            dy = 0;
+            // debugger;
+            while (i + offset.y + dy < this.rows && !this.grid[i + offset.y + dy][j + offset.x]) {
+              dy += 1;
+            }
+            if (!minDelta || dy < minDelta) {
+              minDelta = dy;
+            }
+          }
+        }
+      }
+      offset.y += minDelta;
+      this.setPiece(piece, offset.x, offset.y - 1);
+      this.clearRows(piece.length, offset.y - 1);
     }
   }]);
 
@@ -628,6 +652,7 @@ var Game = function () {
       var _this = this;
 
       document.addEventListener('keydown', function (e) {
+        console.log(e.key);
         switch (e.key) {
           case 'ArrowRight':
             _this.offset.x += 1;
@@ -669,6 +694,14 @@ var Game = function () {
             }
             _this.boardStep();
             break;
+          case ' ':
+            e.preventDefault();
+            _this.board.handleDrop(_this.currentPiece.matrix, _this.offset);
+            _this.offset.y = -2;
+            _this.offset.x = 4;
+            _this.totalRotations = 0;
+            _this.currentPiece = _this.pieces.newPiece();
+            _this.boardStep();
         }
       });
     }

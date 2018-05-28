@@ -124,6 +124,7 @@ export default class Board {
 
   //updates the grid with the piece values
   setPiece(piece, x, y) {
+    // debugger;
     for (let i=0; i<piece.length; i++) {
       for (let j=0; j<piece[0].length; j++) {
         if (piece[i][j] !== 0) {
@@ -269,6 +270,25 @@ export default class Board {
   rightOrLeft(piece, x) {
     let middle = Math.floor(piece.length/2);
     return (x < middle ? 'left':'right');
+  }
+
+  handleDrop(piece, offset) {
+    let minDelta, dy;
+    for (let i=0; i<piece.length; i++){
+      for (let j=0; j<piece[0].length; j++){
+        if (piece[i][j] !== 0) {
+          dy = 0;
+          // debugger;
+          while((i+offset.y+dy) < this.rows && !this.grid[i+offset.y+dy][j+offset.x]){
+            dy += 1;
+          }
+          if (!minDelta || dy < minDelta) { minDelta = dy; }
+        }
+      }
+    }
+    offset.y += minDelta;
+    this.setPiece(piece, offset.x, offset.y-1);
+    this.clearRows(piece.length, offset.y-1);
   }
 
 

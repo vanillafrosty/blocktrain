@@ -136,6 +136,7 @@ export default class Game {
 
   addKeyListeners() {
     document.addEventListener('keydown', (e) => {
+      console.log(e.key);
       switch(e.key) {
         case 'ArrowRight':
           this.offset.x += 1;
@@ -177,6 +178,14 @@ export default class Game {
           }
           this.boardStep();
           break;
+        case ' ':
+          e.preventDefault();
+          this.board.handleDrop(this.currentPiece.matrix, this.offset);
+          this.offset.y = -2;
+          this.offset.x = 4;
+          this.totalRotations = 0;
+          this.currentPiece = this.pieces.newPiece();
+          this.boardStep();
       }
     });
   }
