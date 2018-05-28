@@ -332,6 +332,53 @@ var Board = function () {
       }
       return true;
     }
+  }, {
+    key: 'validateRotate',
+    value: function validateRotate(piece, offset) {
+      var newOffset = {
+        x: offset.x,
+        y: offset.y
+      };
+      for (var i = 0; i < piece.length; i++) {
+        for (var j = 0; j < piece[0].length; j++) {
+          if (piece[i][j] !== 0) {
+            var x = offset.x + j;
+            var y = offset.y + i;
+            if (x < 0) {
+              newOffset.x += 1;
+              if (this.validPos(piece, newOffset)) {
+                return {
+                  reRotate: false,
+                  offset: newOffset
+                };
+              } else {
+                return {
+                  reRotate: true,
+                  offset: offset
+                };
+              }
+            } else if (x > this.cols - 1) {
+              newOffset.x -= 1;
+              if (this.validPos(piece, newOffset)) {
+                return {
+                  reRotate: false,
+                  offset: newOffset
+                };
+              } else {
+                return {
+                  reRotate: true,
+                  offset: offset
+                };
+              }
+            }
+          }
+        }
+      }
+      return {
+        reRotate: false,
+        offset: offset
+      };
+    }
   }]);
 
   return Board;
@@ -481,6 +528,30 @@ var Game = function () {
       }
     }
   }, {
+    key: "handleUnrotate",
+    value: function handleUnrotate(piece) {
+      switch (piece.type) {
+        case 'T':
+        case 'O':
+        case 'J':
+        case 'L':
+          piece.matrix = this.rotateCounter(piece.matrix);
+          return piece;
+        case 'Z':
+        case 'S':
+        case 'I':
+          //since we're unrotating, at a high level of thinking we
+          //shouldn't actually count another rotation. 
+          // this.totalRotations += 1;
+          if (this.totalRotations % 2 !== 0) {
+            piece.matrix = this.rotateCounter(piece.matrix);
+          } else {
+            piece.matrix = this.rotate(piece.matrix);
+          }
+          return piece;
+      }
+    }
+  }, {
     key: "boardStep",
     value: function boardStep() {
       this.board.render();
@@ -523,6 +594,13 @@ var Game = function () {
             break;
           case 'ArrowUp':
             _this.currentPiece = _this.handleRotate(_this.currentPiece);
+            var response = _this.board.validateRotate(_this.currentPiece.matrix, _this.offset);
+            if (response.reRotate) {
+              _this.currentPiece = _this.handleUnrotate(_this.currentPiece);
+            } else {
+              _this.offset = response.offset;
+            }
+            _this.boardStep();
             break;
         }
       });

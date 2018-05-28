@@ -105,6 +105,29 @@ export default class Game {
     }
   }
 
+  handleUnrotate(piece) {
+    switch(piece.type) {
+      case 'T':
+      case 'O':
+      case 'J':
+      case 'L':
+        piece.matrix = this.rotateCounter(piece.matrix);
+        return piece;
+      case 'Z':
+      case 'S':
+      case 'I':
+        //since we're unrotating, at a high level of thinking we
+        //shouldn't actually count another rotation. 
+        // this.totalRotations += 1;
+        if (this.totalRotations % 2 !== 0) {
+          piece.matrix = this.rotateCounter(piece.matrix);
+        } else {
+          piece.matrix = this.rotate(piece.matrix);
+        }
+        return piece;
+    }
+  }
+
   boardStep() {
     this.board.render();
     this.board.drawPiece(this.currentPiece.matrix, this.offset);
@@ -143,6 +166,13 @@ export default class Game {
           break;
         case 'ArrowUp':
           this.currentPiece = this.handleRotate(this.currentPiece);
+          let response = this.board.validateRotate(this.currentPiece.matrix, this.offset);
+          if (response.reRotate) {
+            this.currentPiece = this.handleUnrotate(this.currentPiece);
+          } else {
+            this.offset = response.offset;
+          }
+          this.boardStep();
           break;
       }
     });

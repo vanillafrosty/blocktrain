@@ -123,6 +123,54 @@ export default class Board {
     return true;
   }
 
+  validateRotate(piece, offset) {
+    let newOffset = {
+      x: offset.x,
+      y: offset.y
+    };
+    for (let i=0; i<piece.length; i++) {
+      for (let j=0; j<piece[0].length; j++) {
+        if (piece[i][j] !== 0) {
+          let x = offset.x+j;
+          let y = offset.y+i;
+          if (x < 0) {
+            newOffset.x += 1;
+            if (this.validPos(piece, newOffset)) {
+              return {
+                reRotate: false,
+                offset: newOffset
+              };
+            } else {
+              return {
+                reRotate: true,
+                offset: offset
+              };
+            }
+          }
+          else if (x > (this.cols-1)) {
+            newOffset.x -=1;
+            if (this.validPos(piece, newOffset)){
+              return {
+                reRotate: false,
+                offset: newOffset
+              };
+            } else {
+              return {
+                reRotate: true,
+                offset: offset
+              }
+            }
+          }
+        }
+      }
+    }
+    return {
+      reRotate: false,
+      offset: offset
+    }
+  }
+
+
 
 
 
