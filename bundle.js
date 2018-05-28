@@ -273,6 +273,9 @@ var Board = function () {
   }, {
     key: 'update',
     value: function update(piece, offset) {
+      if (offset.y < 0) {
+        return false;
+      }
       for (var i = 0; i < piece.length; i++) {
         for (var j = 0; j < piece[0].length; j++) {
           if (piece[i][j] !== 0) {
@@ -457,7 +460,7 @@ var Game = function () {
     this.board = board;
     this.offset = {
       x: 4,
-      y: 0
+      y: -2
     };
     this.totalRotations = 0;
     this.pieces = new _pieces2.default();
@@ -579,7 +582,7 @@ var Game = function () {
         case 'S':
         case 'I':
           //since we're unrotating, at a high level of thinking we
-          //shouldn't actually count another rotation. 
+          //shouldn't actually count another rotation.
           // this.totalRotations += 1;
           if (this.totalRotations % 2 !== 0) {
             piece.matrix = this.rotateCounter(piece.matrix);
@@ -622,7 +625,8 @@ var Game = function () {
           case 'ArrowDown':
             _this.offset.y += 1;
             if (_this.board.update(_this.currentPiece.matrix, _this.offset)) {
-              _this.offset.y = 0;
+              // this.offset.y = 0;
+              _this.offset.y = -2;
               _this.offset.x = 4;
               _this.totalRotations = 0;
               _this.currentPiece = _this.pieces.newPiece();
@@ -665,7 +669,8 @@ var Game = function () {
             _this2.resetTime = 0;
             _this2.offset.y += 1;
             if (_this2.board.update(_this2.currentPiece.matrix, _this2.offset)) {
-              _this2.offset.y = 0;
+              // this.offset.y = 0;
+              _this2.offset.y = -2;
               _this2.offset.x = 4;
               _this2.totalRotations = 0;
               _this2.currentPiece = _this2.pieces.newPiece();

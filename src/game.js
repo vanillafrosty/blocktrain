@@ -6,7 +6,7 @@ export default class Game {
     this.board = board;
     this.offset = {
       x: 4,
-      y: 0
+      y: -2
     };
     this.totalRotations = 0;
     this.pieces = new Pieces();
@@ -117,7 +117,7 @@ export default class Game {
       case 'S':
       case 'I':
         //since we're unrotating, at a high level of thinking we
-        //shouldn't actually count another rotation. 
+        //shouldn't actually count another rotation.
         // this.totalRotations += 1;
         if (this.totalRotations % 2 !== 0) {
           piece.matrix = this.rotateCounter(piece.matrix);
@@ -156,7 +156,8 @@ export default class Game {
         case 'ArrowDown':
           this.offset.y += 1;
           if (this.board.update(this.currentPiece.matrix, this.offset)) {
-            this.offset.y = 0;
+            // this.offset.y = 0;
+            this.offset.y = -2;
             this.offset.x = 4;
             this.totalRotations = 0;
             this.currentPiece = this.pieces.newPiece();
@@ -198,7 +199,8 @@ export default class Game {
           this.resetTime = 0;
           this.offset.y += 1;
           if (this.board.update(this.currentPiece.matrix, this.offset)){
-            this.offset.y = 0;
+            // this.offset.y = 0;
+            this.offset.y = -2;
             this.offset.x = 4;
             this.totalRotations = 0;
             this.currentPiece = this.pieces.newPiece();

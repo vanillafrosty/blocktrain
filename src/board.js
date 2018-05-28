@@ -69,6 +69,9 @@ export default class Board {
   }
 
   update(piece, offset) {
+    if (offset.y < 0) {
+      return false;
+    }
     for (let i=0; i<piece.length; i++) {
       for (let j=0; j<piece[0].length; j++) {
         if (piece[i][j] !== 0) {
