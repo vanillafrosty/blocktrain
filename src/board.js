@@ -5,7 +5,7 @@ export default class Board {
     this.width = width;
     this.height = height;
     // this.rows = 24;
-    this.rows = 20;
+    this.rows = 21;
     this.cols = 10;
     this.grid = [];
     this.strokeStyle = '#000000';

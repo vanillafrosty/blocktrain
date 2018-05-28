@@ -29,13 +29,13 @@ body {
 .app-container {
   display: flex;
   width: 700px;
-  height: 600px;
+  height: 630px;
   margin: auto;
 }
 
 #canvas {
   width: 300px;
-  height: 600px;
+  height: 630px;
   background: rgba(0, 0, 0, 0.75);
   border: 10px solid #D3D3D3;
   border-radius: 5px;

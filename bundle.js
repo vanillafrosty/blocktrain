@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var canvas = document.getElementById("canvas");
   canvas.width = 300;
   // canvas.height = 720;
-  canvas.height = 600;
+  canvas.height = 630;
   var square_width = canvas.width / 10;
   var ctx = canvas.getContext('2d');
 
@@ -160,7 +160,7 @@ var Board = function () {
     this.width = width;
     this.height = height;
     // this.rows = 24;
-    this.rows = 20;
+    this.rows = 21;
     this.cols = 10;
     this.grid = [];
     this.strokeStyle = '#000000';

@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById("canvas");
   canvas.width = 300;
   // canvas.height = 720;
-  canvas.height = 600;
+  canvas.height = 630;
   const square_width = canvas.width/10;
   var ctx = canvas.getContext('2d');
 
