@@ -325,6 +325,8 @@ var Board = function () {
         newOffset.x += 1;
         return this.handleResponse(piece, offset, newOffset);
       } else if (x > this.cols - 1) {
+        //reminder: may want to subtract Math.floor(piece.length/2)
+        //to account for the line pieces hugging the right side of the board
         newOffset.x -= 1;
         return this.handleResponse(piece, offset, newOffset);
       }
@@ -368,6 +370,28 @@ var Board = function () {
             if (handledY) {
               return handledY;
             }
+            if (typeof this.grid[y][x] !== 'undefined') {
+              if (this.rightOrLeft(piece, x) === 'left') {
+                newOffset.x += 1;
+                //try moving the piece up one before giving up
+                var response = this.handleResponse(piece, offset, newOffset);
+                if (response.reRotate) {
+                  newOffset.x -= 1;
+                  newOffset.y -= 1;
+                  return this.handleResponse(piece, offset, newOffset);
+                }
+                return response;
+              } else if (this.rightOrLeft(piece, x) === 'right') {
+                newOffset.x -= 1;
+                var _response = this.handleResponse(piece, offset, newOffset);
+                if (_response.reRotate) {
+                  newOffset.x += 1;
+                  newOffset.y -= 1;
+                  return this.handleResponse(piece, offset, newOffset);
+                }
+                return _response;
+              }
+            }
           }
         }
       }
@@ -375,6 +399,12 @@ var Board = function () {
         reRotate: false,
         offset: offset
       };
+    }
+  }, {
+    key: 'rightOrLeft',
+    value: function rightOrLeft(piece, x) {
+      var middle = Math.floor(piece.length / 2);
+      return x < middle ? 'left' : 'right';
     }
   }]);
 
