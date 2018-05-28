@@ -56,7 +56,7 @@ body {
   font-family: 'Geo', sans-serif;
   color: #F9F9F9;
   background-color: #000000;
-  opacity: .9;
+  opacity: .95;
 }
 
 .sidebar-text {
@@ -98,9 +98,11 @@ body {
 }
 
 #game-over{
-  font-size: 24px;
   font-family: 'Geo', sans-serif;
   color: #F9F9F9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   position: absolute;
   top: 0px;
   left: 0px;
@@ -114,4 +116,15 @@ body {
 
 #not-game-over {
   display: none;
+}
+
+.game-over-text-heading {
+  font-size: 48px;
+  text-align: center;
+  padding-top: 40px;
+
+}
+
+.game-over-text {
+  font-size: 24px;
 }
