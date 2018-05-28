@@ -33,7 +33,17 @@ body {
   margin: auto;
 }
 
+.canvas-container {
+  position: relative;
+  top: 0px;
+  left: 0px;
+}
+
 #canvas {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 2;
   width: 300px;
   height: 630px;
   background: rgba(0, 0, 0, 0.75);
@@ -85,4 +95,23 @@ body {
   width: 44px;
   border-radius: 22px;
   background-color: #F9F9F9;
+}
+
+#game-over{
+  font-size: 24px;
+  font-family: 'Geo', sans-serif;
+  color: #F9F9F9;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 5;
+  width: 300px;
+  height: 630px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 10px solid #D3D3D3;
+  border-radius: 5px;
+}
+
+#not-game-over {
+  display: none;
 }

@@ -169,6 +169,8 @@ export default class Game {
           this.boardStep();
           this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
           if (this.gameOver) {
+            let notGameOver = document.getElementById('not-game-over');
+            notGameOver.setAttribute("id", "game-over");
             cancelAnimationFrame(this.animationFrame);
           }
           break;
@@ -224,6 +226,8 @@ export default class Game {
           this.boardStep();
           this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
           if (this.gameOver) {
+            let notGameOver = document.getElementById('not-game-over');
+            notGameOver.setAttribute("id", "game-over");
             cancelAnimationFrame(this.animationFrame);
             return true;
           }

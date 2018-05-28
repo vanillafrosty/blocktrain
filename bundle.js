@@ -705,6 +705,8 @@ var Game = function () {
             _this.boardStep();
             _this.gameOver = _this.board.checkGameOver(_this.currentPiece.matrix, _this.offset);
             if (_this.gameOver) {
+              var notGameOver = document.getElementById('not-game-over');
+              notGameOver.setAttribute("id", "game-over");
               cancelAnimationFrame(_this.animationFrame);
             }
             break;
@@ -761,6 +763,8 @@ var Game = function () {
             _this2.boardStep();
             _this2.gameOver = _this2.board.checkGameOver(_this2.currentPiece.matrix, _this2.offset);
             if (_this2.gameOver) {
+              var notGameOver = document.getElementById('not-game-over');
+              notGameOver.setAttribute("id", "game-over");
               cancelAnimationFrame(_this2.animationFrame);
               return true;
             }
