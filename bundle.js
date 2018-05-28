@@ -371,13 +371,31 @@ var Board = function () {
       }
     }
   }, {
+    key: 'handleY',
+    value: function handleY(y, piece, offset) {
+      var newOffset = {
+        x: offset.x,
+        y: offset.y
+      };
+      if (this.between(y, 0, this.rows - 1)) {
+        return null;
+      } else if (y < 0) {
+        newOffset.y += 1;
+        return this.handleResponse(piece, offset, newOffset);
+      } else if (y > this.rows - 1) {
+        newOffset.y -= 1;
+        return this.handleResponse(piece, offset, newOffset);
+      }
+    }
+  }, {
     key: 'validateRotate',
     value: function validateRotate(piece, offset) {
       var newOffset = {
         x: offset.x,
         y: offset.y
       };
-      var handledX = void 0;
+      var handledX = void 0,
+          handledY = void 0;
       for (var i = 0; i < piece.length; i++) {
         for (var j = 0; j < piece[0].length; j++) {
           if (piece[i][j] !== 0) {
@@ -386,6 +404,10 @@ var Board = function () {
             handledX = this.handleX(x, piece, offset);
             if (handledX) {
               return handledX;
+            }
+            handledY = this.handleY(y, piece, offset);
+            if (handledY) {
+              return handledY;
             }
           }
         }

@@ -157,22 +157,43 @@ export default class Board {
     }
   }
 
+  handleY(y, piece, offset) {
+    let newOffset = {
+      x: offset.x,
+      y: offset.y
+    };
+    if (this.between(y, 0, this.rows-1)) {
+      return null;
+    }
+    else if (y < 0) {
+      newOffset.y += 1;
+      return this.handleResponse(piece, offset, newOffset);
+    }
+    else if (y > (this.rows-1)) {
+      newOffset.y -=1;
+      return this.handleResponse(piece, offset, newOffset);
+    }
+  }
+
   validateRotate(piece, offset) {
     let newOffset = {
       x: offset.x,
       y: offset.y
     };
-    let handledX;
+    let handledX, handledY;
     for (let i=0; i<piece.length; i++) {
       for (let j=0; j<piece[0].length; j++) {
         if (piece[i][j] !== 0) {
           let x = offset.x+j;
           let y = offset.y+i;
-          handledX = this.handleX(x, piece, offset)
+          handledX = this.handleX(x, piece, offset);
           if (handledX) {
             return handledX;
           }
-
+          handledY = this.handleY(y, piece, offset);
+          if (handledY) {
+            return handledY;
+          }
         }
       }
     }
