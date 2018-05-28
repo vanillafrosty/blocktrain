@@ -692,22 +692,24 @@ var Game = function () {
             }
             break;
           case 'ArrowDown':
-            e.preventDefault();
-            _this.offset.y += 1;
-            if (_this.board.update(_this.currentPiece.matrix, _this.offset)) {
-              // this.offset.y = 0;
-              _this.offset.y = 0;
-              _this.offset.x = 4;
-              _this.totalRotations = 0;
-              _this.currentPiece = _this.pieces.newPiece();
-            }
-            _this.resetTime = 0;
-            _this.boardStep();
-            _this.gameOver = _this.board.checkGameOver(_this.currentPiece.matrix, _this.offset);
-            if (_this.gameOver) {
-              var notGameOver = document.getElementById('not-game-over');
-              notGameOver.setAttribute("id", "game-over");
-              cancelAnimationFrame(_this.animationFrame);
+            if (!_this.gameOver) {
+              e.preventDefault();
+              _this.offset.y += 1;
+              if (_this.board.update(_this.currentPiece.matrix, _this.offset)) {
+                // this.offset.y = 0;
+                _this.offset.y = 0;
+                _this.offset.x = 4;
+                _this.totalRotations = 0;
+                _this.currentPiece = _this.pieces.newPiece();
+              }
+              _this.resetTime = 0;
+              _this.boardStep();
+              _this.gameOver = _this.board.checkGameOver(_this.currentPiece.matrix, _this.offset);
+              if (_this.gameOver) {
+                var notGameOver = document.getElementById('not-game-over');
+                notGameOver.setAttribute("id", "game-over");
+                cancelAnimationFrame(_this.animationFrame);
+              }
             }
             break;
           case 'ArrowUp':

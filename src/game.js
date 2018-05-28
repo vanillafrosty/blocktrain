@@ -156,22 +156,24 @@ export default class Game {
           }
           break;
         case 'ArrowDown':
-          e.preventDefault();
-          this.offset.y += 1;
-          if (this.board.update(this.currentPiece.matrix, this.offset)) {
-            // this.offset.y = 0;
-            this.offset.y = 0;
-            this.offset.x = 4;
-            this.totalRotations = 0;
-            this.currentPiece = this.pieces.newPiece();
-          }
-          this.resetTime = 0;
-          this.boardStep();
-          this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
-          if (this.gameOver) {
-            let notGameOver = document.getElementById('not-game-over');
-            notGameOver.setAttribute("id", "game-over");
-            cancelAnimationFrame(this.animationFrame);
+          if (!this.gameOver){
+            e.preventDefault();
+            this.offset.y += 1;
+            if (this.board.update(this.currentPiece.matrix, this.offset)) {
+              // this.offset.y = 0;
+              this.offset.y = 0;
+              this.offset.x = 4;
+              this.totalRotations = 0;
+              this.currentPiece = this.pieces.newPiece();
+            }
+            this.resetTime = 0;
+            this.boardStep();
+            this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
+            if (this.gameOver) {
+              let notGameOver = document.getElementById('not-game-over');
+              notGameOver.setAttribute("id", "game-over");
+              cancelAnimationFrame(this.animationFrame);
+            }
           }
           break;
         case 'ArrowUp':
