@@ -80,6 +80,7 @@ export default class Board {
           let y = offset.y+i;
           if (y >= this.rows || typeof(this.grid[y][x]) !== 'undefined') {
             this.setPiece(piece, offset.x, offset.y-1);
+            this.clearRows(piece.length, offset.y-1);
             return true;
           }
         }
@@ -88,6 +89,38 @@ export default class Board {
     return false;
   }
 
+  clearRows(numRows, startY){
+    for (let i=0; i<numRows; i++) {
+      if (this.fullRow(startY+i)) {
+        this.removeRow(startY+i);
+      }
+    }
+  }
+
+  fullRow(row_idx){
+    let row = this.grid[row_idx];
+    if (row === undefined) {
+      return false;
+    }
+    for (let i=0; i<row.length; i++) {
+      if (typeof(row[i]) === 'undefined') {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  removeRow(row_idx) {
+    let row = this.grid[row_idx];
+    for (let i=row_idx-1; i>=0; i--) {
+      for (let j=0; j<row.length; j++){
+        this.grid[i+1][j] = this.grid[i][j];
+      }
+    }
+    for (let j=0; j<row.length; j++){
+      this.grid[0][j] = undefined;
+    }
+  }
 
   //updates the grid with the piece values
   setPiece(piece, x, y) {
@@ -99,6 +132,8 @@ export default class Board {
       }
     }
   }
+
+
 
   //checks that a number is between a lower and higher bound (inclusive)
   between(num, low, high) {

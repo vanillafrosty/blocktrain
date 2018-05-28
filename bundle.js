@@ -239,12 +239,49 @@ var Board = function () {
             var y = offset.y + i;
             if (y >= this.rows || typeof this.grid[y][x] !== 'undefined') {
               this.setPiece(piece, offset.x, offset.y - 1);
+              this.clearRows(piece.length, offset.y - 1);
               return true;
             }
           }
         }
       }
       return false;
+    }
+  }, {
+    key: 'clearRows',
+    value: function clearRows(numRows, startY) {
+      for (var i = 0; i < numRows; i++) {
+        if (this.fullRow(startY + i)) {
+          this.removeRow(startY + i);
+        }
+      }
+    }
+  }, {
+    key: 'fullRow',
+    value: function fullRow(row_idx) {
+      var row = this.grid[row_idx];
+      if (row === undefined) {
+        return false;
+      }
+      for (var i = 0; i < row.length; i++) {
+        if (typeof row[i] === 'undefined') {
+          return false;
+        }
+      }
+      return true;
+    }
+  }, {
+    key: 'removeRow',
+    value: function removeRow(row_idx) {
+      var row = this.grid[row_idx];
+      for (var i = row_idx - 1; i >= 0; i--) {
+        for (var j = 0; j < row.length; j++) {
+          this.grid[i + 1][j] = this.grid[i][j];
+        }
+      }
+      for (var _j = 0; _j < row.length; _j++) {
+        this.grid[0][_j] = undefined;
+      }
     }
 
     //updates the grid with the piece values
