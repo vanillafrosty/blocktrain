@@ -19,11 +19,14 @@ body {
   margin: 50px;
 }
 
-
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  margin-right: 100px;
+}
 
 .app-container {
   display: flex;
-  justify-content: space-between;
   width: 700px;
   height: 720px;
   margin: auto;
@@ -39,10 +42,14 @@ body {
   font-size: 24px;
   font-family: 'Geo', sans-serif;
   color: #F9F9F9;
-  width: 150px;
-  height: 360px;
+  /* width: 170px;
+  height: 360px; */
   background-color: #000000;
   opacity: .9;
+}
+
+.sidebar-text {
+  padding: 15px;
 }
 
 .links-form {

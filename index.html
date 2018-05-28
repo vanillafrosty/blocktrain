@@ -14,33 +14,37 @@
         <div class="title-text">Blocktrain</div>
       </div>
       <div class="app-container">
-        <div class="links">
-          <form class="links-form" action="https://github.com/vanillafrosty">
-            <button class="button-link" type="submit">
-              <i class="icon-social-github"></i>
-            </button>
-          </form>
-          <form class="links-form" action="https://www.linkedin.com/in/daviddwu/">
-            <button class="button-link" type="submit">
-              <i class="icon-social-linkedin"></i>
-            </button>
-          </form>
-          <form class="links-form" action="http://dwu.space">
-            <button class="button-link" type="submit">
-              <i class="icon-user"></i>
-            </button>
-          </form>
+        <div class="sidebar-container">
+          <div class="links">
+            <form class="links-form" action="https://github.com/vanillafrosty">
+              <button class="button-link" type="submit">
+                <i class="icon-social-github"></i>
+              </button>
+            </form>
+            <form class="links-form" action="https://www.linkedin.com/in/daviddwu/">
+              <button class="button-link" type="submit">
+                <i class="icon-social-linkedin"></i>
+              </button>
+            </form>
+            <form class="links-form" action="http://dwu.space">
+              <button class="button-link" type="submit">
+                <i class="icon-user"></i>
+              </button>
+            </form>
+          </div>
+          <div class="sidebar">
+            <audio id="title-theme" autoplay src="./music/intro.mp3">
+              Your browser does not support the <code>audio</code> element.
+            </audio>
+            <audio id="megaman-theme" src="./music/metal-man.mp3">
+              Your browser does not support the <code>audio</code> element.
+            </audio>
+            <div class="sidebar-text">'m' - music</div>
+            <div class="sidebar-text">'p' - play</div>
+          </div>
         </div>
         <canvas id="canvas"></canvas>
-        <div class="sidebar">
-          <audio id="title-theme" autoplay src="./music/intro.mp3">
-            Your browser does not support the <code>audio</code> element.
-          </audio>
-          <audio id="megaman-theme" src="./music/metal-man.mp3">
-            Your browser does not support the <code>audio</code> element.
-          </audio>
-          <div>'m' to toggle music</div>
-        </div>
+
       </div>
     </div>
   </body>
