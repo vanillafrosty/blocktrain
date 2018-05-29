@@ -535,6 +535,9 @@ var Game = function () {
     this.currentPiece = this.pieces.newPiece();
     this.startTime;
     this.resetTime = 0;
+    this.foreverTime = 0;
+    this.foreverStep = 0;
+    this.timeStep = 1000;
     this.titlePlaying = true;
     this.titleEnded = false;
     this.megamanPlaying = false;
@@ -754,6 +757,9 @@ var Game = function () {
       this.currentPiece = this.pieces.newPiece();
       this.startTime = null;
       this.resetTime = 0;
+      this.timeStep = 1000;
+      this.foreverTime = 0;
+      this.foreverStep = 0;
       this.gameOver = false;
       this.play();
     }
@@ -777,7 +783,13 @@ var Game = function () {
 
         var render = function render(timestamp) {
           _this2.resetTime += timestamp - _this2.startTime;
-          if (_this2.resetTime > 1000) {
+          _this2.foreverTime += timestamp - _this2.startTime;
+          if (_this2.foreverTime > 40000) {
+            _this2.foreverStep += 1;
+            _this2.foreverTime = 0;
+            _this2.timeStep = _this2.timeStep - _this2.foreverStep * 100;
+          }
+          if (_this2.resetTime > _this2.timeStep) {
             _this2.resetTime = 0;
             _this2.offset.y += 1;
             if (_this2.board.update(_this2.currentPiece.matrix, _this2.offset)) {

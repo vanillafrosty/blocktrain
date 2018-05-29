@@ -15,6 +15,9 @@ export default class Game {
     this.currentPiece = this.pieces.newPiece();
     this.startTime;
     this.resetTime = 0;
+    this.foreverTime = 0;
+    this.foreverStep = 0;
+    this.timeStep = 1000;
     this.titlePlaying = true;
     this.titleEnded = false;
     this.megamanPlaying = false;
@@ -218,6 +221,9 @@ export default class Game {
     this.currentPiece = this.pieces.newPiece();
     this.startTime = null;
     this.resetTime = 0;
+    this.timeStep = 1000;
+    this.foreverTime = 0;
+    this.foreverStep = 0;
     this.gameOver = false;
     this.play();
   }
@@ -236,7 +242,13 @@ export default class Game {
 
       const render = (timestamp) => {
         this.resetTime += timestamp-this.startTime;
-        if (this.resetTime > 1000) {
+        this.foreverTime += timestamp-this.startTime;
+        if (this.foreverTime > 40000) {
+          this.foreverStep += 1;
+          this.foreverTime = 0;
+          this.timeStep = this.timeStep - (this.foreverStep*100);
+        }
+        if (this.resetTime > this.timeStep) {
           this.resetTime = 0;
           this.offset.y += 1;
           if (this.board.update(this.currentPiece.matrix, this.offset)){

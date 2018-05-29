@@ -3,7 +3,7 @@ body {
 }
 
 .game-container {
-  background-image: url("../sprites/megaman-intro.jpg");
+  background-image: url("../img/megaman-intro.jpg");
   background-size: 1000px 100vh;
   background-position: 0 0;
   width: 700px;
