@@ -195,22 +195,13 @@ var Board = function () {
     key: 'render',
     value: function render() {
       this.ctx.clearRect(0, 0, this.width, this.height);
-      var s_w = this.square_width;
       for (var i = 0; i < this.rows; i++) {
         for (var j = 0; j < this.cols; j++) {
           if (typeof this.grid[i][j] !== 'undefined') {
-            this.ctx.fillStyle = this.colors[this.grid[i][j]];
-            this.ctx.strokeStyle = this.strokeStyle;
-            this.ctx.lineWidth = 2;
-            var x = j * s_w;
-            var y = i * s_w;
-            this.ctx.fillRect(x, y, s_w, s_w);
-            this.ctx.strokeRect(x, y, s_w, s_w);
-            this.ctx.beginPath();
-            this.ctx.moveTo(x + s_w / 4, y + s_w * (3 / 4));
-            this.ctx.lineTo(x + s_w / 4, y + s_w / 4);
-            this.ctx.lineTo(x + s_w * (3 / 4), y + s_w / 4);
-            this.ctx.stroke();
+            var x = j * this.square_width;
+            var y = i * this.square_width;
+            var color = this.colors[this.grid[i][j]];
+            this.drawSquare(x, y, color);
           }
         }
       }
@@ -218,25 +209,31 @@ var Board = function () {
   }, {
     key: 'drawPiece',
     value: function drawPiece(piece, offset) {
-      var s_w = this.square_width;
       for (var i = 0; i < piece.length; i++) {
         for (var j = 0; j < piece[0].length; j++) {
           if (piece[i][j] !== 0) {
-            this.ctx.fillStyle = this.colors[piece[i][j]];
-            this.ctx.strokeStyle = this.strokeStyle;
-            this.ctx.lineWidth = 2;
-            var x = (offset.x + j) * s_w;
-            var y = (offset.y + i) * s_w;
-            this.ctx.fillRect(x, y, s_w, s_w);
-            this.ctx.strokeRect(x, y, s_w, s_w);
-            this.ctx.beginPath();
-            this.ctx.moveTo(x + s_w / 4, y + s_w * (3 / 4));
-            this.ctx.lineTo(x + s_w / 4, y + s_w / 4);
-            this.ctx.lineTo(x + s_w * (3 / 4), y + s_w / 4);
-            this.ctx.stroke();
+            var x = (offset.x + j) * this.square_width;
+            var y = (offset.y + i) * this.square_width;
+            var color = this.colors[piece[i][j]];
+            this.drawSquare(x, y, color);
           }
         }
       }
+    }
+  }, {
+    key: 'drawSquare',
+    value: function drawSquare(x, y, color) {
+      var s_w = this.square_width;
+      this.ctx.fillStyle = color;
+      this.ctx.strokeStyle = this.strokeStyle;
+      this.ctx.lineWidth = 2;
+      this.ctx.fillRect(x, y, s_w, s_w);
+      this.ctx.strokeRect(x, y, s_w, s_w);
+      this.ctx.beginPath();
+      this.ctx.moveTo(x + s_w / 4, y + s_w * (3 / 4));
+      this.ctx.lineTo(x + s_w / 4, y + s_w / 4);
+      this.ctx.lineTo(x + s_w * (3 / 4), y + s_w / 4);
+      this.ctx.stroke();
     }
   }, {
     key: 'update',
@@ -526,7 +523,7 @@ var Game = function () {
   function Game(board) {
     _classCallCheck(this, Game);
 
-    this.gameOverOnce = false;
+    this.gameOverOnce = false; //to make sure we don't add multiple event listeners
     this.animationFrame = null;
     this.board = board;
     this.offset = {
@@ -698,7 +695,6 @@ var Game = function () {
               e.preventDefault();
               _this.offset.y += 1;
               if (_this.board.update(_this.currentPiece.matrix, _this.offset)) {
-                // this.offset.y = 0;
                 _this.offset.y = 0;
                 _this.offset.x = 4;
                 _this.totalRotations = 0;
@@ -755,7 +751,6 @@ var Game = function () {
         y: 0
       };
       this.totalRotations = 0;
-      // this.pieces = new Pieces();
       this.currentPiece = this.pieces.newPiece();
       this.startTime = null;
       this.resetTime = 0;

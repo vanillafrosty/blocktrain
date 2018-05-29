@@ -34,47 +34,43 @@ export default class Board {
 
   render() {
     this.ctx.clearRect(0, 0, this.width, this.height);
-    let s_w = this.square_width;
     for (let i=0; i<this.rows; i++) {
       for (let j=0; j<this.cols; j++) {
         if (typeof(this.grid[i][j]) !== 'undefined') {
-          this.ctx.fillStyle = this.colors[this.grid[i][j]];
-          this.ctx.strokeStyle = this.strokeStyle;
-          this.ctx.lineWidth = 2;
-          let x = j*s_w;
-          let y = i*s_w;
-          this.ctx.fillRect(x, y, s_w, s_w);
-          this.ctx.strokeRect(x, y, s_w, s_w);
-          this.ctx.beginPath();
-          this.ctx.moveTo(x+s_w/4, y+s_w*(3/4));
-          this.ctx.lineTo(x+s_w/4, y+s_w/4);
-          this.ctx.lineTo(x+s_w*(3/4), y+s_w/4);
-          this.ctx.stroke();
+          let x = j*this.square_width;
+          let y = i*this.square_width;
+          let color = this.colors[this.grid[i][j]];
+          this.drawSquare(x,y, color);
         }
       }
     }
   }
 
   drawPiece(piece, offset) {
-    let s_w = this.square_width;
     for (let i=0; i<piece.length; i++) {
       for (let j=0; j<piece[0].length; j++) {
         if (piece[i][j] !== 0) {
-          this.ctx.fillStyle = this.colors[piece[i][j]];
-          this.ctx.strokeStyle = this.strokeStyle;
-          this.ctx.lineWidth = 2;
-          let x = (offset.x+j)*s_w;
-          let y = (offset.y+i)*s_w;
-          this.ctx.fillRect(x, y, s_w, s_w);
-          this.ctx.strokeRect(x, y, s_w, s_w);
-          this.ctx.beginPath();
-          this.ctx.moveTo(x+s_w/4, y+s_w*(3/4));
-          this.ctx.lineTo(x+s_w/4, y+s_w/4);
-          this.ctx.lineTo(x+s_w*(3/4), y+s_w/4);
-          this.ctx.stroke();
+          let x = (offset.x+j)*this.square_width;
+          let y = (offset.y+i)*this.square_width;
+          let color = this.colors[piece[i][j]];
+          this.drawSquare(x, y, color);
         }
       }
     }
+  }
+
+  drawSquare(x, y, color)  {
+    const s_w = this.square_width;
+    this.ctx.fillStyle = color;
+    this.ctx.strokeStyle = this.strokeStyle;
+    this.ctx.lineWidth = 2;
+    this.ctx.fillRect(x, y, s_w, s_w);
+    this.ctx.strokeRect(x, y, s_w, s_w);
+    this.ctx.beginPath();
+    this.ctx.moveTo(x+s_w/4, y+s_w*(3/4));
+    this.ctx.lineTo(x+s_w/4, y+s_w/4);
+    this.ctx.lineTo(x+s_w*(3/4), y+s_w/4);
+    this.ctx.stroke();
   }
 
   update(piece, offset) {

@@ -3,7 +3,7 @@ import Pieces from './pieces';
 export default class Game {
 
   constructor(board) {
-    this.gameOverOnce = false;
+    this.gameOverOnce = false; //to make sure we don't add multiple event listeners
     this.animationFrame = null;
     this.board = board;
     this.offset = {
@@ -160,7 +160,6 @@ export default class Game {
             e.preventDefault();
             this.offset.y += 1;
             if (this.board.update(this.currentPiece.matrix, this.offset)) {
-              // this.offset.y = 0;
               this.offset.y = 0;
               this.offset.x = 4;
               this.totalRotations = 0;
@@ -216,7 +215,6 @@ export default class Game {
       y: 0
     };
     this.totalRotations = 0;
-    // this.pieces = new Pieces();
     this.currentPiece = this.pieces.newPiece();
     this.startTime = null;
     this.resetTime = 0;
