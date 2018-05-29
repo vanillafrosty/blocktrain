@@ -115,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
   var titleAudio = document.getElementById("title-theme");
+  titleAudio.play();
   titleAudio.addEventListener("ended", function () {
     game.titleEnded = true;
   });

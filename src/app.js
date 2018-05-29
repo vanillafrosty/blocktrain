@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   const titleAudio = document.getElementById("title-theme");
+  titleAudio.play();
   titleAudio.addEventListener("ended", () => {
     game.titleEnded = true;
   });
