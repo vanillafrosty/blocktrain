@@ -98,7 +98,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 document.addEventListener('DOMContentLoaded', function () {
   var canvas = document.getElementById("canvas");
   canvas.width = 300;
-  // canvas.height = 720;
   canvas.height = 630;
   var square_width = canvas.width / 10;
   var ctx = canvas.getContext('2d');
@@ -109,6 +108,10 @@ document.addEventListener('DOMContentLoaded', function () {
   document.addEventListener("keypress", function (event) {
     if (event.key === 'm') {
       game.toggleAudio();
+    } else if (event.key === 'r') {
+      if (game.gameOver) {
+        game.restart();
+      }
     }
   });
   var titleAudio = document.getElementById("title-theme");
@@ -159,7 +162,6 @@ var Board = function () {
     this.ctx = ctx;
     this.width = width;
     this.height = height;
-    // this.rows = 24;
     this.rows = 21;
     this.cols = 10;
     this.grid = [];
@@ -177,9 +179,19 @@ var Board = function () {
       6: '#3EE848',
       7: '#F14D17'
     };
+    this.emptyBoard = this.emptyBoard.bind(this);
   }
 
   _createClass(Board, [{
+    key: 'emptyBoard',
+    value: function emptyBoard() {
+      for (var i = 0; i < this.rows; i++) {
+        for (var j = 0; j < this.cols; j++) {
+          this.grid[i][j] = undefined;
+        }
+      }
+    }
+  }, {
     key: 'render',
     value: function render() {
       this.ctx.clearRect(0, 0, this.width, this.height);
@@ -453,7 +465,6 @@ var Board = function () {
         for (var j = 0; j < piece[0].length; j++) {
           if (piece[i][j] !== 0) {
             dy = 0;
-            // debugger;
             while (i + offset.y + dy < this.rows && !this.grid[i + offset.y + dy][j + offset.x]) {
               dy += 1;
             }
@@ -474,17 +485,8 @@ var Board = function () {
         return false;
       }
       if (!this.validPos(piece, offset)) {
-        console.log('game ova son');
-        // this.endGame();
         return true;
       }
-      // for (let j=0; j<this.grid[0].length; j++) {
-      //   if (this.grid[0][j] !== undefined) {
-      //     console.log("game ova");
-      //     return true;
-      //   }
-      // }
-      // return false;
       return false;
     }
   }]);
@@ -524,6 +526,7 @@ var Game = function () {
   function Game(board) {
     _classCallCheck(this, Game);
 
+    this.gameOverOnce = false;
     this.animationFrame = null;
     this.board = board;
     this.offset = {
@@ -547,22 +550,21 @@ var Game = function () {
   _createClass(Game, [{
     key: "toggleAudio",
     value: function toggleAudio() {
-      debugger;
-      if (!this.playingGame && !this.titleEnded) {
-        if (this.titlePlaying) {
-          this.titleAudio.pause();
-          this.titlePlaying = false;
-        } else {
-          this.titleAudio.play();
-          this.titlePlaying = true;
-        }
-      } else if (this.playingGame) {
+      if (this.playingGame || this.gameOver) {
         if (this.megamanPlaying) {
           this.megamanAudio.pause();
           this.megamanPlaying = false;
         } else {
           this.megamanAudio.play();
           this.megamanPlaying = true;
+        }
+      } else if (!this.playingGame && !this.titleEnded) {
+        if (this.titlePlaying) {
+          this.titleAudio.pause();
+          this.titlePlaying = false;
+        } else {
+          this.titleAudio.play();
+          this.titlePlaying = true;
         }
       }
     }
@@ -706,6 +708,8 @@ var Game = function () {
               _this.boardStep();
               _this.gameOver = _this.board.checkGameOver(_this.currentPiece.matrix, _this.offset);
               if (_this.gameOver) {
+                _this.gameOverOnce = true;
+                _this.playingGame = false;
                 var notGameOver = document.getElementById('not-game-over');
                 notGameOver.setAttribute("id", "game-over");
                 cancelAnimationFrame(_this.animationFrame);
@@ -724,15 +728,39 @@ var Game = function () {
             _this.boardStep();
             break;
           case ' ':
-            e.preventDefault();
-            _this.board.handleDrop(_this.currentPiece.matrix, _this.offset);
-            _this.offset.y = 0;
-            _this.offset.x = 4;
-            _this.totalRotations = 0;
-            _this.currentPiece = _this.pieces.newPiece();
-            _this.boardStep();
+            if (!_this.gameOver) {
+              e.preventDefault();
+              _this.board.handleDrop(_this.currentPiece.matrix, _this.offset);
+              _this.offset.y = 0;
+              _this.offset.x = 4;
+              _this.totalRotations = 0;
+              _this.currentPiece = _this.pieces.newPiece();
+              _this.boardStep();
+            }
         }
       });
+    }
+  }, {
+    key: "restart",
+    value: function restart() {
+      //clear old board because we are not actually clearing HTML canvas before
+      //new game starts playing
+      this.board.ctx.clearRect(0, 0, this.board.width, this.board.height);
+      this.board.emptyBoard();
+      var gameOver = document.getElementById('game-over');
+      gameOver.setAttribute("id", "not-game-over");
+      this.animationFrame = null;
+      this.offset = {
+        x: 4,
+        y: 0
+      };
+      this.totalRotations = 0;
+      // this.pieces = new Pieces();
+      this.currentPiece = this.pieces.newPiece();
+      this.startTime = null;
+      this.resetTime = 0;
+      this.gameOver = false;
+      this.play();
     }
   }, {
     key: "play",
@@ -748,7 +776,9 @@ var Game = function () {
         this.megamanAudio.play();
         this.megamanPlaying = true;
 
-        this.addKeyListeners();
+        if (!this.gameOverOnce) {
+          this.addKeyListeners();
+        }
 
         var render = function render(timestamp) {
           _this2.resetTime += timestamp - _this2.startTime;
@@ -756,7 +786,6 @@ var Game = function () {
             _this2.resetTime = 0;
             _this2.offset.y += 1;
             if (_this2.board.update(_this2.currentPiece.matrix, _this2.offset)) {
-              // this.offset.y = 0;
               _this2.offset.y = 0;
               _this2.offset.x = 4;
               _this2.totalRotations = 0;
@@ -765,6 +794,8 @@ var Game = function () {
             _this2.boardStep();
             _this2.gameOver = _this2.board.checkGameOver(_this2.currentPiece.matrix, _this2.offset);
             if (_this2.gameOver) {
+              _this2.gameOverOnce = true;
+              _this2.playingGame = false;
               var notGameOver = document.getElementById('not-game-over');
               notGameOver.setAttribute("id", "game-over");
               cancelAnimationFrame(_this2.animationFrame);

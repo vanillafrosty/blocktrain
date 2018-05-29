@@ -3,6 +3,7 @@ import Pieces from './pieces';
 export default class Game {
 
   constructor(board) {
+    this.gameOverOnce = false;
     this.animationFrame = null;
     this.board = board;
     this.offset = {
@@ -24,22 +25,21 @@ export default class Game {
   }
 
   toggleAudio(){
-    debugger;
-    if (!this.playingGame && !this.titleEnded) {
-      if (this.titlePlaying){
-        this.titleAudio.pause();
-        this.titlePlaying = false;
-      } else {
-        this.titleAudio.play();
-        this.titlePlaying = true;
-      }
-    } else if (this.playingGame) {
+    if (this.playingGame || this.gameOver) {
       if (this.megamanPlaying){
         this.megamanAudio.pause();
         this.megamanPlaying = false;
       } else {
         this.megamanAudio.play();
         this.megamanPlaying = true;
+      }
+    }  else if (!this.playingGame && !this.titleEnded) {
+      if (this.titlePlaying){
+        this.titleAudio.pause();
+        this.titlePlaying = false;
+      } else {
+        this.titleAudio.play();
+        this.titlePlaying = true;
       }
     }
   }
@@ -170,6 +170,8 @@ export default class Game {
             this.boardStep();
             this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
             if (this.gameOver) {
+              this.gameOverOnce = true;
+              this.playingGame = false;
               let notGameOver = document.getElementById('not-game-over');
               notGameOver.setAttribute("id", "game-over");
               cancelAnimationFrame(this.animationFrame);
@@ -188,18 +190,39 @@ export default class Game {
           this.boardStep();
           break;
         case ' ':
-          e.preventDefault();
-          this.board.handleDrop(this.currentPiece.matrix, this.offset);
-          this.offset.y = 0;
-          this.offset.x = 4;
-          this.totalRotations = 0;
-          this.currentPiece = this.pieces.newPiece();
-          this.boardStep();
+          if (!this.gameOver) {
+            e.preventDefault();
+            this.board.handleDrop(this.currentPiece.matrix, this.offset);
+            this.offset.y = 0;
+            this.offset.x = 4;
+            this.totalRotations = 0;
+            this.currentPiece = this.pieces.newPiece();
+            this.boardStep();
+          }
       }
     });
   }
 
-
+  restart() {
+    //clear old board because we are not actually clearing HTML canvas before
+    //new game starts playing
+    this.board.ctx.clearRect(0, 0, this.board.width, this.board.height);
+    this.board.emptyBoard();
+    let gameOver = document.getElementById('game-over');
+    gameOver.setAttribute("id", "not-game-over");
+    this.animationFrame = null;
+    this.offset = {
+      x: 4,
+      y: 0
+    };
+    this.totalRotations = 0;
+    // this.pieces = new Pieces();
+    this.currentPiece = this.pieces.newPiece();
+    this.startTime = null;
+    this.resetTime = 0;
+    this.gameOver = false;
+    this.play();
+  }
 
   play() {
     if (this.playingGame) {
@@ -211,7 +234,7 @@ export default class Game {
       this.megamanAudio.play();
       this.megamanPlaying = true;
 
-      this.addKeyListeners();
+      if (!this.gameOverOnce) {this.addKeyListeners();}
 
       const render = (timestamp) => {
         this.resetTime += timestamp-this.startTime;
@@ -219,7 +242,6 @@ export default class Game {
           this.resetTime = 0;
           this.offset.y += 1;
           if (this.board.update(this.currentPiece.matrix, this.offset)){
-            // this.offset.y = 0;
             this.offset.y = 0;
             this.offset.x = 4;
             this.totalRotations = 0;
@@ -228,6 +250,8 @@ export default class Game {
           this.boardStep();
           this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
           if (this.gameOver) {
+            this.gameOverOnce = true;
+            this.playingGame = false;
             let notGameOver = document.getElementById('not-game-over');
             notGameOver.setAttribute("id", "game-over");
             cancelAnimationFrame(this.animationFrame);

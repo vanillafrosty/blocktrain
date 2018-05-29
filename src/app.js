@@ -6,7 +6,6 @@ import LRUCache from './lru/cache';
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById("canvas");
   canvas.width = 300;
-  // canvas.height = 720;
   canvas.height = 630;
   const square_width = canvas.width/10;
   var ctx = canvas.getContext('2d');
@@ -17,6 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener("keypress", (event) => {
     if (event.key === 'm'){
       game.toggleAudio();
+    } else if (event.key === 'r') {
+      if (game.gameOver) {
+        game.restart();
+      }
     }
   });
   const titleAudio = document.getElementById("title-theme");

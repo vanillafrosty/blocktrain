@@ -4,7 +4,6 @@ export default class Board {
     this.ctx = ctx;
     this.width = width;
     this.height = height;
-    // this.rows = 24;
     this.rows = 21;
     this.cols = 10;
     this.grid = [];
@@ -22,6 +21,15 @@ export default class Board {
       6: '#3EE848',
       7: '#F14D17'
     };
+    this.emptyBoard = this.emptyBoard.bind(this);
+  }
+
+  emptyBoard() {
+    for (let i=0; i<this.rows; i++) {
+      for (let j=0; j<this.cols; j++) {
+        this.grid[i][j] = undefined;
+      }
+    }
   }
 
   render() {
@@ -278,7 +286,6 @@ export default class Board {
       for (let j=0; j<piece[0].length; j++){
         if (piece[i][j] !== 0) {
           dy = 0;
-          // debugger;
           while((i+offset.y+dy) < this.rows && !this.grid[i+offset.y+dy][j+offset.x]){
             dy += 1;
           }
@@ -294,17 +301,8 @@ export default class Board {
   checkGameOver(piece, offset) {
     if (offset.y !== 0) { return false; }
     if (!this.validPos(piece, offset)) {
-      console.log('game ova son');
-      // this.endGame();
       return true;
     }
-    // for (let j=0; j<this.grid[0].length; j++) {
-    //   if (this.grid[0][j] !== undefined) {
-    //     console.log("game ova");
-    //     return true;
-    //   }
-    // }
-    // return false;
     return false;
   }
 
