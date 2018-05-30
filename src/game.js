@@ -17,7 +17,7 @@ export default class Game {
     this.resetTime = 0;
     this.foreverTime = 0;
     this.timeStep = 1000;
-    this.titlePlaying = true;
+    this.titlePlaying = false;
     this.titleEnded = false;
     this.megamanPlaying = false;
     this.playingGame = false;

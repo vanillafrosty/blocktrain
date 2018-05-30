@@ -115,7 +115,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
   var titleAudio = document.getElementById("title-theme");
-  titleAudio.play();
   titleAudio.addEventListener("ended", function () {
     game.titleEnded = true;
   });
@@ -538,7 +537,7 @@ var Game = function () {
     this.resetTime = 0;
     this.foreverTime = 0;
     this.timeStep = 1000;
-    this.titlePlaying = true;
+    this.titlePlaying = false;
     this.titleEnded = false;
     this.megamanPlaying = false;
     this.playingGame = false;
