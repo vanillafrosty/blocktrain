@@ -786,9 +786,10 @@ var Game = function () {
           _this2.resetTime += timestamp - _this2.startTime;
           _this2.foreverTime += timestamp - _this2.startTime;
           if (_this2.foreverTime > 40000) {
-            _this2.foreverStep += 1;
+            // this.foreverStep += 1;
             _this2.foreverTime = 0;
-            _this2.timeStep = _this2.timeStep - _this2.foreverStep * 100;
+            _this2.timeStep = _this2.timeStep * 0.9;
+            console.log(_this2.timeStep);
           }
           if (_this2.resetTime > _this2.timeStep) {
             _this2.resetTime = 0;
