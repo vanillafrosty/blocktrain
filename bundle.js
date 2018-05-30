@@ -676,7 +676,6 @@ var Game = function () {
       var _this = this;
 
       document.addEventListener('keydown', function (e) {
-        console.log(e.key);
         switch (e.key) {
           case 'd':
           case 'ArrowRight':
@@ -791,7 +790,6 @@ var Game = function () {
           if (_this2.foreverTime > 40000) {
             _this2.foreverTime = 0;
             _this2.timeStep = _this2.timeStep * 0.9;
-            console.log(_this2.timeStep);
           }
           if (_this2.resetTime > _this2.timeStep) {
             _this2.resetTime = 0;

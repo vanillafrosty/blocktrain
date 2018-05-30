@@ -140,7 +140,6 @@ export default class Game {
 
   addKeyListeners() {
     document.addEventListener('keydown', (e) => {
-      console.log(e.key);
       switch(e.key) {
         case 'd':
         case 'ArrowRight':
@@ -249,7 +248,6 @@ export default class Game {
         if (this.foreverTime > 40000) {
           this.foreverTime = 0;
           this.timeStep = this.timeStep * 0.9;
-          console.log(this.timeStep);
         }
         if (this.resetTime > this.timeStep) {
           this.resetTime = 0;
