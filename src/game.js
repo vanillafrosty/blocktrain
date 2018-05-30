@@ -16,7 +16,6 @@ export default class Game {
     this.startTime;
     this.resetTime = 0;
     this.foreverTime = 0;
-    this.foreverStep = 0;
     this.timeStep = 1000;
     this.titlePlaying = true;
     this.titleEnded = false;
@@ -223,7 +222,6 @@ export default class Game {
     this.resetTime = 0;
     this.timeStep = 1000;
     this.foreverTime = 0;
-    this.foreverStep = 0;
     this.gameOver = false;
     this.play();
   }
@@ -244,7 +242,6 @@ export default class Game {
         this.resetTime += timestamp-this.startTime;
         this.foreverTime += timestamp-this.startTime;
         if (this.foreverTime > 40000) {
-          // this.foreverStep += 1;
           this.foreverTime = 0;
           this.timeStep = this.timeStep * 0.9;
           console.log(this.timeStep);

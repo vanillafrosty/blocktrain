@@ -537,7 +537,6 @@ var Game = function () {
     this.startTime;
     this.resetTime = 0;
     this.foreverTime = 0;
-    this.foreverStep = 0;
     this.timeStep = 1000;
     this.titlePlaying = true;
     this.titleEnded = false;
@@ -760,7 +759,6 @@ var Game = function () {
       this.resetTime = 0;
       this.timeStep = 1000;
       this.foreverTime = 0;
-      this.foreverStep = 0;
       this.gameOver = false;
       this.play();
     }
@@ -786,7 +784,6 @@ var Game = function () {
           _this2.resetTime += timestamp - _this2.startTime;
           _this2.foreverTime += timestamp - _this2.startTime;
           if (_this2.foreverTime > 40000) {
-            // this.foreverStep += 1;
             _this2.foreverTime = 0;
             _this2.timeStep = _this2.timeStep * 0.9;
             console.log(_this2.timeStep);
