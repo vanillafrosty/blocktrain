@@ -676,7 +676,9 @@ var Game = function () {
       var _this = this;
 
       document.addEventListener('keydown', function (e) {
+        console.log(e.key);
         switch (e.key) {
+          case 'd':
           case 'ArrowRight':
             _this.offset.x += 1;
             if (_this.board.validPos(_this.currentPiece.matrix, _this.offset)) {
@@ -685,6 +687,7 @@ var Game = function () {
               _this.offset.x -= 1;
             }
             break;
+          case 'a':
           case 'ArrowLeft':
             _this.offset.x -= 1;
             if (_this.board.validPos(_this.currentPiece.matrix, _this.offset)) {
@@ -693,6 +696,7 @@ var Game = function () {
               _this.offset.x += 1;
             }
             break;
+          case 's':
           case 'ArrowDown':
             if (!_this.gameOver) {
               e.preventDefault();
@@ -715,6 +719,7 @@ var Game = function () {
               }
             }
             break;
+          case 'w':
           case 'ArrowUp':
             e.preventDefault();
             _this.currentPiece = _this.handleRotate(_this.currentPiece);

@@ -140,7 +140,9 @@ export default class Game {
 
   addKeyListeners() {
     document.addEventListener('keydown', (e) => {
+      console.log(e.key);
       switch(e.key) {
+        case 'd':
         case 'ArrowRight':
           this.offset.x += 1;
           if (this.board.validPos(this.currentPiece.matrix, this.offset)) {
@@ -149,6 +151,7 @@ export default class Game {
             this.offset.x -= 1;
           }
           break;
+        case 'a':
         case 'ArrowLeft':
           this.offset.x -= 1;
           if (this.board.validPos(this.currentPiece.matrix, this.offset)){
@@ -157,6 +160,7 @@ export default class Game {
             this.offset.x += 1;
           }
           break;
+        case 's':
         case 'ArrowDown':
           if (!this.gameOver){
             e.preventDefault();
@@ -179,6 +183,7 @@ export default class Game {
             }
           }
           break;
+        case 'w':
         case 'ArrowUp':
           e.preventDefault();
           this.currentPiece = this.handleRotate(this.currentPiece);
