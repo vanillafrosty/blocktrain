@@ -7,10 +7,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById("canvas");
   canvas.width = 300;
   canvas.height = 630;
-  const square_width = canvas.width/10;
-  var ctx = canvas.getContext('2d');
+  const nextPieceCanvas = document.getElementById("next-piece-canvas");
+  nextPieceCanvas.width = 90;
+  nextPieceCanvas.height = 150;
 
-  let board = new Board(canvas.width, canvas.height, ctx);
+  const square_width = canvas.width/10;
+  let ctx = canvas.getContext('2d');
+  let nextPieceCtx = nextPieceCanvas.getContext('2d');
+
+  let board = new Board(canvas.width, canvas.height, ctx, nextPieceCtx);
   let game = new Game(board);
 
   document.addEventListener("keypress", (event) => {

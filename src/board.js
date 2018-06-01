@@ -1,7 +1,8 @@
 export default class Board {
 
-  constructor(width, height, ctx) {
+  constructor(width, height, ctx, nextPieceCtx) {
     this.ctx = ctx;
+    this.nextPieceCtx = nextPieceCtx;
     this.width = width;
     this.height = height;
     this.rows = 21;

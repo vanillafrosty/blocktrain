@@ -4,7 +4,7 @@ body {
 
 .game-container {
   background-image: url("../img/megaman-intro.jpg");
-  background-size: 1000px 800px;
+  background-size: 1040px 800px;
   background-position: 0 0;
   width: 800px;
   height: 800px;
@@ -51,12 +51,23 @@ body {
   border-radius: 5px;
 }
 
+#next-piece-canvas {
+  margin-left: 15px;
+  width: 90px;
+  height: 150px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 4px solid #D3D3D3;
+  border-radius: 2px;
+}
+
 .sidebar {
   font-size: 24px;
   font-family: 'Geo', sans-serif;
   color: #F9F9F9;
-  background-color: #000000;
-  opacity: .95;
+  /* background-color: #000000; */
+  /* opacity: .95; */
+  /* text-shadow: 2px 2px #000000; */
+  text-shadow: 0.5px 0.5px 0.5px #ffffff;
 }
 
 .sidebar-text {
@@ -67,12 +78,19 @@ body {
   font-size: 24px;
   font-family: 'Geo', sans-serif;
   color: #F9F9F9;
-  background-color: #000000;
-  opacity: .95;
+  /* background-color: #000000;
+  opacity: .95; */
   position: relative;
   top: 0px;
-  left: 350px;
+  left: 330px;
+  width: 190px;
   /* height: 400px; */
+}
+
+.controls-container {
+  /* text-shadow: 0.5px 0.5px 0.5px #ffffff; */
+  background: rgba(0, 0, 0, 0.75);
+  width:
 }
 
 .next-piece-text {
