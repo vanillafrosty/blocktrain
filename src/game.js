@@ -173,7 +173,9 @@ export default class Game {
               this.offset.y = 0;
               this.offset.x = 4;
               this.totalRotations = 0;
-              this.currentPiece = this.pieces.newPiece();
+              this.currentPiece = this.nextPiece;
+              this.nextPiece = this.pieces.newPiece();
+              this.board.drawNext(this.nextPiece.matrix);
             }
             this.resetTime = 0;
             this.boardStep();
@@ -207,7 +209,9 @@ export default class Game {
             this.offset.y = 0;
             this.offset.x = 4;
             this.totalRotations = 0;
-            this.currentPiece = this.pieces.newPiece();
+            this.currentPiece = this.nextPiece;
+            this.nextPiece = this.pieces.newPiece();
+            this.board.drawNext(this.nextPiece.matrix);
             this.boardStep();
           }
       }
@@ -228,6 +232,7 @@ export default class Game {
     };
     this.totalRotations = 0;
     this.currentPiece = this.pieces.newPiece();
+    this.nextPiece = this.pieces.newPiece();
     this.startTime = null;
     this.resetTime = 0;
     this.timeStep = 1000;
@@ -262,7 +267,9 @@ export default class Game {
             this.offset.y = 0;
             this.offset.x = 4;
             this.totalRotations = 0;
-            this.currentPiece = this.pieces.newPiece();
+            this.currentPiece = this.nextPiece;
+            this.nextPiece = this.pieces.newPiece();
+            this.board.drawNext(this.nextPiece.matrix);
           }
           this.boardStep();
           this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);

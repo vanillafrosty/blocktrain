@@ -749,7 +749,9 @@ var Game = function () {
                 _this.offset.y = 0;
                 _this.offset.x = 4;
                 _this.totalRotations = 0;
-                _this.currentPiece = _this.pieces.newPiece();
+                _this.currentPiece = _this.nextPiece;
+                _this.nextPiece = _this.pieces.newPiece();
+                _this.board.drawNext(_this.nextPiece.matrix);
               }
               _this.resetTime = 0;
               _this.boardStep();
@@ -783,7 +785,9 @@ var Game = function () {
               _this.offset.y = 0;
               _this.offset.x = 4;
               _this.totalRotations = 0;
-              _this.currentPiece = _this.pieces.newPiece();
+              _this.currentPiece = _this.nextPiece;
+              _this.nextPiece = _this.pieces.newPiece();
+              _this.board.drawNext(_this.nextPiece.matrix);
               _this.boardStep();
             }
         }
@@ -805,6 +809,7 @@ var Game = function () {
       };
       this.totalRotations = 0;
       this.currentPiece = this.pieces.newPiece();
+      this.nextPiece = this.pieces.newPiece();
       this.startTime = null;
       this.resetTime = 0;
       this.timeStep = 1000;
@@ -844,7 +849,9 @@ var Game = function () {
               _this2.offset.y = 0;
               _this2.offset.x = 4;
               _this2.totalRotations = 0;
-              _this2.currentPiece = _this2.pieces.newPiece();
+              _this2.currentPiece = _this2.nextPiece;
+              _this2.nextPiece = _this2.pieces.newPiece();
+              _this2.board.drawNext(_this2.nextPiece.matrix);
             }
             _this2.boardStep();
             _this2.gameOver = _this2.board.checkGameOver(_this2.currentPiece.matrix, _this2.offset);
