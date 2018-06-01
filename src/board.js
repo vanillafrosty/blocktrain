@@ -66,7 +66,7 @@ export default class Board {
       y: 1
     };
     //hard code width and height for now
-    this.nextPieceCtx.clearRect(0, 0, 90, 150);
+    this.nextPieceCtx.clearRect(0, 0, 120, 150);
     for (let i=0; i<piece.length; i++) {
       for (let j=0; j<piece[0].length; j++) {
         if (piece[i][j] !== 0) {

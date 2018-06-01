@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
   canvas.width = 300;
   canvas.height = 630;
   var nextPieceCanvas = document.getElementById("next-piece-canvas");
-  nextPieceCanvas.width = 90;
+  nextPieceCanvas.width = 120;
   nextPieceCanvas.height = 150;
 
   var square_width = canvas.width / 10;
@@ -234,7 +234,7 @@ var Board = function () {
         y: 1
       };
       //hard code width and height for now
-      this.nextPieceCtx.clearRect(0, 0, 90, 150);
+      this.nextPieceCtx.clearRect(0, 0, 120, 150);
       for (var i = 0; i < piece.length; i++) {
         for (var j = 0; j < piece[0].length; j++) {
           if (piece[i][j] !== 0) {
@@ -1108,6 +1108,7 @@ var Pieces = function () {
         piece = this.shuffle()[0];
       }
       this.lru.get(piece);
+      // debugger;
       return {
         type: piece,
         matrix: this.lru.map[piece].val

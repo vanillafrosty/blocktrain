@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   canvas.width = 300;
   canvas.height = 630;
   const nextPieceCanvas = document.getElementById("next-piece-canvas");
-  nextPieceCanvas.width = 90;
+  nextPieceCanvas.width = 120;
   nextPieceCanvas.height = 150;
 
   const square_width = canvas.width/10;
