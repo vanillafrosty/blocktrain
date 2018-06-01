@@ -143,26 +143,30 @@ export default class Game {
       switch(e.key) {
         case 'd':
         case 'ArrowRight':
-          this.offset.x += 1;
-          if (this.board.validPos(this.currentPiece.matrix, this.offset)) {
-            this.boardStep();
-          } else {
-            this.offset.x -= 1;
+          if (!this.gameOver) {
+            this.offset.x += 1;
+            if (this.board.validPos(this.currentPiece.matrix, this.offset)) {
+              this.boardStep();
+            } else {
+              this.offset.x -= 1;
+            }
           }
           break;
         case 'a':
         case 'ArrowLeft':
-          this.offset.x -= 1;
-          if (this.board.validPos(this.currentPiece.matrix, this.offset)){
-            this.boardStep();
-          } else {
-            this.offset.x += 1;
+          if (!this.gameOver) {
+            this.offset.x -= 1;
+            if (this.board.validPos(this.currentPiece.matrix, this.offset)){
+              this.boardStep();
+            } else {
+              this.offset.x += 1;
+            }
           }
           break;
         case 's':
         case 'ArrowDown':
+          e.preventDefault();
           if (!this.gameOver){
-            e.preventDefault();
             this.offset.y += 1;
             if (this.board.update(this.currentPiece.matrix, this.offset)) {
               this.offset.y = 0;
@@ -195,6 +199,7 @@ export default class Game {
           this.boardStep();
           break;
         case ' ':
+          e.preventDefault();
           if (!this.gameOver) {
             e.preventDefault();
             this.board.handleDrop(this.currentPiece.matrix, this.offset);

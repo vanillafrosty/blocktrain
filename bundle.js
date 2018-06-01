@@ -99,10 +99,15 @@ document.addEventListener('DOMContentLoaded', function () {
   var canvas = document.getElementById("canvas");
   canvas.width = 300;
   canvas.height = 630;
+  var nextPieceCanvas = document.getElementById("next-piece-canvas");
+  nextPieceCanvas.width = 90;
+  nextPieceCanvas.height = 150;
+
   var square_width = canvas.width / 10;
   var ctx = canvas.getContext('2d');
+  var nextPieceCtx = nextPieceCanvas.getContext('2d');
 
-  var board = new _board2.default(canvas.width, canvas.height, ctx);
+  var board = new _board2.default(canvas.width, canvas.height, ctx, nextPieceCtx);
   var game = new _game2.default(board);
 
   document.addEventListener("keypress", function (event) {
@@ -156,10 +161,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Board = function () {
-  function Board(width, height, ctx) {
+  function Board(width, height, ctx, nextPieceCtx) {
     _classCallCheck(this, Board);
 
     this.ctx = ctx;
+    this.nextPieceCtx = nextPieceCtx;
     this.width = width;
     this.height = height;
     this.rows = 21;
@@ -678,26 +684,30 @@ var Game = function () {
         switch (e.key) {
           case 'd':
           case 'ArrowRight':
-            _this.offset.x += 1;
-            if (_this.board.validPos(_this.currentPiece.matrix, _this.offset)) {
-              _this.boardStep();
-            } else {
-              _this.offset.x -= 1;
+            if (!_this.gameOver) {
+              _this.offset.x += 1;
+              if (_this.board.validPos(_this.currentPiece.matrix, _this.offset)) {
+                _this.boardStep();
+              } else {
+                _this.offset.x -= 1;
+              }
             }
             break;
           case 'a':
           case 'ArrowLeft':
-            _this.offset.x -= 1;
-            if (_this.board.validPos(_this.currentPiece.matrix, _this.offset)) {
-              _this.boardStep();
-            } else {
-              _this.offset.x += 1;
+            if (!_this.gameOver) {
+              _this.offset.x -= 1;
+              if (_this.board.validPos(_this.currentPiece.matrix, _this.offset)) {
+                _this.boardStep();
+              } else {
+                _this.offset.x += 1;
+              }
             }
             break;
           case 's':
           case 'ArrowDown':
+            e.preventDefault();
             if (!_this.gameOver) {
-              e.preventDefault();
               _this.offset.y += 1;
               if (_this.board.update(_this.currentPiece.matrix, _this.offset)) {
                 _this.offset.y = 0;
@@ -730,6 +740,7 @@ var Game = function () {
             _this.boardStep();
             break;
           case ' ':
+            e.preventDefault();
             if (!_this.gameOver) {
               e.preventDefault();
               _this.board.handleDrop(_this.currentPiece.matrix, _this.offset);
