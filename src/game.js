@@ -13,6 +13,7 @@ export default class Game {
     this.totalRotations = 0;
     this.pieces = new Pieces();
     this.currentPiece = this.pieces.newPiece();
+    this.nextPiece = this.pieces.newPiece();
     this.startTime;
     this.resetTime = 0;
     this.foreverTime = 0;
@@ -281,6 +282,8 @@ export default class Game {
       this.animationFrame = requestAnimationFrame((timestamp) => {
         this.startTime = timestamp;
         this.board.drawPiece(this.currentPiece.matrix, this.offset);
+        // debugger;
+        this.board.drawNext(this.nextPiece.matrix);
         render(timestamp);
       });
     }

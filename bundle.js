@@ -227,6 +227,41 @@ var Board = function () {
       }
     }
   }, {
+    key: 'drawNext',
+    value: function drawNext(piece) {
+      var offset = {
+        x: 0,
+        y: 1
+      };
+      //hard code width and height for now
+      this.nextPieceCtx.clearRect(0, 0, 90, 150);
+      for (var i = 0; i < piece.length; i++) {
+        for (var j = 0; j < piece[0].length; j++) {
+          if (piece[i][j] !== 0) {
+            var x = (offset.x + j) * this.square_width;
+            var y = (offset.y + i) * this.square_width;
+            var color = this.colors[piece[i][j]];
+            this.drawNextSquare(x, y, color);
+          }
+        }
+      }
+    }
+  }, {
+    key: 'drawNextSquare',
+    value: function drawNextSquare(x, y, color) {
+      var s_w = this.square_width;
+      this.nextPieceCtx.fillStyle = color;
+      this.nextPieceCtx.strokeStyle = this.strokeStyle;
+      this.nextPieceCtx.lineWidth = 2;
+      this.nextPieceCtx.fillRect(x, y, s_w, s_w);
+      this.nextPieceCtx.strokeRect(x, y, s_w, s_w);
+      this.nextPieceCtx.beginPath();
+      this.nextPieceCtx.moveTo(x + s_w / 4, y + s_w * (3 / 4));
+      this.nextPieceCtx.lineTo(x + s_w / 4, y + s_w / 4);
+      this.nextPieceCtx.lineTo(x + s_w * (3 / 4), y + s_w / 4);
+      this.nextPieceCtx.stroke();
+    }
+  }, {
     key: 'drawSquare',
     value: function drawSquare(x, y, color) {
       var s_w = this.square_width;
@@ -539,6 +574,7 @@ var Game = function () {
     this.totalRotations = 0;
     this.pieces = new _pieces2.default();
     this.currentPiece = this.pieces.newPiece();
+    this.nextPiece = this.pieces.newPiece();
     this.startTime;
     this.resetTime = 0;
     this.foreverTime = 0;
@@ -828,6 +864,8 @@ var Game = function () {
         this.animationFrame = requestAnimationFrame(function (timestamp) {
           _this2.startTime = timestamp;
           _this2.board.drawPiece(_this2.currentPiece.matrix, _this2.offset);
+          // debugger;
+          _this2.board.drawNext(_this2.nextPiece.matrix);
           render(timestamp);
         });
       }

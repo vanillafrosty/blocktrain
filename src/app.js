@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let ctx = canvas.getContext('2d');
   let nextPieceCtx = nextPieceCanvas.getContext('2d');
 
+
   let board = new Board(canvas.width, canvas.height, ctx, nextPieceCtx);
   let game = new Game(board);
 

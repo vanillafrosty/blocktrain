@@ -60,6 +60,39 @@ export default class Board {
     }
   }
 
+  drawNext(piece) {
+    const offset = {
+      x: 0,
+      y: 1
+    };
+    //hard code width and height for now
+    this.nextPieceCtx.clearRect(0, 0, 90, 150);
+    for (let i=0; i<piece.length; i++) {
+      for (let j=0; j<piece[0].length; j++) {
+        if (piece[i][j] !== 0) {
+          let x = (offset.x+j)*this.square_width;
+          let y = (offset.y+i)*this.square_width;
+          let color = this.colors[piece[i][j]];
+          this.drawNextSquare(x, y, color);
+        }
+      }
+    }
+  }
+
+  drawNextSquare(x, y, color){
+    const s_w = this.square_width;
+    this.nextPieceCtx.fillStyle = color;
+    this.nextPieceCtx.strokeStyle = this.strokeStyle;
+    this.nextPieceCtx.lineWidth = 2;
+    this.nextPieceCtx.fillRect(x, y, s_w, s_w);
+    this.nextPieceCtx.strokeRect(x, y, s_w, s_w);
+    this.nextPieceCtx.beginPath();
+    this.nextPieceCtx.moveTo(x+s_w/4, y+s_w*(3/4));
+    this.nextPieceCtx.lineTo(x+s_w/4, y+s_w/4);
+    this.nextPieceCtx.lineTo(x+s_w*(3/4), y+s_w/4);
+    this.nextPieceCtx.stroke();
+  }
+
   drawSquare(x, y, color)  {
     const s_w = this.square_width;
     this.ctx.fillStyle = color;
