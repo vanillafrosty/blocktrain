@@ -867,7 +867,7 @@ var Game = function () {
         var render = function render(timestamp) {
           _this2.resetTime += timestamp - _this2.startTime;
           _this2.foreverTime += timestamp - _this2.startTime;
-          if (_this2.foreverTime > 40000) {
+          if (_this2.foreverTime > 32000) {
             _this2.foreverTime = 0;
             _this2.timeStep = _this2.timeStep * 0.9;
           }
