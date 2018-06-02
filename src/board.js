@@ -49,26 +49,11 @@ export default class Board {
   }
 
   drawPiece(piece, offset) {
-    for (let i=0; i<piece.length; i++) {
-      for (let j=0; j<piece[0].length; j++) {
-        if (piece[i][j] !== 0) {
-          let x = (offset.x+j)*this.square_width;
-          let y = (offset.y+i)*this.square_width;
-          let color = this.colors[piece[i][j]];
-          this.drawSquare(x, y, color);
-        }
-      }
-    }
+    let minDelta, dy;
     let dupOffset = {
       x: offset.x,
       y: offset.y
     };
-    this.drawOutline(piece, dupOffset);
-  }
-
-  //like handleDrop but actually draws
-  drawOutline(piece, offset) {
-    let minDelta, dy;
     for (let i=0; i<piece.length; i++){
       for (let j=0; j<piece[0].length; j++){
         if (piece[i][j] !== 0) {
@@ -80,18 +65,23 @@ export default class Board {
         }
       }
     }
-    offset.y += minDelta-1;
+    dupOffset.y += minDelta-1;
+    let x, y, maxY, color;
     for (let i=0; i<piece.length; i++) {
       for (let j=0; j<piece[0].length; j++) {
         if (piece[i][j] !== 0) {
-          let x = (offset.x+j)*this.square_width;
-          let y = (offset.y+i)*this.square_width;
-          let color = this.colors[piece[i][j]];
-          this.drawSquareOutline(x, y, color);
+          x = (offset.x+j)*this.square_width;
+          y = (offset.y+i)*this.square_width;
+          maxY = (dupOffset.y+i)*this.square_width;
+          color = this.colors[piece[i][j]];
+          this.drawSquare(x, y, color);
+          this.drawSquareOutline(x, maxY, color);
         }
       }
     }
+    // this.drawOutline(piece, dupOffset);
   }
+
 
   drawNext(piece) {
     const offset = {

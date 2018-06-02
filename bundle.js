@@ -216,30 +216,12 @@ var Board = function () {
   }, {
     key: 'drawPiece',
     value: function drawPiece(piece, offset) {
-      for (var i = 0; i < piece.length; i++) {
-        for (var j = 0; j < piece[0].length; j++) {
-          if (piece[i][j] !== 0) {
-            var x = (offset.x + j) * this.square_width;
-            var y = (offset.y + i) * this.square_width;
-            var color = this.colors[piece[i][j]];
-            this.drawSquare(x, y, color);
-          }
-        }
-      }
+      var minDelta = void 0,
+          dy = void 0;
       var dupOffset = {
         x: offset.x,
         y: offset.y
       };
-      this.drawOutline(piece, dupOffset);
-    }
-
-    //like handleDrop but actually draws
-
-  }, {
-    key: 'drawOutline',
-    value: function drawOutline(piece, offset) {
-      var minDelta = void 0,
-          dy = void 0;
       for (var i = 0; i < piece.length; i++) {
         for (var j = 0; j < piece[0].length; j++) {
           if (piece[i][j] !== 0) {
@@ -253,17 +235,24 @@ var Board = function () {
           }
         }
       }
-      offset.y += minDelta - 1;
+      dupOffset.y += minDelta - 1;
+      var x = void 0,
+          y = void 0,
+          maxY = void 0,
+          color = void 0;
       for (var _i = 0; _i < piece.length; _i++) {
         for (var _j = 0; _j < piece[0].length; _j++) {
           if (piece[_i][_j] !== 0) {
-            var x = (offset.x + _j) * this.square_width;
-            var y = (offset.y + _i) * this.square_width;
-            var color = this.colors[piece[_i][_j]];
-            this.drawSquareOutline(x, y, color);
+            x = (offset.x + _j) * this.square_width;
+            y = (offset.y + _i) * this.square_width;
+            maxY = (dupOffset.y + _i) * this.square_width;
+            color = this.colors[piece[_i][_j]];
+            this.drawSquare(x, y, color);
+            this.drawSquareOutline(x, maxY, color);
           }
         }
       }
+      // this.drawOutline(piece, dupOffset);
     }
   }, {
     key: 'drawNext',
