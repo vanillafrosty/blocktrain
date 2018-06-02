@@ -706,6 +706,7 @@ var Game = function () {
     value: function boardStep() {
       this.board.render();
       this.board.drawPiece(this.currentPiece.matrix, this.offset);
+      this.board.drawNext(this.nextPiece.matrix);
     }
   }, {
     key: "addKeyListeners",
@@ -747,7 +748,6 @@ var Game = function () {
                 _this.totalRotations = 0;
                 _this.currentPiece = _this.nextPiece;
                 _this.nextPiece = _this.pieces.newPiece();
-                _this.board.drawNext(_this.nextPiece.matrix);
               }
               _this.resetTime = 0;
               _this.boardStep();
@@ -783,7 +783,6 @@ var Game = function () {
               _this.totalRotations = 0;
               _this.currentPiece = _this.nextPiece;
               _this.nextPiece = _this.pieces.newPiece();
-              _this.board.drawNext(_this.nextPiece.matrix);
               _this.boardStep();
             }
         }
@@ -847,7 +846,6 @@ var Game = function () {
               _this2.totalRotations = 0;
               _this2.currentPiece = _this2.nextPiece;
               _this2.nextPiece = _this2.pieces.newPiece();
-              _this2.board.drawNext(_this2.nextPiece.matrix);
             }
             _this2.boardStep();
             _this2.gameOver = _this2.board.checkGameOver(_this2.currentPiece.matrix, _this2.offset);

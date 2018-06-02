@@ -137,6 +137,7 @@ export default class Game {
   boardStep() {
     this.board.render();
     this.board.drawPiece(this.currentPiece.matrix, this.offset);
+    this.board.drawNext(this.nextPiece.matrix);
   }
 
   addKeyListeners() {
@@ -175,7 +176,6 @@ export default class Game {
               this.totalRotations = 0;
               this.currentPiece = this.nextPiece;
               this.nextPiece = this.pieces.newPiece();
-              this.board.drawNext(this.nextPiece.matrix);
             }
             this.resetTime = 0;
             this.boardStep();
@@ -211,7 +211,6 @@ export default class Game {
             this.totalRotations = 0;
             this.currentPiece = this.nextPiece;
             this.nextPiece = this.pieces.newPiece();
-            this.board.drawNext(this.nextPiece.matrix);
             this.boardStep();
           }
       }
@@ -269,7 +268,6 @@ export default class Game {
             this.totalRotations = 0;
             this.currentPiece = this.nextPiece;
             this.nextPiece = this.pieces.newPiece();
-            this.board.drawNext(this.nextPiece.matrix);
           }
           this.boardStep();
           this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
