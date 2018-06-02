@@ -1,3 +1,5 @@
+import * as boardUtil from './util';
+
 export default class Board {
 
   constructor(width, height, ctx, nextPieceCtx) {
@@ -54,7 +56,7 @@ export default class Board {
       x: offset.x,
       y: offset.y
     };
-    minDelta = this.deltaY(piece, offset);
+    minDelta = boardUtil.deltaY(piece, offset, this.rows, this.grid);
     dupOffset.y += minDelta-1;
     let x, y, maxY, color;
     for (let i=0; i<piece.length; i++) {
@@ -181,7 +183,6 @@ export default class Board {
 
   //updates the grid with the piece values
   setPiece(piece, x, y) {
-    // debugger;
     for (let i=0; i<piece.length; i++) {
       for (let j=0; j<piece[0].length; j++) {
         if (piece[i][j] !== 0) {
@@ -191,24 +192,13 @@ export default class Board {
     }
   }
 
-
-
-  //checks that a number is between a lower and higher bound (inclusive)
-  between(num, low, high) {
-    if (num < low || num > high) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
   validPos(piece, offset) {
     for (let i=0; i<piece.length; i++) {
       for (let j=0; j<piece[0].length; j++) {
         if (piece[i][j] !== 0) {
           let x = offset.x+j;
           let y = offset.y+i;
-          if (!this.between(x, 0, this.cols-1) || !this.between(y, 0, this.rows-1)) {
+          if (!boardUtil.between(x, 0, this.cols-1) || !boardUtil.between(y, 0, this.rows-1)) {
             return false;
           }
           if (typeof(this.grid[y][x]) !== 'undefined') {
@@ -241,7 +231,7 @@ export default class Board {
       x: offset.x,
       y: offset.y
     };
-    if (this.between(x, 0, this.cols-1)) {
+    if (boardUtil.between(x, 0, this.cols-1)) {
       return null;
     }
     else if (x < 0) {
@@ -261,7 +251,7 @@ export default class Board {
       x: offset.x,
       y: offset.y
     };
-    if (this.between(y, 0, this.rows-1)) {
+    if (boardUtil.between(y, 0, this.rows-1)) {
       return null;
     }
     else if (y < 0) {
@@ -294,7 +284,7 @@ export default class Board {
             return handledY;
           }
           if (typeof(this.grid[y][x]) !== 'undefined') {
-            if (this.rightOrLeft(piece, x) === 'left') {
+            if (boardUtil.rightOrLeft(piece, x) === 'left') {
               newOffset.x += 1;
               //try moving the piece up one before giving up
               let response = this.handleResponse(piece, offset, newOffset);
@@ -304,7 +294,7 @@ export default class Board {
                 return this.handleResponse(piece, offset, newOffset);
               }
               return response;
-            } else if (this.rightOrLeft(piece, x) === 'right'){
+            } else if (boardUtil.rightOrLeft(piece, x) === 'right'){
               newOffset.x -=1;
               let response = this.handleResponse(piece, offset, newOffset);
               if (response.reRotate) {
@@ -324,30 +314,9 @@ export default class Board {
     }
   }
 
-  rightOrLeft(piece, x) {
-    let middle = Math.floor(piece.length/2);
-    return (x < middle ? 'left':'right');
-  }
-
-  deltaY(piece, offset) {
-    let minDelta, dy;
-    for (let i=0; i<piece.length; i++){
-      for (let j=0; j<piece[0].length; j++){
-        if (piece[i][j] !== 0) {
-          dy = 0;
-          while((i+offset.y+dy) < this.rows && !this.grid[i+offset.y+dy][j+offset.x]){
-            dy += 1;
-          }
-          if (!minDelta || dy < minDelta) { minDelta = dy; }
-        }
-      }
-    }
-    return minDelta;
-  }
-
   handleDrop(piece, offset) {
     let minDelta;
-    minDelta = this.deltaY(piece, offset);
+    minDelta = boardUtil.deltaY(piece, offset, this.rows, this.grid);
     offset.y += minDelta;
     this.setPiece(piece, offset.x, offset.y-1);
     this.clearRows(piece.length, offset.y-1);

@@ -89,10 +89,6 @@ var _board = __webpack_require__(/*! ./board */ "./src/board.js");
 
 var _board2 = _interopRequireDefault(_board);
 
-var _cache = __webpack_require__(/*! ./lru/cache */ "./src/lru/cache.js");
-
-var _cache2 = _interopRequireDefault(_cache);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -103,7 +99,6 @@ document.addEventListener('DOMContentLoaded', function () {
   nextPieceCanvas.width = 120;
   nextPieceCanvas.height = 150;
 
-  var square_width = canvas.width / 10;
   var ctx = canvas.getContext('2d');
   var nextPieceCtx = nextPieceCanvas.getContext('2d');
 
@@ -157,6 +152,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = __webpack_require__(/*! ./util */ "./src/util.js");
+
+var boardUtil = _interopRequireWildcard(_util);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -221,7 +222,7 @@ var Board = function () {
         x: offset.x,
         y: offset.y
       };
-      minDelta = this.deltaY(piece, offset);
+      minDelta = boardUtil.deltaY(piece, offset, this.rows, this.grid);
       dupOffset.y += minDelta - 1;
       var x = void 0,
           y = void 0,
@@ -361,25 +362,12 @@ var Board = function () {
   }, {
     key: 'setPiece',
     value: function setPiece(piece, x, y) {
-      // debugger;
       for (var i = 0; i < piece.length; i++) {
         for (var j = 0; j < piece[0].length; j++) {
           if (piece[i][j] !== 0) {
             this.grid[y + i][x + j] = piece[i][j];
           }
         }
-      }
-    }
-
-    //checks that a number is between a lower and higher bound (inclusive)
-
-  }, {
-    key: 'between',
-    value: function between(num, low, high) {
-      if (num < low || num > high) {
-        return false;
-      } else {
-        return true;
       }
     }
   }, {
@@ -390,7 +378,7 @@ var Board = function () {
           if (piece[i][j] !== 0) {
             var x = offset.x + j;
             var y = offset.y + i;
-            if (!this.between(x, 0, this.cols - 1) || !this.between(y, 0, this.rows - 1)) {
+            if (!boardUtil.between(x, 0, this.cols - 1) || !boardUtil.between(y, 0, this.rows - 1)) {
               return false;
             }
             if (typeof this.grid[y][x] !== 'undefined') {
@@ -429,7 +417,7 @@ var Board = function () {
         x: offset.x,
         y: offset.y
       };
-      if (this.between(x, 0, this.cols - 1)) {
+      if (boardUtil.between(x, 0, this.cols - 1)) {
         return null;
       } else if (x < 0) {
         newOffset.x += 1;
@@ -448,7 +436,7 @@ var Board = function () {
         x: offset.x,
         y: offset.y
       };
-      if (this.between(y, 0, this.rows - 1)) {
+      if (boardUtil.between(y, 0, this.rows - 1)) {
         return null;
       } else if (y < 0) {
         newOffset.y += 1;
@@ -481,7 +469,7 @@ var Board = function () {
               return handledY;
             }
             if (typeof this.grid[y][x] !== 'undefined') {
-              if (this.rightOrLeft(piece, x) === 'left') {
+              if (boardUtil.rightOrLeft(piece, x) === 'left') {
                 newOffset.x += 1;
                 //try moving the piece up one before giving up
                 var response = this.handleResponse(piece, offset, newOffset);
@@ -491,7 +479,7 @@ var Board = function () {
                   return this.handleResponse(piece, offset, newOffset);
                 }
                 return response;
-              } else if (this.rightOrLeft(piece, x) === 'right') {
+              } else if (boardUtil.rightOrLeft(piece, x) === 'right') {
                 newOffset.x -= 1;
                 var _response = this.handleResponse(piece, offset, newOffset);
                 if (_response.reRotate) {
@@ -511,36 +499,10 @@ var Board = function () {
       };
     }
   }, {
-    key: 'rightOrLeft',
-    value: function rightOrLeft(piece, x) {
-      var middle = Math.floor(piece.length / 2);
-      return x < middle ? 'left' : 'right';
-    }
-  }, {
-    key: 'deltaY',
-    value: function deltaY(piece, offset) {
-      var minDelta = void 0,
-          dy = void 0;
-      for (var i = 0; i < piece.length; i++) {
-        for (var j = 0; j < piece[0].length; j++) {
-          if (piece[i][j] !== 0) {
-            dy = 0;
-            while (i + offset.y + dy < this.rows && !this.grid[i + offset.y + dy][j + offset.x]) {
-              dy += 1;
-            }
-            if (!minDelta || dy < minDelta) {
-              minDelta = dy;
-            }
-          }
-        }
-      }
-      return minDelta;
-    }
-  }, {
     key: 'handleDrop',
     value: function handleDrop(piece, offset) {
       var minDelta = void 0;
-      minDelta = this.deltaY(piece, offset);
+      minDelta = boardUtil.deltaY(piece, offset, this.rows, this.grid);
       offset.y += minDelta;
       this.setPiece(piece, offset.x, offset.y - 1);
       this.clearRows(piece.length, offset.y - 1);
@@ -1148,6 +1110,53 @@ var Pieces = function () {
 }();
 
 exports.default = Pieces;
+
+/***/ }),
+
+/***/ "./src/util.js":
+/*!*********************!*\
+  !*** ./src/util.js ***!
+  \*********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var rightOrLeft = exports.rightOrLeft = function rightOrLeft(piece, x) {
+  var middle = Math.floor(piece.length / 2);
+  return x < middle ? 'left' : 'right';
+};
+
+var between = exports.between = function between(num, low, high) {
+  if (num < low || num > high) {
+    return false;
+  } else {
+    return true;
+  }
+};
+
+var deltaY = exports.deltaY = function deltaY(piece, offset, rows, grid) {
+  var minDelta = void 0,
+      dy = void 0;
+  for (var i = 0; i < piece.length; i++) {
+    for (var j = 0; j < piece[0].length; j++) {
+      if (piece[i][j] !== 0) {
+        dy = 0;
+        while (i + offset.y + dy < rows && !grid[i + offset.y + dy][j + offset.x]) {
+          dy += 1;
+        }
+        if (!minDelta || dy < minDelta) {
+          minDelta = dy;
+        }
+      }
+    }
+  }
+  return minDelta;
+};
 
 /***/ })
 

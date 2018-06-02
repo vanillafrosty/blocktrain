@@ -1,6 +1,5 @@
 import Game from './game';
 import Board from './board';
-import LRUCache from './lru/cache';
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -11,10 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
   nextPieceCanvas.width = 120;
   nextPieceCanvas.height = 150;
 
-  const square_width = canvas.width/10;
   let ctx = canvas.getContext('2d');
   let nextPieceCtx = nextPieceCanvas.getContext('2d');
-
 
   let board = new Board(canvas.width, canvas.height, ctx, nextPieceCtx);
   let game = new Game(board);
