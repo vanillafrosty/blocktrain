@@ -5,7 +5,7 @@ Made in vanilla JS, HTML5, Canvas, and CSS3.
 
 [Play!](http://dwu.space/blocktrain/)
 
-![screenshot](https://i.imgur.com/d3Ap50w.png)
+![screenshot](https://i.imgur.com/d3Ap50ws.png)
 
 ## Gameplay
 Press the arrow keys/WSAD to move the current piece. Up arrow or W will rotate the piece.
