@@ -447,12 +447,36 @@ var Board = function () {
       }
     }
   }, {
-    key: 'validateRotate',
-    value: function validateRotate(piece, offset) {
+    key: 'handleP',
+    value: function handleP(x, piece, offset) {
       var newOffset = {
         x: offset.x,
         y: offset.y
       };
+      if (boardUtil.rightOrLeft(piece, x) === 'left') {
+        newOffset.x += 1;
+        //try moving the piece up one before giving up
+        var response = this.handleResponse(piece, offset, newOffset);
+        if (response.reRotate) {
+          newOffset.x -= 1;
+          newOffset.y -= 1;
+          return this.handleResponse(piece, offset, newOffset);
+        }
+        return response;
+      } else if (boardUtil.rightOrLeft(piece, x) === 'right') {
+        newOffset.x -= 1;
+        var _response = this.handleResponse(piece, offset, newOffset);
+        if (_response.reRotate) {
+          newOffset.x += 1;
+          newOffset.y -= 1;
+          return this.handleResponse(piece, offset, newOffset);
+        }
+        return _response;
+      }
+    }
+  }, {
+    key: 'validateRotate',
+    value: function validateRotate(piece, offset) {
       var handledX = void 0,
           handledY = void 0;
       for (var i = 0; i < piece.length; i++) {
@@ -469,26 +493,7 @@ var Board = function () {
               return handledY;
             }
             if (typeof this.grid[y][x] !== 'undefined') {
-              if (boardUtil.rightOrLeft(piece, x) === 'left') {
-                newOffset.x += 1;
-                //try moving the piece up one before giving up
-                var response = this.handleResponse(piece, offset, newOffset);
-                if (response.reRotate) {
-                  newOffset.x -= 1;
-                  newOffset.y -= 1;
-                  return this.handleResponse(piece, offset, newOffset);
-                }
-                return response;
-              } else if (boardUtil.rightOrLeft(piece, x) === 'right') {
-                newOffset.x -= 1;
-                var _response = this.handleResponse(piece, offset, newOffset);
-                if (_response.reRotate) {
-                  newOffset.x += 1;
-                  newOffset.y -= 1;
-                  return this.handleResponse(piece, offset, newOffset);
-                }
-                return _response;
-              }
+              return this.handleP(x, piece, offset);
             }
           }
         }

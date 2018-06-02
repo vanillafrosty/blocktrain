@@ -264,11 +264,35 @@ export default class Board {
     }
   }
 
-  validateRotate(piece, offset) {
+  handleP(x, piece, offset) {
     let newOffset = {
       x: offset.x,
       y: offset.y
     };
+    if (boardUtil.rightOrLeft(piece, x) === 'left') {
+      newOffset.x += 1;
+      //try moving the piece up one before giving up
+      let response = this.handleResponse(piece, offset, newOffset);
+      if (response.reRotate){
+        newOffset.x -= 1;
+        newOffset.y -= 1;
+        return this.handleResponse(piece, offset, newOffset);
+      }
+      return response;
+    } else if (boardUtil.rightOrLeft(piece, x) === 'right'){
+      newOffset.x -=1;
+      let response = this.handleResponse(piece, offset, newOffset);
+      if (response.reRotate) {
+        newOffset.x += 1;
+        newOffset.y -= 1;
+        return this.handleResponse(piece, offset, newOffset);
+      }
+      return response;
+    }
+
+  }
+
+  validateRotate(piece, offset) {
     let handledX, handledY;
     for (let i=0; i<piece.length; i++) {
       for (let j=0; j<piece[0].length; j++) {
@@ -284,26 +308,8 @@ export default class Board {
             return handledY;
           }
           if (typeof(this.grid[y][x]) !== 'undefined') {
-            if (boardUtil.rightOrLeft(piece, x) === 'left') {
-              newOffset.x += 1;
-              //try moving the piece up one before giving up
-              let response = this.handleResponse(piece, offset, newOffset);
-              if (response.reRotate){
-                newOffset.x -= 1;
-                newOffset.y -= 1;
-                return this.handleResponse(piece, offset, newOffset);
-              }
-              return response;
-            } else if (boardUtil.rightOrLeft(piece, x) === 'right'){
-              newOffset.x -=1;
-              let response = this.handleResponse(piece, offset, newOffset);
-              if (response.reRotate) {
-                newOffset.x += 1;
-                newOffset.y -= 1;
-                return this.handleResponse(piece, offset, newOffset);
-              }
-              return response;
-            }
+            return this.handleP(x, piece, offset);
+
           }
         }
       }
