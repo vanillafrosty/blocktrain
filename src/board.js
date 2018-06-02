@@ -49,22 +49,12 @@ export default class Board {
   }
 
   drawPiece(piece, offset) {
-    let minDelta, dy;
+    let minDelta;
     let dupOffset = {
       x: offset.x,
       y: offset.y
     };
-    for (let i=0; i<piece.length; i++){
-      for (let j=0; j<piece[0].length; j++){
-        if (piece[i][j] !== 0) {
-          dy = 0;
-          while((i+offset.y+dy) < this.rows && !this.grid[i+offset.y+dy][j+offset.x]){
-            dy += 1;
-          }
-          if (!minDelta || dy < minDelta) { minDelta = dy; }
-        }
-      }
-    }
+    minDelta = this.deltaY(piece, offset);
     dupOffset.y += minDelta-1;
     let x, y, maxY, color;
     for (let i=0; i<piece.length; i++) {
@@ -79,7 +69,6 @@ export default class Board {
         }
       }
     }
-    // this.drawOutline(piece, dupOffset);
   }
 
 
@@ -340,7 +329,7 @@ export default class Board {
     return (x < middle ? 'left':'right');
   }
 
-  handleDrop(piece, offset) {
+  deltaY(piece, offset) {
     let minDelta, dy;
     for (let i=0; i<piece.length; i++){
       for (let j=0; j<piece[0].length; j++){
@@ -353,6 +342,12 @@ export default class Board {
         }
       }
     }
+    return minDelta;
+  }
+
+  handleDrop(piece, offset) {
+    let minDelta;
+    minDelta = this.deltaY(piece, offset);
     offset.y += minDelta;
     this.setPiece(piece, offset.x, offset.y-1);
     this.clearRows(piece.length, offset.y-1);

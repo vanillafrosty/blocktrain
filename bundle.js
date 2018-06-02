@@ -216,43 +216,29 @@ var Board = function () {
   }, {
     key: 'drawPiece',
     value: function drawPiece(piece, offset) {
-      var minDelta = void 0,
-          dy = void 0;
+      var minDelta = void 0;
       var dupOffset = {
         x: offset.x,
         y: offset.y
       };
-      for (var i = 0; i < piece.length; i++) {
-        for (var j = 0; j < piece[0].length; j++) {
-          if (piece[i][j] !== 0) {
-            dy = 0;
-            while (i + offset.y + dy < this.rows && !this.grid[i + offset.y + dy][j + offset.x]) {
-              dy += 1;
-            }
-            if (!minDelta || dy < minDelta) {
-              minDelta = dy;
-            }
-          }
-        }
-      }
+      minDelta = this.deltaY(piece, offset);
       dupOffset.y += minDelta - 1;
       var x = void 0,
           y = void 0,
           maxY = void 0,
           color = void 0;
-      for (var _i = 0; _i < piece.length; _i++) {
-        for (var _j = 0; _j < piece[0].length; _j++) {
-          if (piece[_i][_j] !== 0) {
-            x = (offset.x + _j) * this.square_width;
-            y = (offset.y + _i) * this.square_width;
-            maxY = (dupOffset.y + _i) * this.square_width;
-            color = this.colors[piece[_i][_j]];
+      for (var i = 0; i < piece.length; i++) {
+        for (var j = 0; j < piece[0].length; j++) {
+          if (piece[i][j] !== 0) {
+            x = (offset.x + j) * this.square_width;
+            y = (offset.y + i) * this.square_width;
+            maxY = (dupOffset.y + i) * this.square_width;
+            color = this.colors[piece[i][j]];
             this.drawSquare(x, y, color);
             this.drawSquareOutline(x, maxY, color);
           }
         }
       }
-      // this.drawOutline(piece, dupOffset);
     }
   }, {
     key: 'drawNext',
@@ -365,8 +351,8 @@ var Board = function () {
           this.grid[i + 1][j] = this.grid[i][j];
         }
       }
-      for (var _j2 = 0; _j2 < row.length; _j2++) {
-        this.grid[0][_j2] = undefined;
+      for (var _j = 0; _j < row.length; _j++) {
+        this.grid[0][_j] = undefined;
       }
     }
 
@@ -531,8 +517,8 @@ var Board = function () {
       return x < middle ? 'left' : 'right';
     }
   }, {
-    key: 'handleDrop',
-    value: function handleDrop(piece, offset) {
+    key: 'deltaY',
+    value: function deltaY(piece, offset) {
       var minDelta = void 0,
           dy = void 0;
       for (var i = 0; i < piece.length; i++) {
@@ -548,6 +534,13 @@ var Board = function () {
           }
         }
       }
+      return minDelta;
+    }
+  }, {
+    key: 'handleDrop',
+    value: function handleDrop(piece, offset) {
+      var minDelta = void 0;
+      minDelta = this.deltaY(piece, offset);
       offset.y += minDelta;
       this.setPiece(piece, offset.x, offset.y - 1);
       this.clearRows(piece.length, offset.y - 1);
