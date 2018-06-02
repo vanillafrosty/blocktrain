@@ -172,6 +172,7 @@ var Board = function () {
     this.cols = 10;
     this.grid = [];
     this.strokeStyle = '#000000';
+    this.outlineStrokeStyle = '#F9F9F9';
     this.square_width = width / this.cols;
     for (var i = 0; i < this.rows; i++) {
       this.grid[i] = new Array(this.cols);
@@ -222,6 +223,44 @@ var Board = function () {
             var y = (offset.y + i) * this.square_width;
             var color = this.colors[piece[i][j]];
             this.drawSquare(x, y, color);
+          }
+        }
+      }
+      var dupOffset = {
+        x: offset.x,
+        y: offset.y
+      };
+      this.drawOutline(piece, dupOffset);
+    }
+
+    //like handleDrop but actually draws
+
+  }, {
+    key: 'drawOutline',
+    value: function drawOutline(piece, offset) {
+      var minDelta = void 0,
+          dy = void 0;
+      for (var i = 0; i < piece.length; i++) {
+        for (var j = 0; j < piece[0].length; j++) {
+          if (piece[i][j] !== 0) {
+            dy = 0;
+            while (i + offset.y + dy < this.rows && !this.grid[i + offset.y + dy][j + offset.x]) {
+              dy += 1;
+            }
+            if (!minDelta || dy < minDelta) {
+              minDelta = dy;
+            }
+          }
+        }
+      }
+      offset.y += minDelta - 1;
+      for (var _i = 0; _i < piece.length; _i++) {
+        for (var _j = 0; _j < piece[0].length; _j++) {
+          if (piece[_i][_j] !== 0) {
+            var x = (offset.x + _j) * this.square_width;
+            var y = (offset.y + _i) * this.square_width;
+            var color = this.colors[piece[_i][_j]];
+            this.drawSquareOutline(x, y, color);
           }
         }
       }
@@ -277,6 +316,14 @@ var Board = function () {
       this.ctx.stroke();
     }
   }, {
+    key: 'drawSquareOutline',
+    value: function drawSquareOutline(x, y, color) {
+      var s_w = this.square_width;
+      this.ctx.strokeStyle = this.outlineStrokeStyle;
+      this.ctx.lineWidth = 2;
+      this.ctx.strokeRect(x, y, s_w, s_w);
+    }
+  }, {
     key: 'update',
     value: function update(piece, offset) {
       if (offset.y < 0) {
@@ -329,8 +376,8 @@ var Board = function () {
           this.grid[i + 1][j] = this.grid[i][j];
         }
       }
-      for (var _j = 0; _j < row.length; _j++) {
-        this.grid[0][_j] = undefined;
+      for (var _j2 = 0; _j2 < row.length; _j2++) {
+        this.grid[0][_j2] = undefined;
       }
     }
 
@@ -871,7 +918,6 @@ var Game = function () {
         this.animationFrame = requestAnimationFrame(function (timestamp) {
           _this2.startTime = timestamp;
           _this2.board.drawPiece(_this2.currentPiece.matrix, _this2.offset);
-          // debugger;
           _this2.board.drawNext(_this2.nextPiece.matrix);
           render(timestamp);
         });

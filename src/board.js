@@ -9,6 +9,7 @@ export default class Board {
     this.cols = 10;
     this.grid = [];
     this.strokeStyle = '#000000';
+    this.outlineStrokeStyle = '#F9F9F9';
     this.square_width = width/this.cols;
     for (let i=0; i<this.rows; i++) {
       this.grid[i] = new Array(this.cols);
@@ -55,6 +56,38 @@ export default class Board {
           let y = (offset.y+i)*this.square_width;
           let color = this.colors[piece[i][j]];
           this.drawSquare(x, y, color);
+        }
+      }
+    }
+    let dupOffset = {
+      x: offset.x,
+      y: offset.y
+    };
+    this.drawOutline(piece, dupOffset);
+  }
+
+  //like handleDrop but actually draws
+  drawOutline(piece, offset) {
+    let minDelta, dy;
+    for (let i=0; i<piece.length; i++){
+      for (let j=0; j<piece[0].length; j++){
+        if (piece[i][j] !== 0) {
+          dy = 0;
+          while((i+offset.y+dy) < this.rows && !this.grid[i+offset.y+dy][j+offset.x]){
+            dy += 1;
+          }
+          if (!minDelta || dy < minDelta) { minDelta = dy; }
+        }
+      }
+    }
+    offset.y += minDelta-1;
+    for (let i=0; i<piece.length; i++) {
+      for (let j=0; j<piece[0].length; j++) {
+        if (piece[i][j] !== 0) {
+          let x = (offset.x+j)*this.square_width;
+          let y = (offset.y+i)*this.square_width;
+          let color = this.colors[piece[i][j]];
+          this.drawSquareOutline(x, y, color);
         }
       }
     }
@@ -105,6 +138,13 @@ export default class Board {
     this.ctx.lineTo(x+s_w/4, y+s_w/4);
     this.ctx.lineTo(x+s_w*(3/4), y+s_w/4);
     this.ctx.stroke();
+  }
+
+  drawSquareOutline(x, y, color) {
+    const s_w = this.square_width;
+    this.ctx.strokeStyle = this.outlineStrokeStyle;
+    this.ctx.lineWidth = 2;
+    this.ctx.strokeRect(x, y, s_w, s_w);
   }
 
   update(piece, offset) {

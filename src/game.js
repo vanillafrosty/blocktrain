@@ -289,7 +289,6 @@ export default class Game {
       this.animationFrame = requestAnimationFrame((timestamp) => {
         this.startTime = timestamp;
         this.board.drawPiece(this.currentPiece.matrix, this.offset);
-        // debugger;
         this.board.drawNext(this.nextPiece.matrix);
         render(timestamp);
       });
