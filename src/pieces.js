@@ -50,7 +50,6 @@ export default class Pieces {
       piece = this.shuffle()[0];
     }
     this.lru.get(piece);
-    // debugger;
     return {
       type: piece,
       matrix: this.lru.map[piece].val

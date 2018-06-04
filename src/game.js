@@ -241,7 +241,7 @@ export default class Game {
   }
 
   play() {
-    if (this.playingGame) {
+    if (this.playingGame || this.gameOver) {
       return true;
     } else {
       this.playingGame = true;

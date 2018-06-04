@@ -817,7 +817,7 @@ var Game = function () {
     value: function play() {
       var _this2 = this;
 
-      if (this.playingGame) {
+      if (this.playingGame || this.gameOver) {
         return true;
       } else {
         this.playingGame = true;
@@ -1103,7 +1103,6 @@ var Pieces = function () {
         piece = this.shuffle()[0];
       }
       this.lru.get(piece);
-      // debugger;
       return {
         type: piece,
         matrix: this.lru.map[piece].val
