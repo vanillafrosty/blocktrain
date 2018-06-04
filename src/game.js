@@ -250,7 +250,12 @@ export default class Game {
       this.megamanAudio.play();
       this.megamanPlaying = true;
 
-      if (!this.gameOverOnce) {this.addKeyListeners();}
+
+      if (!this.gameOverOnce) {
+        this.addKeyListeners();
+        let gameStart = document.getElementById('before-game-start');
+        gameStart.setAttribute("id", "game-start");
+      }
 
       const render = (timestamp) => {
         this.resetTime += timestamp-this.startTime;

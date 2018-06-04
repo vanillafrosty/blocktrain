@@ -828,6 +828,8 @@ var Game = function () {
 
         if (!this.gameOverOnce) {
           this.addKeyListeners();
+          var gameStart = document.getElementById('before-game-start');
+          gameStart.setAttribute("id", "game-start");
         }
 
         var render = function render(timestamp) {
