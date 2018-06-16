@@ -1,6 +1,6 @@
 import Game from './game';
 import Board from './board';
-
+import AIGame from './ai';
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById("canvas");
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let nextPieceCtx = nextPieceCanvas.getContext('2d');
 
   let board = new Board(canvas.width, canvas.height, ctx, nextPieceCtx);
-  let game = new Game(board);
+  let game = new AIGame(board);
 
   document.addEventListener("keypress", (event) => {
     if (event.key === 'm'){
@@ -25,10 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
-  const titleAudio = document.getElementById("title-theme");
-  titleAudio.addEventListener("ended", () => {
-    game.titleEnded = true;
-  });
+
 
   const tracks = [
     "./music/metal-man.mp3",

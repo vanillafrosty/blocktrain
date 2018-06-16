@@ -18,13 +18,10 @@ export default class Game {
     this.resetTime = 0;
     this.foreverTime = 0;
     this.timeStep = 1000;
-    this.titlePlaying = false;
-    this.titleEnded = false;
     this.megamanPlaying = false;
     this.playingGame = false;
     this.gameOver = false;
     this.megamanAudio = document.getElementById("megaman-theme");
-    this.titleAudio = document.getElementById("title-theme");
   }
 
   toggleAudio(){
@@ -35,14 +32,6 @@ export default class Game {
       } else {
         this.megamanAudio.play();
         this.megamanPlaying = true;
-      }
-    }  else if (!this.playingGame && !this.titleEnded) {
-      if (this.titlePlaying){
-        this.titleAudio.pause();
-        this.titlePlaying = false;
-      } else {
-        this.titleAudio.play();
-        this.titlePlaying = true;
       }
     }
   }
@@ -245,8 +234,6 @@ export default class Game {
       return true;
     } else {
       this.playingGame = true;
-      this.titleAudio.pause();
-      this.titlePlaying = false;
       this.megamanAudio.play();
       this.megamanPlaying = true;
 

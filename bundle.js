@@ -71,6 +71,48 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/ai.js":
+/*!*******************!*\
+  !*** ./src/ai.js ***!
+  \*******************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _game = __webpack_require__(/*! ./game */ "./src/game.js");
+
+var _game2 = _interopRequireDefault(_game);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var AIGame = function (_Game) {
+  _inherits(AIGame, _Game);
+
+  function AIGame(board) {
+    _classCallCheck(this, AIGame);
+
+    return _possibleConstructorReturn(this, (AIGame.__proto__ || Object.getPrototypeOf(AIGame)).call(this, board));
+  }
+
+  return AIGame;
+}(_game2.default);
+
+exports.default = AIGame;
+
+/***/ }),
+
 /***/ "./src/app.js":
 /*!********************!*\
   !*** ./src/app.js ***!
@@ -89,6 +131,10 @@ var _board = __webpack_require__(/*! ./board */ "./src/board.js");
 
 var _board2 = _interopRequireDefault(_board);
 
+var _ai = __webpack_require__(/*! ./ai */ "./src/ai.js");
+
+var _ai2 = _interopRequireDefault(_ai);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -103,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var nextPieceCtx = nextPieceCanvas.getContext('2d');
 
   var board = new _board2.default(canvas.width, canvas.height, ctx, nextPieceCtx);
-  var game = new _game2.default(board);
+  var game = new _ai2.default(board);
 
   document.addEventListener("keypress", function (event) {
     if (event.key === 'm') {
@@ -113,10 +159,6 @@ document.addEventListener('DOMContentLoaded', function () {
         game.restart();
       }
     }
-  });
-  var titleAudio = document.getElementById("title-theme");
-  titleAudio.addEventListener("ended", function () {
-    game.titleEnded = true;
   });
 
   var tracks = ["./music/metal-man.mp3", "./music/crash-man.mp3", "./music/dr-wily.mp3"];
@@ -575,17 +617,14 @@ var Game = function () {
     this.resetTime = 0;
     this.foreverTime = 0;
     this.timeStep = 1000;
-    this.titlePlaying = false;
-    this.titleEnded = false;
     this.megamanPlaying = false;
     this.playingGame = false;
     this.gameOver = false;
     this.megamanAudio = document.getElementById("megaman-theme");
-    this.titleAudio = document.getElementById("title-theme");
   }
 
   _createClass(Game, [{
-    key: "toggleAudio",
+    key: 'toggleAudio',
     value: function toggleAudio() {
       if (this.playingGame || this.gameOver) {
         if (this.megamanPlaying) {
@@ -595,21 +634,13 @@ var Game = function () {
           this.megamanAudio.play();
           this.megamanPlaying = true;
         }
-      } else if (!this.playingGame && !this.titleEnded) {
-        if (this.titlePlaying) {
-          this.titleAudio.pause();
-          this.titlePlaying = false;
-        } else {
-          this.titleAudio.play();
-          this.titlePlaying = true;
-        }
       }
     }
 
     //transpose a square matrix with space considerations
 
   }, {
-    key: "transpose",
+    key: 'transpose',
     value: function transpose(matrix) {
       var temp = void 0;
       for (var i = 0; i < matrix.length; i++) {
@@ -626,7 +657,7 @@ var Game = function () {
     //matrix should give us faster time complexity, but both ways are still O(n^2)
 
   }, {
-    key: "rotate",
+    key: 'rotate',
     value: function rotate(matrix) {
       var temp = void 0;
       var transposed = this.transpose(matrix);
@@ -641,7 +672,7 @@ var Game = function () {
       return matrix;
     }
   }, {
-    key: "rotateCounter",
+    key: 'rotateCounter',
     value: function rotateCounter(matrix) {
       var temp = void 0;
       var transposed = this.transpose(matrix);
@@ -656,7 +687,7 @@ var Game = function () {
       return matrix;
     }
   }, {
-    key: "handleRotate",
+    key: 'handleRotate',
     value: function handleRotate(piece) {
       switch (piece.type) {
         case 'T':
@@ -678,7 +709,7 @@ var Game = function () {
       }
     }
   }, {
-    key: "handleUnrotate",
+    key: 'handleUnrotate',
     value: function handleUnrotate(piece) {
       switch (piece.type) {
         case 'T':
@@ -702,14 +733,14 @@ var Game = function () {
       }
     }
   }, {
-    key: "boardStep",
+    key: 'boardStep',
     value: function boardStep() {
       this.board.render();
       this.board.drawPiece(this.currentPiece.matrix, this.offset);
       this.board.drawNext(this.nextPiece.matrix);
     }
   }, {
-    key: "addKeyListeners",
+    key: 'addKeyListeners',
     value: function addKeyListeners() {
       var _this = this;
 
@@ -789,7 +820,7 @@ var Game = function () {
       });
     }
   }, {
-    key: "restart",
+    key: 'restart',
     value: function restart() {
       //clear old board because we are not actually clearing HTML canvas before
       //new game starts playing
@@ -813,7 +844,7 @@ var Game = function () {
       this.play();
     }
   }, {
-    key: "play",
+    key: 'play',
     value: function play() {
       var _this2 = this;
 
@@ -821,8 +852,6 @@ var Game = function () {
         return true;
       } else {
         this.playingGame = true;
-        this.titleAudio.pause();
-        this.titlePlaying = false;
         this.megamanAudio.play();
         this.megamanPlaying = true;
 
