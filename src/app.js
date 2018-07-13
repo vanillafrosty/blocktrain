@@ -14,7 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let nextPieceCtx = nextPieceCanvas.getContext('2d');
 
   let board = new Board(canvas.width, canvas.height, ctx, nextPieceCtx);
-  let game = new AIGame(board);
+  // let game = new AIGame(board);
+  let game;
 
   document.addEventListener("keypress", (event) => {
     if (event.key === 'm'){
@@ -42,6 +43,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.addEventListener("keypress", (event) => {
     if (event.key === 'p'){
+      if (!game) {
+        game = new Game(board);
+      }
+      game.play();
+    } else if (event.key === 'a') {
+      if (!game) {
+        game = new AIGame(board);
+      }
       game.play();
     }
   });

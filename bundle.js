@@ -85,9 +85,21 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _game = __webpack_require__(/*! ./game */ "./src/game.js");
 
 var _game2 = _interopRequireDefault(_game);
+
+var _util = __webpack_require__(/*! ./util */ "./src/util.js");
+
+var boardUtil = _interopRequireWildcard(_util);
+
+var _shadowBoard = __webpack_require__(/*! ./shadowBoard */ "./src/shadowBoard.js");
+
+var _shadowBoard2 = _interopRequireDefault(_shadowBoard);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -103,8 +115,255 @@ var AIGame = function (_Game) {
   function AIGame(board) {
     _classCallCheck(this, AIGame);
 
-    return _possibleConstructorReturn(this, (AIGame.__proto__ || Object.getPrototypeOf(AIGame)).call(this, board));
+    var _this = _possibleConstructorReturn(this, (AIGame.__proto__ || Object.getPrototypeOf(AIGame)).call(this, board));
+
+    _this.populationSize = 50;
+    _this.genomes = [];
+    _this.genomeIndex = -1;
+    _this.movesTaken = 0;
+    _this.movesLimit = 500;
+    _this.createInitialPopulation();
+    _this.timeStep = 300;
+    _this.score = 0;
+    return _this;
   }
+
+  _createClass(AIGame, [{
+    key: 'createInitialPopulation',
+    value: function createInitialPopulation() {
+      var genome = void 0;
+      for (var i = 0; i < this.populationSize; i++) {
+        genome = {
+          id: Math.random(),
+          rowsCleared: Math.random() - 0.5,
+          weightedHeight: Math.random() - 0.5,
+          cumulativeHeight: Math.random() - 0.5,
+          relativeHeight: Math.random() - 0.5,
+          holes: Math.random() * 0.5,
+          roughness: Math.random() - 0.5
+        };
+        this.genomes.push(genome);
+      }
+      this.evaluateNextGenome();
+    }
+  }, {
+    key: 'evaluateNextGenome',
+    value: function evaluateNextGenome() {
+      this.score = 0;
+      this.genomeIndex += 1;
+      if (this.genomeIndex >= this.genomes.length) {
+        this.evolve();
+      }
+      this.movesTaken = 0;
+      this.makeNextMove();
+    }
+  }, {
+    key: 'makeNextMove',
+    value: function makeNextMove() {
+      this.movesTaken += 1;
+      if (this.movesTaken > this.movesLimit) {
+        //evaluate the score for the current genome, and move to the next genome
+        this.genomes[this.genomeIndex].fitness = this.score;
+        this.evaluateNextGenome();
+      } else {
+        var bestFutureMove = void 0,
+            bestCurrentMove = void 0;
+        //possible moves with this.currentPiece
+        var possibleMoves = this.getPossibleMoves(this.board, this.currentPiece);
+        for (var i = 0; i < possibleMoves.length; i++) {
+          this.shadowBoard = new _shadowBoard2.default(boardUtil.deepDup(this.board.grid));
+          this.shadowMove(possibleMoves[i], this.currentPiece);
+          bestFutureMove = this.getHighestRatedMove(this.getPossibleMoves(this.shadowBoard, this.nextPiece));
+          possibleMoves[i].rating += bestFutureMove.rating;
+        }
+        bestCurrentMove = this.getHighestRatedMove(possibleMoves);
+        //based on the bestCurrentMove, move this.currentPiece and set it on this.board
+        this.updateScore(bestCurrentMove);
+        this.realMove(bestCurrentMove, this.currentPiece);
+        //draw stuff because we just made the best move
+        this.boardStep();
+      }
+    }
+  }, {
+    key: 'updateScore',
+    value: function updateScore(move) {
+      this.score += move.drop;
+      switch (move.rotations) {
+        case 1:
+          this.score += 400;
+          return true;
+        case 2:
+          this.score += 1000;
+          return true;
+        case 3:
+          this.score += 3000;
+          return true;
+        case 4:
+          this.score += 12000;
+          return true;
+      }
+    }
+  }, {
+    key: 'getPossibleMoves',
+    value: function getPossibleMoves(board, piece) {
+      var origOffset = {
+        x: this.offset.x,
+        y: this.offset.y
+      };
+      var possibleMoves = [];
+      var rotationsHsh = {
+        'T': 4,
+        'O': 1,
+        'J': 4,
+        'L': 4,
+        'Z': 2,
+        'S': 2,
+        'I': 2
+      };
+      var rotations = rotationsHsh[piece.type];
+      for (var i = 1; i <= rotations; i++) {
+        //since handleRotate is destructive, just keep rotating once.
+        //call multiRotate some other time.
+        piece = this.handleRotate(piece);
+        for (var trans = -5; trans <= 5; trans++) {
+          var gameOver = false;
+          this.offset.x = origOffset.x;
+          this.offset.y = origOffset.y;
+          this.offset.x += trans;
+          if (board.validPos(piece.matrix, this.offset)) {
+            var minDelta = boardUtil.deltaY(piece, this.offset, board.rows, board);
+            this.offset.y += minDelta;
+            board.setPiece(piece, this.offset.x, this.offset.y - 1);
+            var rowsCleared = board.fullRows(piece.length, this.offset.y - 1);
+            if (rowsCleared === 0) {
+              gameOver = board.checkGameOver(this.nextPiece.matrix, origOffset);
+            }
+            var algorithm = {
+              rowsCleared: rowsCleared,
+              weightedHeight: Math.pow(board.getMaxHeight(), 1.5),
+              cumulativeHeight: board.getCumulativeHeight(rowsCleared),
+              relativeHeight: board.getRelativeHeight(),
+              holes: board.getHoles(),
+              roughness: board.getRoughness()
+            };
+            var rating = 0;
+            rating += algorithm.rowsCleared * this.genomes[this.genomeIndex].rowsCleared;
+            rating += algorithm.weightedHeight * this.genomes[this.genomeIndex].weightedHeight;
+            rating += algorithm.cumulativeHeight * this.genomes[this.genomeIndex].cumulativeHeight;
+            rating += algorithm.relativeHeight * this.genomes[this.genomeIndex].relativeHeight;
+            rating += algorithm.holes * this.genomes[this.genomeIndex].holes;
+            rating += algorithm.roughness * this.genomes[this.genomeIndex].roughness;
+            //if the move loses the game, slam its rating
+            if (gameOver) {
+              rating -= 500;
+            }
+            board.removePiece(piece, this.offset.x, this.offset.y - 1);
+            //push all possible moves, with their associated ratings and parameter values to an array
+            possibleMoves.push({ rotations: i, translation: trans, rating: rating, algorithm: algorithm, drop: minDelta - 1 });
+          }
+        }
+      }
+      this.offset = origOffset;
+      return possibleMoves;
+    }
+  }, {
+    key: 'multiRotate',
+    value: function multiRotate(piece, rotations) {
+      for (var r = 0; r < rotations; r++) {
+        piece = this.handleRotate(piece);
+      }
+      return piece;
+    }
+  }, {
+    key: 'shadowMove',
+    value: function shadowMove(move, piece) {
+      piece = this.multiRotate(piece, move.rotations);
+      var shadowOffset = {
+        x: this.offset.x,
+        y: this.offset.y
+      };
+      shadowOffset.x += move.translation;
+      this.shadowBoard.handleDrop(piece, shadowOffset);
+    }
+  }, {
+    key: 'realMove',
+    value: function realMove(move, piece) {
+      piece = this.multiRotate(piece, move.rotations);
+      this.offset.x += move.translation;
+      this.board.setPiece(piece, this.offset.x, this.offset.y);
+    }
+  }, {
+    key: 'getHighestRatedMove',
+    value: function getHighestRatedMove(moves) {
+      var highestMove = moves[0];
+      for (var i = 1; i < moves.length; i++) {
+        if (moves[i].rating > highestMove.rating) {
+          highestMove = moves[i];
+        }
+      }
+      return highestMove;
+    }
+  }, {
+    key: 'play',
+    value: function play() {
+      var _this2 = this;
+
+      if (this.playingGame || this.gameOver) {
+        return true;
+      } else {
+        this.playingGame = true;
+        this.megamanAudio.play();
+        this.megamanPlaying = true;
+
+        if (!this.gameOverOnce) {
+          var gameStart = document.getElementById('before-game-start');
+          gameStart.setAttribute("id", "game-start");
+        }
+
+        var render = function render(timestamp) {
+          _this2.resetTime += timestamp - _this2.startTime;
+
+          if (_this2.resetTime > _this2.timeStep) {
+            _this2.resetTime = 0;
+            _this2.offset.y += 1;
+            if (_this2.board.update(_this2.currentPiece.matrix, _this2.offset)) {
+              _this2.offset.y = 0;
+              _this2.offset.x = 4;
+              _this2.totalRotations = 0;
+              _this2.currentPiece = _this2.nextPiece;
+              _this2.nextPiece = _this2.pieces.newPiece();
+              _this2.makeNextMove();
+            }
+            _this2.boardStep();
+            _this2.gameOver = _this2.board.checkGameOver(_this2.currentPiece.matrix, _this2.offset);
+            if (_this2.gameOver) {
+              _this2.genomeIndex += 1;
+              _this2.genomes[_this2.genomeIndex].fitness = _this2.score;
+              _this2.score = 0;
+              _this2.currentPiece = _this2.nextPiece;
+              _this2.nextPiece = _this2.pieces.newPiece();
+              _this2.evaluateNextGenome();
+              _this2.board.emptyBoard();
+            }
+          }
+          _this2.startTime = timestamp;
+          _this2.animationFrame = requestAnimationFrame(render);
+        };
+
+        this.animationFrame = requestAnimationFrame(function (timestamp) {
+          _this2.startTime = timestamp;
+          _this2.board.drawPiece(_this2.currentPiece.matrix, _this2.offset);
+          _this2.board.drawNext(_this2.nextPiece.matrix);
+          render(timestamp);
+        });
+      }
+    }
+  }, {
+    key: 'evolve',
+    value: function evolve() {
+      console.log("evolving!");
+    }
+  }]);
 
   return AIGame;
 }(_game2.default);
@@ -149,7 +408,8 @@ document.addEventListener('DOMContentLoaded', function () {
   var nextPieceCtx = nextPieceCanvas.getContext('2d');
 
   var board = new _board2.default(canvas.width, canvas.height, ctx, nextPieceCtx);
-  var game = new _ai2.default(board);
+  // let game = new AIGame(board);
+  var game = void 0;
 
   document.addEventListener("keypress", function (event) {
     if (event.key === 'm') {
@@ -172,6 +432,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.addEventListener("keypress", function (event) {
     if (event.key === 'p') {
+      if (!game) {
+        game = new _game2.default(board);
+      }
+      game.play();
+    } else if (event.key === 'a') {
+      if (!game) {
+        game = new _ai2.default(board);
+      }
       game.play();
     }
   });
@@ -415,6 +683,7 @@ var Board = function () {
   }, {
     key: 'validPos',
     value: function validPos(piece, offset) {
+      debugger;
       for (var i = 0; i < piece.length; i++) {
         for (var j = 0; j < piece[0].length; j++) {
           if (piece[i][j] !== 0) {
@@ -564,6 +833,144 @@ var Board = function () {
         return true;
       }
       return false;
+    }
+
+    /*
+     █████  ██     ███    ███ ███████ ████████ ██   ██  ██████  ██████  ███████
+    ██   ██ ██     ████  ████ ██         ██    ██   ██ ██    ██ ██   ██ ██
+    ███████ ██     ██ ████ ██ █████      ██    ███████ ██    ██ ██   ██ ███████
+    ██   ██ ██     ██  ██  ██ ██         ██    ██   ██ ██    ██ ██   ██      ██
+    ██   ██ ██     ██      ██ ███████    ██    ██   ██  ██████  ██████  ███████
+    */
+
+  }, {
+    key: 'fullRows',
+    value: function fullRows(numRows, startY) {
+      for (var i = 0; i < numRows; i++) {
+        if (this.fullRow(startY + i)) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }, {
+    key: 'getMaxHeight',
+    value: function getMaxHeight() {
+      var peaksRemaining = 10;
+      var maxPeak = 0;
+      for (var i = 0; i < this.rows; i++) {
+        for (var j = 0; j < this.cols; j++) {
+          if (peaksRemaining === 0) {
+            break;
+          }
+          if (this.grid[i][j] === undefined) {
+            peaksRemaining -= 1;
+            if (this.rows - i > maxPeak) {
+              maxPeak = this.rows - i;
+            }
+          }
+        }
+      }
+      return maxPeak;
+    }
+  }, {
+    key: 'getCumulativeHeight',
+    value: function getCumulativeHeight(fullRows) {
+      var peaks = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
+      var peaksRemaining = 10;
+      for (var i = 0; i < this.rows; i++) {
+        for (var j = 0; j < this.cols; j++) {
+          if (peaksRemaining === 0) {
+            break;
+          }
+          if (this.grid[i][j] === undefined && peaks[j] < 0) {
+            peaks[j] = this.rows - i;
+            peaksRemaining -= 1;
+          }
+        }
+      }
+      var cumulativeHeight = 0;
+      for (var p = 0; p < peaks.length; p++) {
+        cumulativeHeight += peaks[p];
+      }
+      //do the below because remember we're not actually clearing rows,
+      //just keeping track of how many rows are filled
+      return cumulativeHeight - fullRows * 10;
+    }
+  }, {
+    key: 'getRelativeHeight',
+    value: function getRelativeHeight() {
+      var peaks = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
+      var peaksRemaining = 10;
+      var minPeak = 99;
+      var maxPeak = 0;
+      for (var i = 0; i < this.rows; i++) {
+        for (var j = 0; j < this.cols; j++) {
+          if (peaksRemaining === 0) {
+            break;
+          }
+          if (this.grid[i][j] === undefined && peaks[j] < 0) {
+            peaks[j] = this.rows - i;
+            peaksRemaining -= 1;
+            if (peaks[j] > maxPeak) {
+              maxPeak = peaks[j];
+            }
+            if (peaks[j] < minPeak) {
+              minPeak = peaks[j];
+            }
+          }
+        }
+      }
+      return maxPeak - minPeak;
+    }
+  }, {
+    key: 'getHoles',
+    value: function getHoles() {
+      var holes = 0;
+      for (var i = 1; i < this.rows; i++) {
+        for (var j = 0; j < this.cols; j++) {
+          if (this.grid[i][j] === undefined && this.grid[i - 1][j]) {
+            holes += 1;
+          }
+        }
+      }
+      return holes;
+    }
+
+    //roughness is the sum of relative height differences between columns
+
+  }, {
+    key: 'getRoughness',
+    value: function getRoughness() {
+      var roughness = 0;
+      var peaks = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
+      var peaksRemaining = 10;
+      for (var i = 0; i < this.rows; i++) {
+        for (var j = 0; j < this.cols; j++) {
+          if (peaksRemaining === 0) {
+            break;
+          }
+          if (this.grid[i][j] === undefined && peaks[j] < 0) {
+            peaks[j] = this.rows - i;
+            peaksRemaining -= 1;
+          }
+        }
+      }
+      for (var p = 0; p < peaks.length - 1; p++) {
+        roughness += Math.abs(peaks[p] - peaks[p + 1]);
+      }
+      return roughness;
+    }
+  }, {
+    key: 'removePiece',
+    value: function removePiece(piece, x, y) {
+      for (var i = 0; i < piece.length; i++) {
+        for (var j = 0; j < piece[0].length; j++) {
+          if (piece[i][j] !== 0) {
+            this.grid[y + i][x + j] = undefined;
+          }
+        }
+      }
     }
   }]);
 
@@ -1146,6 +1553,420 @@ exports.default = Pieces;
 
 /***/ }),
 
+/***/ "./src/shadowBoard.js":
+/*!****************************!*\
+  !*** ./src/shadowBoard.js ***!
+  \****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = __webpack_require__(/*! ./util */ "./src/util.js");
+
+var boardUtil = _interopRequireWildcard(_util);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Board = function () {
+  function Board(grid) {
+    _classCallCheck(this, Board);
+
+    this.grid = grid;
+    this.rows = grid.length;
+    this.cols = grid[0].length;
+    this.emptyBoard = this.emptyBoard.bind(this);
+  }
+
+  _createClass(Board, [{
+    key: 'emptyBoard',
+    value: function emptyBoard() {
+      for (var i = 0; i < this.rows; i++) {
+        for (var j = 0; j < this.cols; j++) {
+          this.grid[i][j] = undefined;
+        }
+      }
+    }
+  }, {
+    key: 'update',
+    value: function update(piece, offset) {
+      if (offset.y < 0) {
+        return false;
+      }
+      for (var i = 0; i < piece.length; i++) {
+        for (var j = 0; j < piece[0].length; j++) {
+          if (piece[i][j] !== 0) {
+            var x = offset.x + j;
+            var y = offset.y + i;
+            if (y >= this.rows || typeof this.grid[y][x] !== 'undefined') {
+              this.setPiece(piece, offset.x, offset.y - 1);
+              this.clearRows(piece.length, offset.y - 1);
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    }
+  }, {
+    key: 'clearRows',
+    value: function clearRows(numRows, startY) {
+      for (var i = 0; i < numRows; i++) {
+        if (this.fullRow(startY + i)) {
+          this.removeRow(startY + i);
+        }
+      }
+    }
+  }, {
+    key: 'fullRow',
+    value: function fullRow(row_idx) {
+      var row = this.grid[row_idx];
+      if (row === undefined) {
+        return false;
+      }
+      for (var i = 0; i < row.length; i++) {
+        if (typeof row[i] === 'undefined') {
+          return false;
+        }
+      }
+      return true;
+    }
+  }, {
+    key: 'removeRow',
+    value: function removeRow(row_idx) {
+      var row = this.grid[row_idx];
+      for (var i = row_idx - 1; i >= 0; i--) {
+        for (var j = 0; j < row.length; j++) {
+          this.grid[i + 1][j] = this.grid[i][j];
+        }
+      }
+      for (var _j = 0; _j < row.length; _j++) {
+        this.grid[0][_j] = undefined;
+      }
+    }
+
+    //updates the grid with the piece values
+
+  }, {
+    key: 'setPiece',
+    value: function setPiece(piece, x, y) {
+      for (var i = 0; i < piece.length; i++) {
+        for (var j = 0; j < piece[0].length; j++) {
+          if (piece[i][j] !== 0) {
+            this.grid[y + i][x + j] = piece[i][j];
+          }
+        }
+      }
+    }
+  }, {
+    key: 'validPos',
+    value: function validPos(piece, offset) {
+      for (var i = 0; i < piece.length; i++) {
+        for (var j = 0; j < piece[0].length; j++) {
+          if (piece[i][j] !== 0) {
+            var x = offset.x + j;
+            var y = offset.y + i;
+            if (!boardUtil.between(x, 0, this.cols - 1) || !boardUtil.between(y, 0, this.rows - 1)) {
+              return false;
+            }
+            if (typeof this.grid[y][x] !== 'undefined') {
+              return false;
+            }
+          }
+        }
+      }
+      return true;
+    }
+
+    //helper method for validateRotate
+
+  }, {
+    key: 'handleResponse',
+    value: function handleResponse(piece, offset, newOffset) {
+      if (this.validPos(piece, newOffset)) {
+        return {
+          reRotate: false,
+          offset: newOffset
+        };
+      } else {
+        return {
+          reRotate: true,
+          offset: offset
+        };
+      }
+    }
+
+    //helper method for validateRotate
+
+  }, {
+    key: 'handleX',
+    value: function handleX(x, piece, offset) {
+      var newOffset = {
+        x: offset.x,
+        y: offset.y
+      };
+      if (boardUtil.between(x, 0, this.cols - 1)) {
+        return null;
+      } else if (x < 0) {
+        newOffset.x += 1;
+        return this.handleResponse(piece, offset, newOffset);
+      } else if (x > this.cols - 1) {
+        //reminder: may want to subtract Math.floor(piece.length/2)
+        //to account for the line pieces hugging the right side of the board
+        newOffset.x -= 1;
+        return this.handleResponse(piece, offset, newOffset);
+      }
+    }
+  }, {
+    key: 'handleY',
+    value: function handleY(y, piece, offset) {
+      var newOffset = {
+        x: offset.x,
+        y: offset.y
+      };
+      if (boardUtil.between(y, 0, this.rows - 1)) {
+        return null;
+      } else if (y < 0) {
+        newOffset.y += 1;
+        return this.handleResponse(piece, offset, newOffset);
+      } else if (y > this.rows - 1) {
+        newOffset.y -= 1;
+        return this.handleResponse(piece, offset, newOffset);
+      }
+    }
+  }, {
+    key: 'handleP',
+    value: function handleP(x, piece, offset) {
+      var newOffset = {
+        x: offset.x,
+        y: offset.y
+      };
+      if (boardUtil.rightOrLeft(piece, x) === 'left') {
+        newOffset.x += 1;
+        //try moving the piece up one before giving up
+        var response = this.handleResponse(piece, offset, newOffset);
+        if (response.reRotate) {
+          newOffset.x -= 1;
+          newOffset.y -= 1;
+          return this.handleResponse(piece, offset, newOffset);
+        }
+        return response;
+      } else if (boardUtil.rightOrLeft(piece, x) === 'right') {
+        newOffset.x -= 1;
+        var _response = this.handleResponse(piece, offset, newOffset);
+        if (_response.reRotate) {
+          newOffset.x += 1;
+          newOffset.y -= 1;
+          return this.handleResponse(piece, offset, newOffset);
+        }
+        return _response;
+      }
+    }
+  }, {
+    key: 'validateRotate',
+    value: function validateRotate(piece, offset) {
+      var handledX = void 0,
+          handledY = void 0;
+      for (var i = 0; i < piece.length; i++) {
+        for (var j = 0; j < piece[0].length; j++) {
+          if (piece[i][j] !== 0) {
+            var x = offset.x + j;
+            var y = offset.y + i;
+            handledX = this.handleX(x, piece, offset);
+            if (handledX) {
+              return handledX;
+            }
+            handledY = this.handleY(y, piece, offset);
+            if (handledY) {
+              return handledY;
+            }
+            if (typeof this.grid[y][x] !== 'undefined') {
+              return this.handleP(x, piece, offset);
+            }
+          }
+        }
+      }
+      return {
+        reRotate: false,
+        offset: offset
+      };
+    }
+  }, {
+    key: 'handleDrop',
+    value: function handleDrop(piece, offset) {
+      var minDelta = void 0;
+      minDelta = boardUtil.deltaY(piece, offset, this.rows, this.grid);
+      offset.y += minDelta;
+      this.setPiece(piece, offset.x, offset.y - 1);
+      this.clearRows(piece.length, offset.y - 1);
+    }
+  }, {
+    key: 'checkGameOver',
+    value: function checkGameOver(piece, offset) {
+      if (offset.y !== 0) {
+        return false;
+      }
+      if (!this.validPos(piece, offset)) {
+        return true;
+      }
+      return false;
+    }
+
+    /*
+     █████  ██     ███    ███ ███████ ████████ ██   ██  ██████  ██████  ███████
+    ██   ██ ██     ████  ████ ██         ██    ██   ██ ██    ██ ██   ██ ██
+    ███████ ██     ██ ████ ██ █████      ██    ███████ ██    ██ ██   ██ ███████
+    ██   ██ ██     ██  ██  ██ ██         ██    ██   ██ ██    ██ ██   ██      ██
+    ██   ██ ██     ██      ██ ███████    ██    ██   ██  ██████  ██████  ███████
+    */
+
+  }, {
+    key: 'fullRows',
+    value: function fullRows(numRows, startY) {
+      for (var i = 0; i < numRows; i++) {
+        if (this.fullRow(startY + i)) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }, {
+    key: 'getMaxHeight',
+    value: function getMaxHeight() {
+      var peaksRemaining = 10;
+      var maxPeak = 0;
+      for (var i = 0; i < this.rows; i++) {
+        for (var j = 0; j < this.cols; j++) {
+          if (peaksRemaining === 0) {
+            break;
+          }
+          if (this.grid[i][j] === undefined) {
+            peaksRemaining -= 1;
+            if (this.rows - i > maxPeak) {
+              maxPeak = this.rows - i;
+            }
+          }
+        }
+      }
+      return maxPeak;
+    }
+  }, {
+    key: 'getCumulativeHeight',
+    value: function getCumulativeHeight(fullRows) {
+      var peaks = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
+      var peaksRemaining = 10;
+      for (var i = 0; i < this.rows; i++) {
+        for (var j = 0; j < this.cols; j++) {
+          if (peaksRemaining === 0) {
+            break;
+          }
+          if (this.grid[i][j] === undefined && peaks[j] < 0) {
+            peaks[j] = this.rows - i;
+            peaksRemaining -= 1;
+          }
+        }
+      }
+      var cumulativeHeight = 0;
+      for (var p = 0; p < peaks.length; p++) {
+        cumulativeHeight += peaks[p];
+      }
+      //do the below because remember we're not actually clearing rows,
+      //just keeping track of how many rows are filled
+      return cumulativeHeight - fullRows * 10;
+    }
+  }, {
+    key: 'getRelativeHeight',
+    value: function getRelativeHeight() {
+      var peaks = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
+      var peaksRemaining = 10;
+      var minPeak = 99;
+      var maxPeak = 0;
+      for (var i = 0; i < this.rows; i++) {
+        for (var j = 0; j < this.cols; j++) {
+          if (peaksRemaining === 0) {
+            break;
+          }
+          if (this.grid[i][j] === undefined && peaks[j] < 0) {
+            peaks[j] = this.rows - i;
+            peaksRemaining -= 1;
+            if (peaks[j] > maxPeak) {
+              maxPeak = peaks[j];
+            }
+            if (peaks[j] < minPeak) {
+              minPeak = peaks[j];
+            }
+          }
+        }
+      }
+      return maxPeak - minPeak;
+    }
+  }, {
+    key: 'getHoles',
+    value: function getHoles() {
+      var holes = 0;
+      for (var i = 1; i < this.rows; i++) {
+        for (var j = 0; j < this.cols; j++) {
+          if (this.grid[i][j] === undefined && this.grid[i - 1][j]) {
+            holes += 1;
+          }
+        }
+      }
+      return holes;
+    }
+
+    //roughness is the sum of relative height differences between columns
+
+  }, {
+    key: 'getRoughness',
+    value: function getRoughness() {
+      var roughness = 0;
+      var peaks = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
+      var peaksRemaining = 10;
+      for (var i = 0; i < this.rows; i++) {
+        for (var j = 0; j < this.cols; j++) {
+          if (peaksRemaining === 0) {
+            break;
+          }
+          if (this.grid[i][j] === undefined && peaks[j] < 0) {
+            peaks[j] = this.rows - i;
+            peaksRemaining -= 1;
+          }
+        }
+      }
+      for (var p = 0; p < peaks.length - 1; p++) {
+        roughness += Math.abs(peaks[p] - peaks[p + 1]);
+      }
+      return roughness;
+    }
+  }, {
+    key: 'removePiece',
+    value: function removePiece(piece, x, y) {
+      for (var i = 0; i < piece.length; i++) {
+        for (var j = 0; j < piece[0].length; j++) {
+          if (piece[i][j] !== 0) {
+            this.grid[y + i][x + j] = undefined;
+          }
+        }
+      }
+    }
+  }]);
+
+  return Board;
+}();
+
+exports.default = Board;
+
+/***/ }),
+
 /***/ "./src/util.js":
 /*!*********************!*\
   !*** ./src/util.js ***!
@@ -1189,6 +2010,19 @@ var deltaY = exports.deltaY = function deltaY(piece, offset, rows, grid) {
     }
   }
   return minDelta;
+};
+
+var deepDup = exports.deepDup = function deepDup(arr) {
+  var duped = new Array(arr.length);
+  for (var i = 0; i < duped.length; i++) {
+    duped[i] = new Array(arr[0].length);
+  }
+  for (var row = 0; row < arr.length; row++) {
+    for (var col = 0; col < arr[0].length; col++) {
+      duped[row][col] = arr[row][col];
+    }
+  }
+  return duped;
 };
 
 /***/ })

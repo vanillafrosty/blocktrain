@@ -27,3 +27,17 @@ export const deltaY = (piece, offset, rows, grid) => {
   }
   return minDelta;
 }
+
+
+export const deepDup = (arr) => {
+  let duped = new Array(arr.length);
+  for (let i=0; i<duped.length; i++) {
+    duped[i] = new Array(arr[0].length);
+  }
+  for (let row=0; row<arr.length; row++) {
+    for (let col=0; col<arr[0].length; col++) {
+      duped[row][col] = arr[row][col];
+    }
+  }
+  return duped;
+}

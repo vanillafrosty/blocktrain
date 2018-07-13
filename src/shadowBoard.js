@@ -2,29 +2,10 @@ import * as boardUtil from './util';
 
 export default class Board {
 
-  constructor(width, height, ctx, nextPieceCtx) {
-    this.ctx = ctx;
-    this.nextPieceCtx = nextPieceCtx;
-    this.width = width;
-    this.height = height;
-    this.rows = 21;
-    this.cols = 10;
-    this.grid = [];
-    this.strokeStyle = '#000000';
-    this.outlineStrokeStyle = '#F9F9F9';
-    this.square_width = width/this.cols;
-    for (let i=0; i<this.rows; i++) {
-      this.grid[i] = new Array(this.cols);
-    }
-    this.colors = {
-      1: '#E24242',
-      2: '#F5DC41',
-      3: '#CC41F5',
-      4: '#3E4AE8',
-      5: '#3EE0E8',
-      6: '#3EE848',
-      7: '#F14D17'
-    };
+  constructor(grid) {
+    this.grid = grid;
+    this.rows = grid.length;
+    this.cols = grid[0].length;
     this.emptyBoard = this.emptyBoard.bind(this);
   }
 
@@ -34,98 +15,6 @@ export default class Board {
         this.grid[i][j] = undefined;
       }
     }
-  }
-
-  render() {
-    this.ctx.clearRect(0, 0, this.width, this.height);
-    for (let i=0; i<this.rows; i++) {
-      for (let j=0; j<this.cols; j++) {
-        if (typeof(this.grid[i][j]) !== 'undefined') {
-          let x = j*this.square_width;
-          let y = i*this.square_width;
-          let color = this.colors[this.grid[i][j]];
-          this.drawSquare(x,y, color);
-        }
-      }
-    }
-  }
-
-  drawPiece(piece, offset) {
-    let minDelta;
-    let dupOffset = {
-      x: offset.x,
-      y: offset.y
-    };
-    minDelta = boardUtil.deltaY(piece, offset, this.rows, this.grid);
-    dupOffset.y += minDelta-1;
-    let x, y, maxY, color;
-    for (let i=0; i<piece.length; i++) {
-      for (let j=0; j<piece[0].length; j++) {
-        if (piece[i][j] !== 0) {
-          x = (offset.x+j)*this.square_width;
-          y = (offset.y+i)*this.square_width;
-          maxY = (dupOffset.y+i)*this.square_width;
-          color = this.colors[piece[i][j]];
-          this.drawSquare(x, y, color);
-          this.drawSquareOutline(x, maxY, color);
-        }
-      }
-    }
-  }
-
-
-  drawNext(piece) {
-    const offset = {
-      x: 0,
-      y: 1
-    };
-    //hard code width and height for now
-    this.nextPieceCtx.clearRect(0, 0, 120, 150);
-    for (let i=0; i<piece.length; i++) {
-      for (let j=0; j<piece[0].length; j++) {
-        if (piece[i][j] !== 0) {
-          let x = (offset.x+j)*this.square_width;
-          let y = (offset.y+i)*this.square_width;
-          let color = this.colors[piece[i][j]];
-          this.drawNextSquare(x, y, color);
-        }
-      }
-    }
-  }
-
-  drawNextSquare(x, y, color){
-    const s_w = this.square_width;
-    this.nextPieceCtx.fillStyle = color;
-    this.nextPieceCtx.strokeStyle = this.strokeStyle;
-    this.nextPieceCtx.lineWidth = 2;
-    this.nextPieceCtx.fillRect(x, y, s_w, s_w);
-    this.nextPieceCtx.strokeRect(x, y, s_w, s_w);
-    this.nextPieceCtx.beginPath();
-    this.nextPieceCtx.moveTo(x+s_w/4, y+s_w*(3/4));
-    this.nextPieceCtx.lineTo(x+s_w/4, y+s_w/4);
-    this.nextPieceCtx.lineTo(x+s_w*(3/4), y+s_w/4);
-    this.nextPieceCtx.stroke();
-  }
-
-  drawSquare(x, y, color)  {
-    const s_w = this.square_width;
-    this.ctx.fillStyle = color;
-    this.ctx.strokeStyle = this.strokeStyle;
-    this.ctx.lineWidth = 2;
-    this.ctx.fillRect(x, y, s_w, s_w);
-    this.ctx.strokeRect(x, y, s_w, s_w);
-    this.ctx.beginPath();
-    this.ctx.moveTo(x+s_w/4, y+s_w*(3/4));
-    this.ctx.lineTo(x+s_w/4, y+s_w/4);
-    this.ctx.lineTo(x+s_w*(3/4), y+s_w/4);
-    this.ctx.stroke();
-  }
-
-  drawSquareOutline(x, y, color) {
-    const s_w = this.square_width;
-    this.ctx.strokeStyle = this.outlineStrokeStyle;
-    this.ctx.lineWidth = 2;
-    this.ctx.strokeRect(x, y, s_w, s_w);
   }
 
   update(piece, offset) {
@@ -195,7 +84,6 @@ export default class Board {
   }
 
   validPos(piece, offset) {
-    debugger;
     for (let i=0; i<piece.length; i++) {
       for (let j=0; j<piece[0].length; j++) {
         if (piece[i][j] !== 0) {
@@ -468,6 +356,7 @@ export default class Board {
       }
     }
   }
+
 
 
 }
