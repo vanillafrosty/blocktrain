@@ -231,11 +231,12 @@ var AIGame = function (_Game) {
           this.offset.y = origOffset.y;
           this.offset.x += trans;
           if (board.validPos(piece.matrix, this.offset)) {
-            var minDelta = boardUtil.deltaY(piece, this.offset, board.rows, board);
+            var minDelta = boardUtil.deltaY(piece.matrix, this.offset, board.rows, board.grid);
             this.offset.y += minDelta;
-            board.setPiece(piece, this.offset.x, this.offset.y - 1);
+            board.setPiece(piece.matrix, this.offset.x, this.offset.y - 1);
             var rowsCleared = board.fullRows(piece.length, this.offset.y - 1);
             if (rowsCleared === 0) {
+              // debugger;
               gameOver = board.checkGameOver(this.nextPiece.matrix, origOffset);
             }
             var algorithm = {
@@ -257,7 +258,7 @@ var AIGame = function (_Game) {
             if (gameOver) {
               rating -= 500;
             }
-            board.removePiece(piece, this.offset.x, this.offset.y - 1);
+            board.removePiece(piece.matrix, this.offset.x, this.offset.y - 1);
             //push all possible moves, with their associated ratings and parameter values to an array
             possibleMoves.push({ rotations: i, translation: trans, rating: rating, algorithm: algorithm, drop: minDelta - 1 });
           }
@@ -277,20 +278,22 @@ var AIGame = function (_Game) {
   }, {
     key: 'shadowMove',
     value: function shadowMove(move, piece) {
+      var origPiece = boardUtil.deepDup(piece.matrix);
       piece = this.multiRotate(piece, move.rotations);
       var shadowOffset = {
         x: this.offset.x,
         y: this.offset.y
       };
       shadowOffset.x += move.translation;
-      this.shadowBoard.handleDrop(piece, shadowOffset);
+      this.shadowBoard.handleDrop(piece.matrix, shadowOffset);
+      piece.matrix = origPiece;
     }
   }, {
     key: 'realMove',
     value: function realMove(move, piece) {
       piece = this.multiRotate(piece, move.rotations);
       this.offset.x += move.translation;
-      this.board.setPiece(piece, this.offset.x, this.offset.y);
+      // this.board.setPiece(piece.matrix, this.offset.x, this.offset.y);
     }
   }, {
     key: 'getHighestRatedMove',
@@ -340,9 +343,11 @@ var AIGame = function (_Game) {
               _this2.genomeIndex += 1;
               _this2.genomes[_this2.genomeIndex].fitness = _this2.score;
               _this2.score = 0;
+              _this2.totalRotations = 0;
               _this2.currentPiece = _this2.nextPiece;
               _this2.nextPiece = _this2.pieces.newPiece();
               _this2.evaluateNextGenome();
+              debugger;
               _this2.board.emptyBoard();
             }
           }
@@ -683,7 +688,6 @@ var Board = function () {
   }, {
     key: 'validPos',
     value: function validPos(piece, offset) {
-      debugger;
       for (var i = 0; i < piece.length; i++) {
         for (var j = 0; j < piece[0].length; j++) {
           if (piece[i][j] !== 0) {
@@ -846,12 +850,13 @@ var Board = function () {
   }, {
     key: 'fullRows',
     value: function fullRows(numRows, startY) {
+      var total = 0;
       for (var i = 0; i < numRows; i++) {
         if (this.fullRow(startY + i)) {
-          return true;
+          total += 1;
         }
       }
-      return false;
+      return total;
     }
   }, {
     key: 'getMaxHeight',
@@ -863,7 +868,7 @@ var Board = function () {
           if (peaksRemaining === 0) {
             break;
           }
-          if (this.grid[i][j] === undefined) {
+          if (this.grid[i][j] !== undefined) {
             peaksRemaining -= 1;
             if (this.rows - i > maxPeak) {
               maxPeak = this.rows - i;
@@ -883,7 +888,7 @@ var Board = function () {
           if (peaksRemaining === 0) {
             break;
           }
-          if (this.grid[i][j] === undefined && peaks[j] < 0) {
+          if (this.grid[i][j] !== undefined && peaks[j] < 0) {
             peaks[j] = this.rows - i;
             peaksRemaining -= 1;
           }
@@ -891,7 +896,9 @@ var Board = function () {
       }
       var cumulativeHeight = 0;
       for (var p = 0; p < peaks.length; p++) {
-        cumulativeHeight += peaks[p];
+        if (peaks[p] > 0) {
+          cumulativeHeight += peaks[p];
+        }
       }
       //do the below because remember we're not actually clearing rows,
       //just keeping track of how many rows are filled
@@ -909,7 +916,7 @@ var Board = function () {
           if (peaksRemaining === 0) {
             break;
           }
-          if (this.grid[i][j] === undefined && peaks[j] < 0) {
+          if (this.grid[i][j] !== undefined && peaks[j] < 0) {
             peaks[j] = this.rows - i;
             peaksRemaining -= 1;
             if (peaks[j] > maxPeak) {
@@ -950,14 +957,15 @@ var Board = function () {
           if (peaksRemaining === 0) {
             break;
           }
-          if (this.grid[i][j] === undefined && peaks[j] < 0) {
+          if (this.grid[i][j] !== undefined && peaks[j] < 0) {
             peaks[j] = this.rows - i;
             peaksRemaining -= 1;
           }
         }
       }
       for (var p = 0; p < peaks.length - 1; p++) {
-        roughness += Math.abs(peaks[p] - peaks[p + 1]);
+        var currPeak = peaks[p + 1] < 0 ? 0 : peaks[p + 1];
+        roughness += Math.abs(peaks[p] - currPeak);
       }
       return roughness;
     }
@@ -1577,9 +1585,9 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Board = function () {
-  function Board(grid) {
-    _classCallCheck(this, Board);
+var ShadowBoard = function () {
+  function ShadowBoard(grid) {
+    _classCallCheck(this, ShadowBoard);
 
     this.grid = grid;
     this.rows = grid.length;
@@ -1587,7 +1595,7 @@ var Board = function () {
     this.emptyBoard = this.emptyBoard.bind(this);
   }
 
-  _createClass(Board, [{
+  _createClass(ShadowBoard, [{
     key: 'emptyBoard',
     value: function emptyBoard() {
       for (var i = 0; i < this.rows; i++) {
@@ -1659,6 +1667,7 @@ var Board = function () {
   }, {
     key: 'setPiece',
     value: function setPiece(piece, x, y) {
+      // debugger;
       for (var i = 0; i < piece.length; i++) {
         for (var j = 0; j < piece[0].length; j++) {
           if (piece[i][j] !== 0) {
@@ -1832,12 +1841,13 @@ var Board = function () {
   }, {
     key: 'fullRows',
     value: function fullRows(numRows, startY) {
+      var total = 0;
       for (var i = 0; i < numRows; i++) {
         if (this.fullRow(startY + i)) {
-          return true;
+          total += 1;
         }
       }
-      return false;
+      return total;
     }
   }, {
     key: 'getMaxHeight',
@@ -1849,7 +1859,7 @@ var Board = function () {
           if (peaksRemaining === 0) {
             break;
           }
-          if (this.grid[i][j] === undefined) {
+          if (this.grid[i][j] !== undefined) {
             peaksRemaining -= 1;
             if (this.rows - i > maxPeak) {
               maxPeak = this.rows - i;
@@ -1869,7 +1879,7 @@ var Board = function () {
           if (peaksRemaining === 0) {
             break;
           }
-          if (this.grid[i][j] === undefined && peaks[j] < 0) {
+          if (this.grid[i][j] !== undefined && peaks[j] < 0) {
             peaks[j] = this.rows - i;
             peaksRemaining -= 1;
           }
@@ -1877,7 +1887,9 @@ var Board = function () {
       }
       var cumulativeHeight = 0;
       for (var p = 0; p < peaks.length; p++) {
-        cumulativeHeight += peaks[p];
+        if (peaks[p] > 0) {
+          cumulativeHeight += peaks[p];
+        }
       }
       //do the below because remember we're not actually clearing rows,
       //just keeping track of how many rows are filled
@@ -1895,7 +1907,7 @@ var Board = function () {
           if (peaksRemaining === 0) {
             break;
           }
-          if (this.grid[i][j] === undefined && peaks[j] < 0) {
+          if (this.grid[i][j] !== undefined && peaks[j] < 0) {
             peaks[j] = this.rows - i;
             peaksRemaining -= 1;
             if (peaks[j] > maxPeak) {
@@ -1936,14 +1948,15 @@ var Board = function () {
           if (peaksRemaining === 0) {
             break;
           }
-          if (this.grid[i][j] === undefined && peaks[j] < 0) {
+          if (this.grid[i][j] !== undefined && peaks[j] < 0) {
             peaks[j] = this.rows - i;
             peaksRemaining -= 1;
           }
         }
       }
       for (var p = 0; p < peaks.length - 1; p++) {
-        roughness += Math.abs(peaks[p] - peaks[p + 1]);
+        var currPeak = peaks[p + 1] < 0 ? 0 : peaks[p + 1];
+        roughness += Math.abs(peaks[p] - currPeak);
       }
       return roughness;
     }
@@ -1960,10 +1973,10 @@ var Board = function () {
     }
   }]);
 
-  return Board;
+  return ShadowBoard;
 }();
 
-exports.default = Board;
+exports.default = ShadowBoard;
 
 /***/ }),
 

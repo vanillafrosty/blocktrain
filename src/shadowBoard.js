@@ -1,6 +1,6 @@
 import * as boardUtil from './util';
 
-export default class Board {
+export default class ShadowBoard {
 
   constructor(grid) {
     this.grid = grid;
@@ -74,6 +74,7 @@ export default class Board {
 
   //updates the grid with the piece values
   setPiece(piece, x, y) {
+    // debugger;
     for (let i=0; i<piece.length; i++) {
       for (let j=0; j<piece[0].length; j++) {
         if (piece[i][j] !== 0) {
@@ -238,12 +239,13 @@ export default class Board {
 
 
   fullRows(numRows, startY){
+    let total = 0;
     for (let i=0; i<numRows; i++) {
       if (this.fullRow(startY+i)) {
-        return true;
+        total += 1;
       }
     }
-    return false;
+    return total;
   }
 
   getMaxHeight() {
@@ -254,7 +256,7 @@ export default class Board {
         if (peaksRemaining === 0) {
           break;
         }
-        if (this.grid[i][j] === undefined) {
+        if (this.grid[i][j] !== undefined) {
           peaksRemaining -= 1;
           if ((this.rows - i) > maxPeak) {
             maxPeak = this.rows-i;
@@ -273,7 +275,7 @@ export default class Board {
         if (peaksRemaining === 0) {
           break;
         }
-        if (this.grid[i][j] === undefined && peaks[j] < 0) {
+        if (this.grid[i][j] !== undefined && peaks[j] < 0) {
           peaks[j] = this.rows-i;
           peaksRemaining -= 1;
         }
@@ -281,7 +283,9 @@ export default class Board {
     }
     let cumulativeHeight = 0;
     for (let p=0; p<peaks.length; p++) {
-      cumulativeHeight += peaks[p];
+      if (peaks[p] > 0) {
+        cumulativeHeight += peaks[p];
+      }
     }
     //do the below because remember we're not actually clearing rows,
     //just keeping track of how many rows are filled
@@ -298,7 +302,7 @@ export default class Board {
         if (peaksRemaining === 0) {
           break;
         }
-        if (this.grid[i][j] === undefined && peaks[j] < 0) {
+        if (this.grid[i][j] !== undefined && peaks[j] < 0) {
           peaks[j] = this.rows-i;
           peaksRemaining -= 1;
           if (peaks[j] > maxPeak) {
@@ -335,14 +339,15 @@ export default class Board {
         if (peaksRemaining === 0) {
           break;
         }
-        if (this.grid[i][j] === undefined && peaks[j] < 0) {
+        if (this.grid[i][j] !== undefined && peaks[j] < 0) {
           peaks[j] = this.rows-i;
           peaksRemaining -= 1;
         }
       }
     }
     for (let p=0; p<peaks.length-1; p++) {
-      roughness += Math.abs(peaks[p] - peaks[p+1]);
+      let currPeak = peaks[p+1] < 0 ? 0 : peaks[p+1];
+      roughness += Math.abs(peaks[p] - currPeak);
     }
     return roughness;
   }

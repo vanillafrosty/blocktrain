@@ -113,11 +113,12 @@ export default class AIGame extends Game {
         this.offset.y = origOffset.y;
         this.offset.x += trans;
         if (board.validPos(piece.matrix, this.offset)) {
-          let minDelta = boardUtil.deltaY(piece, this.offset, board.rows, board);
+          let minDelta = boardUtil.deltaY(piece.matrix, this.offset, board.rows, board.grid);
           this.offset.y += minDelta;
-          board.setPiece(piece, this.offset.x, this.offset.y-1);
+          board.setPiece(piece.matrix, this.offset.x, this.offset.y-1);
           let rowsCleared = board.fullRows(piece.length, this.offset.y-1);
           if (rowsCleared === 0) {
+            // debugger;
             gameOver = board.checkGameOver(this.nextPiece.matrix, origOffset);
           }
           let algorithm = {
@@ -139,7 +140,7 @@ export default class AIGame extends Game {
    				if (gameOver) {
    					rating -= 500;
    				}
-          board.removePiece(piece, this.offset.x, this.offset.y-1);
+          board.removePiece(piece.matrix, this.offset.x, this.offset.y-1);
    				//push all possible moves, with their associated ratings and parameter values to an array
    				possibleMoves.push({rotations: i, translation: trans, rating: rating, algorithm: algorithm, drop: minDelta-1});
         }
@@ -157,19 +158,22 @@ export default class AIGame extends Game {
   }
 
   shadowMove(move, piece) {
+    let origPiece = boardUtil.deepDup(piece.matrix);
     piece = this.multiRotate(piece, move.rotations);
     let shadowOffset = {
       x: this.offset.x,
       y: this.offset.y
     }
     shadowOffset.x += move.translation;
-    this.shadowBoard.handleDrop(piece, shadowOffset);
+    this.shadowBoard.handleDrop(piece.matrix, shadowOffset);
+    piece.matrix = origPiece;
   }
 
   realMove(move, piece) {
     piece = this.multiRotate(piece, move.rotations);
     this.offset.x += move.translation;
-    this.board.setPiece(piece, this.offset.x, this.offset.y);
+    // this.board.setPiece(piece.matrix, this.offset.x, this.offset.y);
+    
   }
 
   getHighestRatedMove(moves) {
@@ -216,9 +220,11 @@ export default class AIGame extends Game {
             this.genomeIndex += 1;
             this.genomes[this.genomeIndex].fitness = this.score;
             this.score = 0;
+            this.totalRotations = 0;
             this.currentPiece = this.nextPiece;
             this.nextPiece = this.pieces.newPiece();
             this.evaluateNextGenome();
+            debugger;
             this.board.emptyBoard();
           }
         }
