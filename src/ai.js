@@ -173,7 +173,7 @@ export default class AIGame extends Game {
     piece = this.multiRotate(piece, move.rotations);
     this.offset.x += move.translation;
     // this.board.setPiece(piece.matrix, this.offset.x, this.offset.y);
-    
+
   }
 
   getHighestRatedMove(moves) {

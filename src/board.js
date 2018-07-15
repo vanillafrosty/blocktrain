@@ -428,10 +428,23 @@ export default class Board {
   }
 
   getHoles() {
-    let holes = 0;
-    for (let i=1; i<this.rows; i++) {
+    let peaks = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
+    let peaksRemaining = 10;
+    for (let i=0; i<this.rows; i++) {
       for (let j=0; j<this.cols; j++) {
-        if (this.grid[i][j] === undefined && this.grid[i-1][j]) {
+        if (peaksRemaining === 0) {
+          break;
+        }
+        if (this.grid[i][j] !== undefined && peaks[j] < 0) {
+          peaks[j] = this.rows-i;
+          peaksRemaining -= 1;
+        }
+      }
+    }
+    let holes = 0;
+    for (let p=0; p<peaks.length; p++) {
+      for (let row=20; row>(this.rows-peaks[p]); row--) {
+        if (this.grid[row][p] === undefined) {
           holes += 1;
         }
       }

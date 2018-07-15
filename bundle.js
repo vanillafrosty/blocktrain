@@ -225,6 +225,7 @@ var AIGame = function (_Game) {
         //since handleRotate is destructive, just keep rotating once.
         //call multiRotate some other time.
         piece = this.handleRotate(piece);
+        debugger;
         for (var trans = -5; trans <= 5; trans++) {
           var gameOver = false;
           this.offset.x = origOffset.x;
@@ -933,10 +934,24 @@ var Board = function () {
   }, {
     key: 'getHoles',
     value: function getHoles() {
-      var holes = 0;
-      for (var i = 1; i < this.rows; i++) {
+      var peaks = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
+      var peaksRemaining = 10;
+      for (var i = 0; i < this.rows; i++) {
         for (var j = 0; j < this.cols; j++) {
-          if (this.grid[i][j] === undefined && this.grid[i - 1][j]) {
+          if (peaksRemaining === 0) {
+            break;
+          }
+          if (this.grid[i][j] !== undefined && peaks[j] < 0) {
+            peaks[j] = this.rows - i;
+            peaksRemaining -= 1;
+          }
+        }
+      }
+      var holes = 0;
+      debugger;
+      for (var p = 0; p < peaks.length; p++) {
+        for (var row = 20; row > this.rows - peaks[p]; row--) {
+          if (this.grid[row][p] === undefined) {
             holes += 1;
           }
         }
@@ -1924,10 +1939,23 @@ var ShadowBoard = function () {
   }, {
     key: 'getHoles',
     value: function getHoles() {
-      var holes = 0;
-      for (var i = 1; i < this.rows; i++) {
+      var peaks = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1];
+      var peaksRemaining = 10;
+      for (var i = 0; i < this.rows; i++) {
         for (var j = 0; j < this.cols; j++) {
-          if (this.grid[i][j] === undefined && this.grid[i - 1][j]) {
+          if (peaksRemaining === 0) {
+            break;
+          }
+          if (this.grid[i][j] !== undefined && peaks[j] < 0) {
+            peaks[j] = this.rows - i;
+            peaksRemaining -= 1;
+          }
+        }
+      }
+      var holes = 0;
+      for (var p = 0; p < peaks.length; p++) {
+        for (var row = 0; row < peaks[p]; row++) {
+          if (this.grid[row][p] === undefined) {
             holes += 1;
           }
         }
