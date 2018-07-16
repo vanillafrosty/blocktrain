@@ -137,6 +137,9 @@ export default class Board {
         if (piece[i][j] !== 0) {
           let x = offset.x+j;
           let y = offset.y+i;
+          //we allow y>=this.rows because update is used to set a piece at
+          //the very bottom of the board (in a fresh game). this.grid[y][x]
+          //fails as a check in this case. 
           if (y >= this.rows || typeof(this.grid[y][x]) !== 'undefined') {
             this.setPiece(piece, offset.x, offset.y-1);
             this.clearRows(piece.length, offset.y-1);

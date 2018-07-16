@@ -123,7 +123,7 @@ var AIGame = function (_Game) {
     _this.movesTaken = 0;
     _this.movesLimit = 500;
     _this.createInitialPopulation();
-    _this.timeStep = 300;
+    _this.timeStep = 120;
     _this.score = 0;
     return _this;
   }
@@ -174,11 +174,15 @@ var AIGame = function (_Game) {
           this.shadowBoard = new _shadowBoard2.default(boardUtil.deepDup(this.board.grid));
           this.shadowMove(possibleMoves[i], this.currentPiece);
           bestFutureMove = this.getHighestRatedMove(this.getPossibleMoves(this.shadowBoard, this.nextPiece));
-          possibleMoves[i].rating += bestFutureMove.rating;
+          if (bestFutureMove) {
+            possibleMoves[i].rating += bestFutureMove.rating;
+          }
         }
         bestCurrentMove = this.getHighestRatedMove(possibleMoves);
         //based on the bestCurrentMove, move this.currentPiece and set it on this.board
         this.updateScore(bestCurrentMove);
+        //make sure realMove does not update this.offset.x to be NaN
+        //if bestCurrentMove is not a real move.
         this.realMove(bestCurrentMove, this.currentPiece);
         //draw stuff because we just made the best move
         this.boardStep();
@@ -187,6 +191,9 @@ var AIGame = function (_Game) {
   }, {
     key: 'updateScore',
     value: function updateScore(move) {
+      if (!move) {
+        return true;
+      }
       this.score += move.drop;
       switch (move.rotations) {
         case 1:
@@ -225,7 +232,6 @@ var AIGame = function (_Game) {
         //since handleRotate is destructive, just keep rotating once.
         //call multiRotate some other time.
         piece = this.handleRotate(piece);
-        debugger;
         for (var trans = -5; trans <= 5; trans++) {
           var gameOver = false;
           this.offset.x = origOffset.x;
@@ -237,7 +243,6 @@ var AIGame = function (_Game) {
             board.setPiece(piece.matrix, this.offset.x, this.offset.y - 1);
             var rowsCleared = board.fullRows(piece.length, this.offset.y - 1);
             if (rowsCleared === 0) {
-              // debugger;
               gameOver = board.checkGameOver(this.nextPiece.matrix, origOffset);
             }
             var algorithm = {
@@ -292,6 +297,9 @@ var AIGame = function (_Game) {
   }, {
     key: 'realMove',
     value: function realMove(move, piece) {
+      if (!move) {
+        return true;
+      }
       piece = this.multiRotate(piece, move.rotations);
       this.offset.x += move.translation;
       // this.board.setPiece(piece.matrix, this.offset.x, this.offset.y);
@@ -300,6 +308,9 @@ var AIGame = function (_Game) {
     key: 'getHighestRatedMove',
     value: function getHighestRatedMove(moves) {
       var highestMove = moves[0];
+      if (moves.length === 0) {
+        return null;
+      }
       for (var i = 1; i < moves.length; i++) {
         if (moves[i].rating > highestMove.rating) {
           highestMove = moves[i];
@@ -341,15 +352,13 @@ var AIGame = function (_Game) {
             _this2.boardStep();
             _this2.gameOver = _this2.board.checkGameOver(_this2.currentPiece.matrix, _this2.offset);
             if (_this2.gameOver) {
-              _this2.genomeIndex += 1;
               _this2.genomes[_this2.genomeIndex].fitness = _this2.score;
               _this2.score = 0;
               _this2.totalRotations = 0;
               _this2.currentPiece = _this2.nextPiece;
               _this2.nextPiece = _this2.pieces.newPiece();
-              _this2.evaluateNextGenome();
-              debugger;
               _this2.board.emptyBoard();
+              _this2.evaluateNextGenome();
             }
           }
           _this2.startTime = timestamp;
@@ -626,6 +635,9 @@ var Board = function () {
           if (piece[i][j] !== 0) {
             var x = offset.x + j;
             var y = offset.y + i;
+            //we allow y>=this.rows because update is used to set a piece at
+            //the very bottom of the board (in a fresh game). this.grid[y][x]
+            //fails as a check in this case. 
             if (y >= this.rows || typeof this.grid[y][x] !== 'undefined') {
               this.setPiece(piece, offset.x, offset.y - 1);
               this.clearRows(piece.length, offset.y - 1);
@@ -948,7 +960,6 @@ var Board = function () {
         }
       }
       var holes = 0;
-      debugger;
       for (var p = 0; p < peaks.length; p++) {
         for (var row = 20; row > this.rows - peaks[p]; row--) {
           if (this.grid[row][p] === undefined) {
@@ -1686,6 +1697,9 @@ var ShadowBoard = function () {
       for (var i = 0; i < piece.length; i++) {
         for (var j = 0; j < piece[0].length; j++) {
           if (piece[i][j] !== 0) {
+            // console.log('in setPiece');
+            // console.log(y+i);
+            // console.log(x+j);
             this.grid[y + i][x + j] = piece[i][j];
           }
         }
@@ -1828,10 +1842,16 @@ var ShadowBoard = function () {
     key: 'handleDrop',
     value: function handleDrop(piece, offset) {
       var minDelta = void 0;
+      var setY = void 0;
       minDelta = boardUtil.deltaY(piece, offset, this.rows, this.grid);
       offset.y += minDelta;
-      this.setPiece(piece, offset.x, offset.y - 1);
-      this.clearRows(piece.length, offset.y - 1);
+      if (offset.y === 0) {
+        setY = 0;
+      } else {
+        setY = offset.y - 1;
+      }
+      this.setPiece(piece, offset.x, setY);
+      this.clearRows(piece.length, setY);
     }
   }, {
     key: 'checkGameOver',

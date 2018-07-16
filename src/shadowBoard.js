@@ -78,6 +78,9 @@ export default class ShadowBoard {
     for (let i=0; i<piece.length; i++) {
       for (let j=0; j<piece[0].length; j++) {
         if (piece[i][j] !== 0) {
+          // console.log('in setPiece');
+          // console.log(y+i);
+          // console.log(x+j);
           this.grid[y+i][x+j] = piece[i][j];
         }
       }
@@ -214,10 +217,16 @@ export default class ShadowBoard {
 
   handleDrop(piece, offset) {
     let minDelta;
+    let setY;
     minDelta = boardUtil.deltaY(piece, offset, this.rows, this.grid);
     offset.y += minDelta;
-    this.setPiece(piece, offset.x, offset.y-1);
-    this.clearRows(piece.length, offset.y-1);
+    if (offset.y === 0) {
+      setY = 0;
+    } else {
+      setY = offset.y-1;
+    }
+    this.setPiece(piece, offset.x, setY);
+    this.clearRows(piece.length, setY);
   }
 
   checkGameOver(piece, offset) {
