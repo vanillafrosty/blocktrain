@@ -125,6 +125,7 @@ var AIGame = function (_Game) {
     _this.createInitialPopulation();
     _this.timeStep = 30;
     _this.score = 0;
+    _this.generation = 0;
     return _this;
   }
 
@@ -151,6 +152,10 @@ var AIGame = function (_Game) {
     value: function evaluateNextGenome() {
       this.score = 0;
       this.genomeIndex += 1;
+      if (this.playingGame) {
+        var aiDisplay = document.getElementById('ai-display');
+        aiDisplay.children[1].innerHTML = 'current genome: ' + (this.genomeIndex + 1) + '/' + this.populationSize;
+      }
       if (this.genomeIndex >= this.genomes.length) {
         this.evolve();
       }
@@ -341,6 +346,8 @@ var AIGame = function (_Game) {
           }
           var aiDisplay = document.getElementById('ai-display-none');
           aiDisplay.setAttribute("id", "ai-display");
+          aiDisplay.children[0].append(' ' + this.generation);
+          aiDisplay.children[1].append(' ' + (this.genomeIndex + 1) + '/' + this.populationSize);
         }
 
         var render = function render(timestamp) {
@@ -385,6 +392,9 @@ var AIGame = function (_Game) {
     key: 'evolve',
     value: function evolve() {
       console.log("evolving!");
+      this.generation += 1;
+      var node = document.getElementById('ai-display');
+      node.children[0].append(' ' + this.generation);
     }
   }]);
 

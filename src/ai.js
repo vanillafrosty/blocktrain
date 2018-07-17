@@ -14,6 +14,7 @@ export default class AIGame extends Game {
     this.createInitialPopulation();
     this.timeStep = 30;
     this.score = 0;
+    this.generation = 0;
   }
 
 
@@ -37,6 +38,10 @@ export default class AIGame extends Game {
   evaluateNextGenome() {
     this.score = 0;
     this.genomeIndex += 1;
+    if (this.playingGame) {
+      let aiDisplay = document.getElementById('ai-display');
+      aiDisplay.children[1].innerHTML = `current genome: ${this.genomeIndex+1}/${this.populationSize}`;
+    }
     if (this.genomeIndex >= this.genomes.length) {
       this.evolve();
     }
@@ -218,6 +223,8 @@ export default class AIGame extends Game {
         }
         let aiDisplay = document.getElementById('ai-display-none');
         aiDisplay.setAttribute("id", "ai-display");
+        aiDisplay.children[0].append(` ${this.generation}`);
+        aiDisplay.children[1].append(` ${this.genomeIndex+1}/${this.populationSize}`)
       }
 
       const render = (timestamp) => {
@@ -261,6 +268,9 @@ export default class AIGame extends Game {
 
   evolve() {
     console.log("evolving!");
+    this.generation += 1;
+    let node = document.getElementById('ai-display');
+    node.children[0].append(` ${this.generation}`);
   }
 
 
