@@ -123,7 +123,7 @@ var AIGame = function (_Game) {
     _this.movesTaken = 0;
     _this.movesLimit = 500;
     _this.createInitialPopulation();
-    _this.timeStep = 120;
+    _this.timeStep = 30;
     _this.score = 0;
     return _this;
   }
@@ -271,6 +271,7 @@ var AIGame = function (_Game) {
         }
       }
       this.offset = origOffset;
+      this.totalRotations = 0;
       return possibleMoves;
     }
   }, {
@@ -297,11 +298,14 @@ var AIGame = function (_Game) {
   }, {
     key: 'realMove',
     value: function realMove(move, piece) {
+      console.log(move);
+      console.log(piece);
       if (!move) {
         return true;
       }
       piece = this.multiRotate(piece, move.rotations);
       this.offset.x += move.translation;
+      this.totalRotations = 0;
       // this.board.setPiece(piece.matrix, this.offset.x, this.offset.y);
     }
   }, {
@@ -352,6 +356,10 @@ var AIGame = function (_Game) {
             _this2.boardStep();
             _this2.gameOver = _this2.board.checkGameOver(_this2.currentPiece.matrix, _this2.offset);
             if (_this2.gameOver) {
+              console.log(_this2.currentPiece.matrix);
+              console.log(_this2.offset);
+              console.log(_this2.board.grid);
+              debugger;
               _this2.genomes[_this2.genomeIndex].fitness = _this2.score;
               _this2.score = 0;
               _this2.totalRotations = 0;
@@ -637,7 +645,7 @@ var Board = function () {
             var y = offset.y + i;
             //we allow y>=this.rows because update is used to set a piece at
             //the very bottom of the board (in a fresh game). this.grid[y][x]
-            //fails as a check in this case. 
+            //fails as a check in this case.
             if (y >= this.rows || typeof this.grid[y][x] !== 'undefined') {
               this.setPiece(piece, offset.x, offset.y - 1);
               this.clearRows(piece.length, offset.y - 1);
@@ -847,6 +855,11 @@ var Board = function () {
         return false;
       }
       if (!this.validPos(piece, offset)) {
+        // console.log(this.grid);
+        // console.log(piece);
+        // console.log(offset);
+        // let a = this.grid;
+        // debugger;
         return true;
       }
       return false;

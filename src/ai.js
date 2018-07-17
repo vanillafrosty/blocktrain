@@ -12,7 +12,7 @@ export default class AIGame extends Game {
     this.movesTaken = 0;
     this.movesLimit = 500;
     this.createInitialPopulation();
-    this.timeStep = 120;
+    this.timeStep = 30;
     this.score = 0;
   }
 
@@ -153,6 +153,7 @@ export default class AIGame extends Game {
       }
     }
     this.offset = origOffset;
+    this.totalRotations = 0;
     return possibleMoves;
   }
 
@@ -176,11 +177,14 @@ export default class AIGame extends Game {
   }
 
   realMove(move, piece) {
+    console.log(move);
+    console.log(piece);
     if (!move) {
       return true;
     }
     piece = this.multiRotate(piece, move.rotations);
     this.offset.x += move.translation;
+    this.totalRotations = 0;
     // this.board.setPiece(piece.matrix, this.offset.x, this.offset.y);
 
   }
@@ -229,6 +233,10 @@ export default class AIGame extends Game {
           this.boardStep();
           this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
           if (this.gameOver) {
+            console.log(this.currentPiece.matrix);
+            console.log(this.offset);
+            console.log(this.board.grid);
+            debugger;
             this.genomes[this.genomeIndex].fitness = this.score;
             this.score = 0;
             this.totalRotations = 0;
