@@ -74,13 +74,9 @@ export default class ShadowBoard {
 
   //updates the grid with the piece values
   setPiece(piece, x, y) {
-    // debugger;
     for (let i=0; i<piece.length; i++) {
       for (let j=0; j<piece[0].length; j++) {
         if (piece[i][j] !== 0) {
-          // console.log('in setPiece');
-          // console.log(y+i);
-          // console.log(x+j);
           this.grid[y+i][x+j] = piece[i][j];
         }
       }

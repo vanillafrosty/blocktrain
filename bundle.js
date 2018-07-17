@@ -298,8 +298,6 @@ var AIGame = function (_Game) {
   }, {
     key: 'realMove',
     value: function realMove(move, piece) {
-      console.log(move);
-      console.log(piece);
       if (!move) {
         return true;
       }
@@ -356,10 +354,6 @@ var AIGame = function (_Game) {
             _this2.boardStep();
             _this2.gameOver = _this2.board.checkGameOver(_this2.currentPiece.matrix, _this2.offset);
             if (_this2.gameOver) {
-              console.log(_this2.currentPiece.matrix);
-              console.log(_this2.offset);
-              console.log(_this2.board.grid);
-              debugger;
               _this2.genomes[_this2.genomeIndex].fitness = _this2.score;
               _this2.score = 0;
               _this2.totalRotations = 0;
@@ -855,11 +849,6 @@ var Board = function () {
         return false;
       }
       if (!this.validPos(piece, offset)) {
-        // console.log(this.grid);
-        // console.log(piece);
-        // console.log(offset);
-        // let a = this.grid;
-        // debugger;
         return true;
       }
       return false;
@@ -1706,13 +1695,9 @@ var ShadowBoard = function () {
   }, {
     key: 'setPiece',
     value: function setPiece(piece, x, y) {
-      // debugger;
       for (var i = 0; i < piece.length; i++) {
         for (var j = 0; j < piece[0].length; j++) {
           if (piece[i][j] !== 0) {
-            // console.log('in setPiece');
-            // console.log(y+i);
-            // console.log(x+j);
             this.grid[y + i][x + j] = piece[i][j];
           }
         }

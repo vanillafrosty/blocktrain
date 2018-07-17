@@ -177,8 +177,6 @@ export default class AIGame extends Game {
   }
 
   realMove(move, piece) {
-    console.log(move);
-    console.log(piece);
     if (!move) {
       return true;
     }
@@ -233,10 +231,6 @@ export default class AIGame extends Game {
           this.boardStep();
           this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
           if (this.gameOver) {
-            console.log(this.currentPiece.matrix);
-            console.log(this.offset);
-            console.log(this.board.grid);
-            debugger;
             this.genomes[this.genomeIndex].fitness = this.score;
             this.score = 0;
             this.totalRotations = 0;

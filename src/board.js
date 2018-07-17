@@ -336,11 +336,6 @@ export default class Board {
   checkGameOver(piece, offset) {
     if (offset.y !== 0) { return false; }
     if (!this.validPos(piece, offset)) {
-      // console.log(this.grid);
-      // console.log(piece);
-      // console.log(offset);
-      // let a = this.grid;
-      // debugger;
       return true;
     }
     return false;
