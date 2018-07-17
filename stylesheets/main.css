@@ -87,10 +87,17 @@ body {
   /* height: 400px; */
 }
 
-.controls-container {
+#controls-container {
   /* text-shadow: 0.5px 0.5px 0.5px #ffffff; */
   background: rgba(0, 0, 0, 0.75);
-  width:
+}
+
+#ai-display {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+#ai-display-none {
+  display: none;
 }
 
 .next-piece-text {

@@ -335,6 +335,12 @@ var AIGame = function (_Game) {
         if (!this.gameOverOnce) {
           var gameStart = document.getElementById('before-game-start');
           gameStart.setAttribute("id", "game-start");
+          var controls = document.getElementById('controls-container');
+          while (controls.children.length > 1) {
+            controls.removeChild(controls.children[1]);
+          }
+          var aiDisplay = document.getElementById('ai-display-none');
+          aiDisplay.setAttribute("id", "ai-display");
         }
 
         var render = function render(timestamp) {

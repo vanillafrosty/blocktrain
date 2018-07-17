@@ -212,6 +212,12 @@ export default class AIGame extends Game {
       if (!this.gameOverOnce) {
         let gameStart = document.getElementById('before-game-start');
         gameStart.setAttribute("id", "game-start");
+        let controls = document.getElementById('controls-container');
+        while (controls.children.length > 1) {
+          controls.removeChild(controls.children[1]);
+        }
+        let aiDisplay = document.getElementById('ai-display-none');
+        aiDisplay.setAttribute("id", "ai-display");
       }
 
       const render = (timestamp) => {
