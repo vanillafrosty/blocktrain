@@ -11,14 +11,15 @@ export default class AIGame extends Game {
     this.genomeIndex = -1;
     this.movesTaken = 0;
     this.movesLimit = 500;
+    this.drawing = true;
     this.createInitialPopulation();
-    this.timeStep = 10;
+    this.timeStep = 90;
     this.score = 0;
     this.generation = 0;
     this.mutationRate = 0.05;
     this.mutationStep = 0.2;
-    this.speedArr = [300, 90, 10];
-    this.speedIndex = 2;
+    this.speedArr = [300, 90, 10, 0];
+    this.speedIndex = 1;
   }
 
 
@@ -236,7 +237,59 @@ export default class AIGame extends Game {
       const render = (timestamp) => {
         this.resetTime += timestamp-this.startTime;
 
-        if (this.resetTime > this.timeStep) {
+        if (this.timeStep === 0) {
+          this.board.handleDrop(this.currentPiece.matrix, this.offset);
+          this.offset.y = 0;
+          this.offset.x = 4;
+          this.totalRotations = 0;
+          this.currentPiece = this.nextPiece;
+          this.nextPiece = this.pieces.newPiece();
+          this.makeNextMove();
+          this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
+          if (this.gameOver) {
+            this.genomes[this.genomeIndex].fitness = this.score;
+            this.score = 0;
+            this.totalRotations = 0;
+            this.currentPiece = this.nextPiece;
+            this.nextPiece = this.pieces.newPiece();
+            this.board.emptyBoard();
+            this.evaluateNextGenome();
+          }
+          this.board.handleDrop(this.currentPiece.matrix, this.offset);
+          this.offset.y = 0;
+          this.offset.x = 4;
+          this.totalRotations = 0;
+          this.currentPiece = this.nextPiece;
+          this.nextPiece = this.pieces.newPiece();
+          this.makeNextMove();
+          this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
+          if (this.gameOver) {
+            this.genomes[this.genomeIndex].fitness = this.score;
+            this.score = 0;
+            this.totalRotations = 0;
+            this.currentPiece = this.nextPiece;
+            this.nextPiece = this.pieces.newPiece();
+            this.board.emptyBoard();
+            this.evaluateNextGenome();
+          }
+          this.board.handleDrop(this.currentPiece.matrix, this.offset);
+          this.offset.y = 0;
+          this.offset.x = 4;
+          this.totalRotations = 0;
+          this.currentPiece = this.nextPiece;
+          this.nextPiece = this.pieces.newPiece();
+          this.makeNextMove();
+          this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
+          if (this.gameOver) {
+            this.genomes[this.genomeIndex].fitness = this.score;
+            this.score = 0;
+            this.totalRotations = 0;
+            this.currentPiece = this.nextPiece;
+            this.nextPiece = this.pieces.newPiece();
+            this.board.emptyBoard();
+            this.evaluateNextGenome();
+          }
+        } else if (this.resetTime > this.timeStep) {
           this.resetTime = 0;
           this.offset.y += 1;
           if (this.board.update(this.currentPiece.matrix, this.offset)){
@@ -339,7 +392,7 @@ export default class AIGame extends Game {
       if (e.key === 's') {
         this.speedIndex = (this.speedIndex + 1) % this.speedArr.length;
         this.timeStep = this.speedArr[this.speedIndex];
-        console.log(this.timeStep);
+        this.drawing = this.timeStep === 0 ? false : true;
       }
     });
   }
