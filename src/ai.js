@@ -6,15 +6,19 @@ export default class AIGame extends Game {
 
   constructor(board) {
     super(board);
-    this.populationSize = 50;
+    this.populationSize = 6;
     this.genomes = [];
     this.genomeIndex = -1;
     this.movesTaken = 0;
     this.movesLimit = 500;
     this.createInitialPopulation();
-    this.timeStep = 30;
+    this.timeStep = 10;
     this.score = 0;
     this.generation = 0;
+    this.mutationRate = 0.05;
+    this.mutationStep = 0.2;
+    this.speedArr = [300, 120, 10, 0];
+    this.speedIndex = 2;
   }
 
 
@@ -41,9 +45,10 @@ export default class AIGame extends Game {
     if (this.playingGame) {
       let aiDisplay = document.getElementById('ai-display');
       aiDisplay.children[1].innerHTML = `current genome: ${this.genomeIndex+1}/${this.populationSize}`;
-    }
-    if (this.genomeIndex >= this.genomes.length) {
-      this.evolve();
+      if (this.genomeIndex >= this.genomes.length) {
+        this.evolve();
+        aiDisplay.children[1].innerHTML = `current genome: ${this.genomeIndex+1}/${this.populationSize}`;
+      }
     }
     this.movesTaken = 0;
     this.makeNextMove();
@@ -268,9 +273,67 @@ export default class AIGame extends Game {
 
   evolve() {
     console.log("evolving!");
+    console.log("old genomes");
     this.generation += 1;
     let node = document.getElementById('ai-display');
-    node.children[0].append(` ${this.generation}`);
+    node.children[0].innerHTML = (`current generation: ${this.generation}`);
+    this.genomeIndex = 0;
+    this.score = 0;
+    this.movesTaken = 0;
+    this.totalRotations = 0;
+    this.board.emptyBoard();
+    this.currentPiece = this.pieces.newPiece();
+    this.nextPiece = this.pieces.newPiece();
+    this.genomes.sort( (a,b) => {
+      return b.fitness - a.fitness;
+    });
+    console.log(this.genomes);
+    let fittest = this.genomes.slice(0,Math.floor(this.populationSize/2));
+    let children = [this.genomes[0]];
+    while (children.length < this.populationSize) {
+      children.push(this.makeChild(fittest));
+    }
+    this.genomes = children;
+    console.log(this.genomes);
+
+  }
+
+  makeChild(genomes) {
+    let mom = genomes[boardUtil.randNumRange(0, genomes.length-1)];
+    let dad = genomes[boardUtil.randNumRange(0, genomes.length-1)];
+    while (dad === mom) {
+      dad = genomes[boardUtil.randNumRange(0, genomes.length-1)];
+    }
+    let child = {
+      id : Math.random(),
+      rowsCleared: boardUtil.randSelect(mom.rowsCleared, dad.rowsCleared),
+      weightedHeight: boardUtil.randSelect(mom.weightedHeight, dad.weightedHeight),
+      cumulativeHeight: boardUtil.randSelect(mom.cumulativeHeight, dad.cumulativeHeight),
+      relativeHeight: boardUtil.randSelect(mom.relativeHeight, dad.relativeHeight),
+      holes: boardUtil.randSelect(mom.holes, dad.holes),
+      roughness: boardUtil.randSelect(mom.roughness, dad.roughness),
+      fitness: -1
+    };
+    if (Math.random() < this.mutationRate) {
+   		child.rowsCleared = child.rowsCleared + Math.random() * this.mutationStep * 2 - this.mutationStep;
+   	}
+   	if (Math.random() < this.mutationRate) {
+   		child.weightedHeight = child.weightedHeight + Math.random() * this.mutationStep * 2 - this.mutationStep;
+   	}
+   	if (Math.random() < this.mutationRate) {
+   		child.cumulativeHeight = child.cumulativeHeight + Math.random() * this.mutationStep * 2 - this.mutationStep;
+   	}
+   	if (Math.random() < this.mutationRate) {
+   		child.relativeHeight = child.relativeHeight + Math.random() * this.mutationStep * 2 - this.mutationStep;
+   	}
+   	if (Math.random() < this.mutationRate) {
+   		child.holes = child.holes + Math.random() * this.mutationStep * 2 - this.mutationStep;
+   	}
+   	if (Math.random() < this.mutationRate) {
+   		child.roughness = child.roughness + Math.random() * this.mutationStep * 2 - this.mutationStep;
+   	}
+    return child;
+
   }
 
 

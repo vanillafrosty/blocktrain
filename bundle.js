@@ -117,15 +117,19 @@ var AIGame = function (_Game) {
 
     var _this = _possibleConstructorReturn(this, (AIGame.__proto__ || Object.getPrototypeOf(AIGame)).call(this, board));
 
-    _this.populationSize = 50;
+    _this.populationSize = 6;
     _this.genomes = [];
     _this.genomeIndex = -1;
     _this.movesTaken = 0;
     _this.movesLimit = 500;
     _this.createInitialPopulation();
-    _this.timeStep = 30;
+    _this.timeStep = 10;
     _this.score = 0;
     _this.generation = 0;
+    _this.mutationRate = 0.05;
+    _this.mutationStep = 0.2;
+    _this.speedArr = [300, 120, 10, 0];
+    _this.speedIndex = 2;
     return _this;
   }
 
@@ -155,9 +159,10 @@ var AIGame = function (_Game) {
       if (this.playingGame) {
         var aiDisplay = document.getElementById('ai-display');
         aiDisplay.children[1].innerHTML = 'current genome: ' + (this.genomeIndex + 1) + '/' + this.populationSize;
-      }
-      if (this.genomeIndex >= this.genomes.length) {
-        this.evolve();
+        if (this.genomeIndex >= this.genomes.length) {
+          this.evolve();
+          aiDisplay.children[1].innerHTML = 'current genome: ' + (this.genomeIndex + 1) + '/' + this.populationSize;
+        }
       }
       this.movesTaken = 0;
       this.makeNextMove();
@@ -392,9 +397,66 @@ var AIGame = function (_Game) {
     key: 'evolve',
     value: function evolve() {
       console.log("evolving!");
+      console.log("old genomes");
       this.generation += 1;
       var node = document.getElementById('ai-display');
-      node.children[0].append(' ' + this.generation);
+      node.children[0].innerHTML = 'current generation: ' + this.generation;
+      this.genomeIndex = 0;
+      this.score = 0;
+      this.movesTaken = 0;
+      this.totalRotations = 0;
+      this.board.emptyBoard();
+      this.currentPiece = this.pieces.newPiece();
+      this.nextPiece = this.pieces.newPiece();
+      this.genomes.sort(function (a, b) {
+        return b.fitness - a.fitness;
+      });
+      console.log(this.genomes);
+      var fittest = this.genomes.slice(0, Math.floor(this.populationSize / 2));
+      var children = [this.genomes[0]];
+      while (children.length < this.populationSize) {
+        children.push(this.makeChild(fittest));
+      }
+      this.genomes = children;
+      console.log(this.genomes);
+    }
+  }, {
+    key: 'makeChild',
+    value: function makeChild(genomes) {
+      var mom = genomes[boardUtil.randNumRange(0, genomes.length - 1)];
+      var dad = genomes[boardUtil.randNumRange(0, genomes.length - 1)];
+      while (dad === mom) {
+        dad = genomes[boardUtil.randNumRange(0, genomes.length - 1)];
+      }
+      var child = {
+        id: Math.random(),
+        rowsCleared: boardUtil.randSelect(mom.rowsCleared, dad.rowsCleared),
+        weightedHeight: boardUtil.randSelect(mom.weightedHeight, dad.weightedHeight),
+        cumulativeHeight: boardUtil.randSelect(mom.cumulativeHeight, dad.cumulativeHeight),
+        relativeHeight: boardUtil.randSelect(mom.relativeHeight, dad.relativeHeight),
+        holes: boardUtil.randSelect(mom.holes, dad.holes),
+        roughness: boardUtil.randSelect(mom.roughness, dad.roughness),
+        fitness: -1
+      };
+      if (Math.random() < this.mutationRate) {
+        child.rowsCleared = child.rowsCleared + Math.random() * this.mutationStep * 2 - this.mutationStep;
+      }
+      if (Math.random() < this.mutationRate) {
+        child.weightedHeight = child.weightedHeight + Math.random() * this.mutationStep * 2 - this.mutationStep;
+      }
+      if (Math.random() < this.mutationRate) {
+        child.cumulativeHeight = child.cumulativeHeight + Math.random() * this.mutationStep * 2 - this.mutationStep;
+      }
+      if (Math.random() < this.mutationRate) {
+        child.relativeHeight = child.relativeHeight + Math.random() * this.mutationStep * 2 - this.mutationStep;
+      }
+      if (Math.random() < this.mutationRate) {
+        child.holes = child.holes + Math.random() * this.mutationStep * 2 - this.mutationStep;
+      }
+      if (Math.random() < this.mutationRate) {
+        child.roughness = child.roughness + Math.random() * this.mutationStep * 2 - this.mutationStep;
+      }
+      return child;
     }
   }]);
 
@@ -2098,6 +2160,14 @@ var deepDup = exports.deepDup = function deepDup(arr) {
     }
   }
   return duped;
+};
+
+var randNumRange = exports.randNumRange = function randNumRange(min, max) {
+  return Math.floor(Math.pow(Math.random(), 2) * (max - min + 1) + min);
+};
+
+var randSelect = exports.randSelect = function randSelect(a, b) {
+  return Math.round(Math.random()) === 0 ? a : b;
 };
 
 /***/ })

@@ -41,3 +41,11 @@ export const deepDup = (arr) => {
   }
   return duped;
 }
+
+export const randNumRange = (min, max) => {
+  return Math.floor(Math.pow(Math.random(), 2) * (max - min + 1) + min);
+}
+
+export const randSelect = (a, b) => {
+  return Math.round(Math.random()) === 0 ? a : b;
+}
