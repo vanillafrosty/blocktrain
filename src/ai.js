@@ -17,7 +17,7 @@ export default class AIGame extends Game {
     this.generation = 0;
     this.mutationRate = 0.05;
     this.mutationStep = 0.2;
-    this.speedArr = [300, 120, 10, 0];
+    this.speedArr = [300, 90, 10];
     this.speedIndex = 2;
   }
 
@@ -220,6 +220,7 @@ export default class AIGame extends Game {
 
 
       if (!this.gameOverOnce) {
+        this.addKeyListeners();
         let gameStart = document.getElementById('before-game-start');
         gameStart.setAttribute("id", "game-start");
         let controls = document.getElementById('controls-container');
@@ -332,5 +333,15 @@ export default class AIGame extends Game {
 
   }
 
+
+  addKeyListeners() {
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 's') {
+        this.speedIndex = (this.speedIndex + 1) % this.speedArr.length;
+        this.timeStep = this.speedArr[this.speedIndex];
+        console.log(this.timeStep);
+      }
+    });
+  }
 
 }

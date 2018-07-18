@@ -128,7 +128,7 @@ var AIGame = function (_Game) {
     _this.generation = 0;
     _this.mutationRate = 0.05;
     _this.mutationStep = 0.2;
-    _this.speedArr = [300, 120, 10, 0];
+    _this.speedArr = [300, 90, 10];
     _this.speedIndex = 2;
     return _this;
   }
@@ -343,6 +343,7 @@ var AIGame = function (_Game) {
         this.megamanPlaying = true;
 
         if (!this.gameOverOnce) {
+          this.addKeyListeners();
           var gameStart = document.getElementById('before-game-start');
           gameStart.setAttribute("id", "game-start");
           var controls = document.getElementById('controls-container');
@@ -453,6 +454,19 @@ var AIGame = function (_Game) {
         child.roughness = child.roughness + Math.random() * this.mutationStep * 2 - this.mutationStep;
       }
       return child;
+    }
+  }, {
+    key: 'addKeyListeners',
+    value: function addKeyListeners() {
+      var _this3 = this;
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 's') {
+          _this3.speedIndex = (_this3.speedIndex + 1) % _this3.speedArr.length;
+          _this3.timeStep = _this3.speedArr[_this3.speedIndex];
+          console.log(_this3.timeStep);
+        }
+      });
     }
   }]);
 
