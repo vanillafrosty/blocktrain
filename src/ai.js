@@ -44,10 +44,10 @@ export default class AIGame extends Game {
     this.genomeIndex += 1;
     if (this.playingGame) {
       let aiDisplay = document.getElementById('ai-display');
-      aiDisplay.children[1].innerHTML = `current genome: ${this.genomeIndex+1}/${this.populationSize}`;
+      aiDisplay.children[2].innerHTML = `current genome: ${this.genomeIndex+1}/${this.populationSize}`;
       if (this.genomeIndex >= this.genomes.length) {
         this.evolve();
-        aiDisplay.children[1].innerHTML = `current genome: ${this.genomeIndex+1}/${this.populationSize}`;
+        aiDisplay.children[2].innerHTML = `current genome: ${this.genomeIndex+1}/${this.populationSize}`;
       }
     }
     this.movesTaken = 0;
@@ -88,7 +88,7 @@ export default class AIGame extends Game {
       return true;
     }
     this.score += move.drop;
-    switch(move.rotations) {
+    switch(move.algorithm.rowsCleared) {
       case 1:
         this.score += 400;
         return true;
@@ -228,8 +228,8 @@ export default class AIGame extends Game {
         }
         let aiDisplay = document.getElementById('ai-display-none');
         aiDisplay.setAttribute("id", "ai-display");
-        aiDisplay.children[0].append(` ${this.generation}`);
-        aiDisplay.children[1].append(` ${this.genomeIndex+1}/${this.populationSize}`)
+        aiDisplay.children[1].append(` ${this.generation}`);
+        aiDisplay.children[2].append(` ${this.genomeIndex+1}/${this.populationSize}`)
       }
 
       const render = (timestamp) => {
@@ -272,11 +272,9 @@ export default class AIGame extends Game {
   }
 
   evolve() {
-    console.log("evolving!");
-    console.log("old genomes");
     this.generation += 1;
     let node = document.getElementById('ai-display');
-    node.children[0].innerHTML = (`current generation: ${this.generation}`);
+    node.children[1].innerHTML = (`current generation: ${this.generation}`);
     this.genomeIndex = 0;
     this.score = 0;
     this.movesTaken = 0;
@@ -287,14 +285,12 @@ export default class AIGame extends Game {
     this.genomes.sort( (a,b) => {
       return b.fitness - a.fitness;
     });
-    console.log(this.genomes);
     let fittest = this.genomes.slice(0,Math.floor(this.populationSize/2));
     let children = [this.genomes[0]];
     while (children.length < this.populationSize) {
       children.push(this.makeChild(fittest));
     }
     this.genomes = children;
-    console.log(this.genomes);
 
   }
 
