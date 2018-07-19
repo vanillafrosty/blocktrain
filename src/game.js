@@ -3,6 +3,7 @@ import Pieces from './pieces';
 export default class Game {
 
   constructor(board) {
+    this.AI = false;
     this.gameOverOnce = false; //to make sure we don't add multiple event listeners
     this.animationFrame = null;
     this.board = board;

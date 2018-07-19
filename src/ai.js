@@ -6,6 +6,7 @@ export default class AIGame extends Game {
 
   constructor(board) {
     super(board);
+    this.AI = true;
     this.populationSize = 6;
     this.genomes = [];
     this.genomeIndex = -1;
@@ -239,12 +240,7 @@ export default class AIGame extends Game {
 
         if (this.timeStep === 0) {
           this.board.handleDrop(this.currentPiece.matrix, this.offset);
-          this.offset.y = 0;
-          this.offset.x = 4;
-          this.totalRotations = 0;
-          this.currentPiece = this.nextPiece;
-          this.nextPiece = this.pieces.newPiece();
-          this.makeNextMove();
+          this.moveIteration();
           this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
           if (this.gameOver) {
             this.genomes[this.genomeIndex].fitness = this.score;
@@ -256,12 +252,7 @@ export default class AIGame extends Game {
             this.evaluateNextGenome();
           }
           this.board.handleDrop(this.currentPiece.matrix, this.offset);
-          this.offset.y = 0;
-          this.offset.x = 4;
-          this.totalRotations = 0;
-          this.currentPiece = this.nextPiece;
-          this.nextPiece = this.pieces.newPiece();
-          this.makeNextMove();
+          this.moveIteration();
           this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
           if (this.gameOver) {
             this.genomes[this.genomeIndex].fitness = this.score;
@@ -273,12 +264,7 @@ export default class AIGame extends Game {
             this.evaluateNextGenome();
           }
           this.board.handleDrop(this.currentPiece.matrix, this.offset);
-          this.offset.y = 0;
-          this.offset.x = 4;
-          this.totalRotations = 0;
-          this.currentPiece = this.nextPiece;
-          this.nextPiece = this.pieces.newPiece();
-          this.makeNextMove();
+          this.moveIteration();
           this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
           if (this.gameOver) {
             this.genomes[this.genomeIndex].fitness = this.score;
@@ -293,12 +279,7 @@ export default class AIGame extends Game {
           this.resetTime = 0;
           this.offset.y += 1;
           if (this.board.update(this.currentPiece.matrix, this.offset)){
-            this.offset.y = 0;
-            this.offset.x = 4;
-            this.totalRotations = 0;
-            this.currentPiece = this.nextPiece;
-            this.nextPiece = this.pieces.newPiece();
-            this.makeNextMove();
+            this.moveIteration();
           }
           this.boardStep();
           this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
@@ -395,6 +376,15 @@ export default class AIGame extends Game {
         this.drawing = this.timeStep === 0 ? false : true;
       }
     });
+  }
+
+  moveIteration() {
+    this.offset.y = 0;
+    this.offset.x = 4;
+    this.totalRotations = 0;
+    this.currentPiece = this.nextPiece;
+    this.nextPiece = this.pieces.newPiece();
+    this.makeNextMove();
   }
 
 }

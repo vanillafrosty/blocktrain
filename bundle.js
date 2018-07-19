@@ -117,6 +117,7 @@ var AIGame = function (_Game) {
 
     var _this = _possibleConstructorReturn(this, (AIGame.__proto__ || Object.getPrototypeOf(AIGame)).call(this, board));
 
+    _this.AI = true;
     _this.populationSize = 6;
     _this.genomes = [];
     _this.genomeIndex = -1;
@@ -362,12 +363,7 @@ var AIGame = function (_Game) {
 
           if (_this2.timeStep === 0) {
             _this2.board.handleDrop(_this2.currentPiece.matrix, _this2.offset);
-            _this2.offset.y = 0;
-            _this2.offset.x = 4;
-            _this2.totalRotations = 0;
-            _this2.currentPiece = _this2.nextPiece;
-            _this2.nextPiece = _this2.pieces.newPiece();
-            _this2.makeNextMove();
+            _this2.moveIteration();
             _this2.gameOver = _this2.board.checkGameOver(_this2.currentPiece.matrix, _this2.offset);
             if (_this2.gameOver) {
               _this2.genomes[_this2.genomeIndex].fitness = _this2.score;
@@ -379,12 +375,7 @@ var AIGame = function (_Game) {
               _this2.evaluateNextGenome();
             }
             _this2.board.handleDrop(_this2.currentPiece.matrix, _this2.offset);
-            _this2.offset.y = 0;
-            _this2.offset.x = 4;
-            _this2.totalRotations = 0;
-            _this2.currentPiece = _this2.nextPiece;
-            _this2.nextPiece = _this2.pieces.newPiece();
-            _this2.makeNextMove();
+            _this2.moveIteration();
             _this2.gameOver = _this2.board.checkGameOver(_this2.currentPiece.matrix, _this2.offset);
             if (_this2.gameOver) {
               _this2.genomes[_this2.genomeIndex].fitness = _this2.score;
@@ -396,12 +387,7 @@ var AIGame = function (_Game) {
               _this2.evaluateNextGenome();
             }
             _this2.board.handleDrop(_this2.currentPiece.matrix, _this2.offset);
-            _this2.offset.y = 0;
-            _this2.offset.x = 4;
-            _this2.totalRotations = 0;
-            _this2.currentPiece = _this2.nextPiece;
-            _this2.nextPiece = _this2.pieces.newPiece();
-            _this2.makeNextMove();
+            _this2.moveIteration();
             _this2.gameOver = _this2.board.checkGameOver(_this2.currentPiece.matrix, _this2.offset);
             if (_this2.gameOver) {
               _this2.genomes[_this2.genomeIndex].fitness = _this2.score;
@@ -416,12 +402,7 @@ var AIGame = function (_Game) {
             _this2.resetTime = 0;
             _this2.offset.y += 1;
             if (_this2.board.update(_this2.currentPiece.matrix, _this2.offset)) {
-              _this2.offset.y = 0;
-              _this2.offset.x = 4;
-              _this2.totalRotations = 0;
-              _this2.currentPiece = _this2.nextPiece;
-              _this2.nextPiece = _this2.pieces.newPiece();
-              _this2.makeNextMove();
+              _this2.moveIteration();
             }
             _this2.boardStep();
             _this2.gameOver = _this2.board.checkGameOver(_this2.currentPiece.matrix, _this2.offset);
@@ -521,6 +502,16 @@ var AIGame = function (_Game) {
         }
       });
     }
+  }, {
+    key: 'moveIteration',
+    value: function moveIteration() {
+      this.offset.y = 0;
+      this.offset.x = 4;
+      this.totalRotations = 0;
+      this.currentPiece = this.nextPiece;
+      this.nextPiece = this.pieces.newPiece();
+      this.makeNextMove();
+    }
   }]);
 
   return AIGame;
@@ -569,16 +560,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // let game = new AIGame(board);
   var game = void 0;
 
-  document.addEventListener("keypress", function (event) {
-    if (event.key === 'm') {
-      game.toggleAudio();
-    } else if (event.key === 'r') {
-      if (game.gameOver) {
-        game.restart();
-      }
-    }
-  });
-
   var tracks = ["./music/metal-man.mp3", "./music/crash-man.mp3", "./music/dr-wily.mp3"];
   var tracksIndex = 0;
   var megamanAudio = document.getElementById("megaman-theme");
@@ -599,6 +580,16 @@ document.addEventListener('DOMContentLoaded', function () {
         game = new _ai2.default(board);
       }
       game.play();
+    }
+  });
+
+  document.addEventListener("keypress", function (event) {
+    if (event.key === 'm') {
+      game.toggleAudio();
+    } else if (event.key === 'r') {
+      if (!game.AI && game.gameOver) {
+        game.restart();
+      }
     }
   });
 });
@@ -1186,6 +1177,7 @@ var Game = function () {
   function Game(board) {
     _classCallCheck(this, Game);
 
+    this.AI = false;
     this.gameOverOnce = false; //to make sure we don't add multiple event listeners
     this.animationFrame = null;
     this.board = board;

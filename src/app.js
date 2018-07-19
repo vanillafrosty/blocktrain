@@ -17,15 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // let game = new AIGame(board);
   let game;
 
-  document.addEventListener("keypress", (event) => {
-    if (event.key === 'm'){
-      game.toggleAudio();
-    } else if (event.key === 'r') {
-      if (game.gameOver) {
-        game.restart();
-      }
-    }
-  });
 
 
   const tracks = [
@@ -55,6 +46,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  document.addEventListener("keypress", (event) => {
+    if (event.key === 'm'){
+      game.toggleAudio();
+    } else if (event.key === 'r') {
+      if (!game.AI && game.gameOver) {
+        game.restart();
+      }
+    }
+  });
 
 
 });
