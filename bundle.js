@@ -132,6 +132,7 @@ var AIGame = function (_Game) {
     _this.mutationStep = 0.2;
     _this.speedArr = [300, 90, 10, 0];
     _this.speedIndex = 1;
+    _this.powerSteps = 3;
     return _this;
   }
 
@@ -362,24 +363,7 @@ var AIGame = function (_Game) {
           _this2.resetTime += timestamp - _this2.startTime;
 
           if (_this2.timeStep === 0) {
-            _this2.board.handleDrop(_this2.currentPiece.matrix, _this2.offset);
-            _this2.moveIteration();
-            _this2.gameOver = _this2.board.checkGameOver(_this2.currentPiece.matrix, _this2.offset);
-            if (_this2.gameOver) {
-              _this2.boardIteration();
-            }
-            _this2.board.handleDrop(_this2.currentPiece.matrix, _this2.offset);
-            _this2.moveIteration();
-            _this2.gameOver = _this2.board.checkGameOver(_this2.currentPiece.matrix, _this2.offset);
-            if (_this2.gameOver) {
-              _this2.boardIteration();
-            }
-            _this2.board.handleDrop(_this2.currentPiece.matrix, _this2.offset);
-            _this2.moveIteration();
-            _this2.gameOver = _this2.board.checkGameOver(_this2.currentPiece.matrix, _this2.offset);
-            if (_this2.gameOver) {
-              _this2.boardIteration();
-            }
+            _this2.powerWalk();
           } else if (_this2.resetTime > _this2.timeStep) {
             _this2.resetTime = 0;
             _this2.offset.y += 1;
@@ -498,6 +482,23 @@ var AIGame = function (_Game) {
       this.nextPiece = this.pieces.newPiece();
       this.board.emptyBoard();
       this.evaluateNextGenome();
+    }
+  }, {
+    key: 'powerStep',
+    value: function powerStep() {
+      this.board.handleDrop(this.currentPiece.matrix, this.offset);
+      this.moveIteration();
+      this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
+      if (this.gameOver) {
+        this.boardIteration();
+      }
+    }
+  }, {
+    key: 'powerWalk',
+    value: function powerWalk() {
+      for (var i = 0; i < this.powerSteps; i++) {
+        this.powerStep();
+      }
     }
   }]);
 

@@ -21,6 +21,7 @@ export default class AIGame extends Game {
     this.mutationStep = 0.2;
     this.speedArr = [300, 90, 10, 0];
     this.speedIndex = 1;
+    this.powerSteps = 3;
   }
 
 
@@ -239,24 +240,7 @@ export default class AIGame extends Game {
         this.resetTime += timestamp-this.startTime;
 
         if (this.timeStep === 0) {
-          this.board.handleDrop(this.currentPiece.matrix, this.offset);
-          this.moveIteration();
-          this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
-          if (this.gameOver) {
-            this.boardIteration();
-          }
-          this.board.handleDrop(this.currentPiece.matrix, this.offset);
-          this.moveIteration();
-          this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
-          if (this.gameOver) {
-            this.boardIteration();
-          }
-          this.board.handleDrop(this.currentPiece.matrix, this.offset);
-          this.moveIteration();
-          this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
-          if (this.gameOver) {
-            this.boardIteration();
-          }
+          this.powerWalk();
         } else if (this.resetTime > this.timeStep) {
           this.resetTime = 0;
           this.offset.y += 1;
@@ -371,6 +355,21 @@ export default class AIGame extends Game {
     this.nextPiece = this.pieces.newPiece();
     this.board.emptyBoard();
     this.evaluateNextGenome();
+  }
+
+  powerStep() {
+    this.board.handleDrop(this.currentPiece.matrix, this.offset);
+    this.moveIteration();
+    this.gameOver = this.board.checkGameOver(this.currentPiece.matrix, this.offset);
+    if (this.gameOver) {
+      this.boardIteration();
+    }
+  }
+
+  powerWalk() {
+    for (let i=0; i<this.powerSteps; i++) {
+      this.powerStep();
+    }
   }
 
 }
