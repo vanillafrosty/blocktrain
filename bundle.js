@@ -435,11 +435,7 @@ var AIGame = function (_Game) {
           continue;
         }
         if (Math.random() < this.mutationRate) {
-          console.log("mutating!");
-          console.log(child[keys[i]]);
-          console.log(keys[i]);
           child[keys[i]] = child[keys[i]] + Math.random() * this.mutationStep * 2 - this.mutationStep;
-          console.log(child[keys[i]]);
         }
       }
     }
