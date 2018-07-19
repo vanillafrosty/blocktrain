@@ -123,7 +123,6 @@ var AIGame = function (_Game) {
     _this.genomeIndex = -1;
     _this.movesTaken = 0;
     _this.movesLimit = 500;
-    _this.drawing = true;
     _this.createInitialPopulation();
     _this.timeStep = 90;
     _this.score = 0;
@@ -317,7 +316,6 @@ var AIGame = function (_Game) {
       piece = this.multiRotate(piece, move.rotations);
       this.offset.x += move.translation;
       this.totalRotations = 0;
-      // this.board.setPiece(piece.matrix, this.offset.x, this.offset.y);
     }
   }, {
     key: 'getHighestRatedMove',
@@ -395,12 +393,8 @@ var AIGame = function (_Game) {
       var node = document.getElementById('ai-display');
       node.children[1].innerHTML = 'current generation: ' + this.generation;
       this.genomeIndex = 0;
-      this.score = 0;
       this.movesTaken = 0;
-      this.totalRotations = 0;
-      this.board.emptyBoard();
-      this.currentPiece = this.pieces.newPiece();
-      this.nextPiece = this.pieces.newPiece();
+      this.scrubBoard();
       this.genomes.sort(function (a, b) {
         return b.fitness - a.fitness;
       });
@@ -429,25 +423,25 @@ var AIGame = function (_Game) {
         roughness: boardUtil.randSelect(mom.roughness, dad.roughness),
         fitness: -1
       };
-      if (Math.random() < this.mutationRate) {
-        child.rowsCleared = child.rowsCleared + Math.random() * this.mutationStep * 2 - this.mutationStep;
-      }
-      if (Math.random() < this.mutationRate) {
-        child.weightedHeight = child.weightedHeight + Math.random() * this.mutationStep * 2 - this.mutationStep;
-      }
-      if (Math.random() < this.mutationRate) {
-        child.cumulativeHeight = child.cumulativeHeight + Math.random() * this.mutationStep * 2 - this.mutationStep;
-      }
-      if (Math.random() < this.mutationRate) {
-        child.relativeHeight = child.relativeHeight + Math.random() * this.mutationStep * 2 - this.mutationStep;
-      }
-      if (Math.random() < this.mutationRate) {
-        child.holes = child.holes + Math.random() * this.mutationStep * 2 - this.mutationStep;
-      }
-      if (Math.random() < this.mutationRate) {
-        child.roughness = child.roughness + Math.random() * this.mutationStep * 2 - this.mutationStep;
-      }
+      this.mutate(child);
       return child;
+    }
+  }, {
+    key: 'mutate',
+    value: function mutate(child) {
+      var keys = Object.keys(child);
+      for (var i = 0; i < keys.length; i++) {
+        if (keys[i] === "fitness") {
+          continue;
+        }
+        if (Math.random() < this.mutationRate) {
+          console.log("mutating!");
+          console.log(child[keys[i]]);
+          console.log(keys[i]);
+          child[keys[i]] = child[keys[i]] + Math.random() * this.mutationStep * 2 - this.mutationStep;
+          console.log(child[keys[i]]);
+        }
+      }
     }
   }, {
     key: 'addKeyListeners',
@@ -458,7 +452,6 @@ var AIGame = function (_Game) {
         if (e.key === 's') {
           _this3.speedIndex = (_this3.speedIndex + 1) % _this3.speedArr.length;
           _this3.timeStep = _this3.speedArr[_this3.speedIndex];
-          _this3.drawing = _this3.timeStep === 0 ? false : true;
         }
       });
     }
@@ -476,12 +469,17 @@ var AIGame = function (_Game) {
     key: 'boardIteration',
     value: function boardIteration() {
       this.genomes[this.genomeIndex].fitness = this.score;
+      this.scrubBoard();
+      this.evaluateNextGenome();
+    }
+  }, {
+    key: 'scrubBoard',
+    value: function scrubBoard() {
       this.score = 0;
       this.totalRotations = 0;
       this.currentPiece = this.nextPiece;
       this.nextPiece = this.pieces.newPiece();
       this.board.emptyBoard();
-      this.evaluateNextGenome();
     }
   }, {
     key: 'powerStep',
