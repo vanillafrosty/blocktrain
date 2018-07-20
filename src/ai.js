@@ -12,10 +12,11 @@ export default class AIGame extends Game {
     this.genomeIndex = -1;
     this.movesTaken = 0;
     this.movesLimit = 500;
+    this.genZero = false;
     this.createInitialPopulation();
     this.timeStep = 90;
     this.score = 0;
-    this.generation = 0;
+    this.generation = 25;
     this.mutationRate = 0.05;
     this.mutationStep = 0.2;
     this.speedArr = [300, 90, 10, 0];
@@ -27,7 +28,7 @@ export default class AIGame extends Game {
   createInitialPopulation() {
     let genome;
     for (let i=0; i<this.populationSize; i++) {
-      genome = {
+      genome = this.genZero ? {
    			id: Math.random(),
    			rowsCleared: Math.random() - 0.5,
    			weightedHeight: Math.random() - 0.5,
@@ -35,7 +36,16 @@ export default class AIGame extends Game {
    			relativeHeight: Math.random() - 0.5,
    			holes: Math.random() * 0.5,
    			roughness: Math.random() - 0.5,
-      }
+      } : {
+        cumulativeHeight: -0.5959229477940513,
+        holes: 0.078680173605579,
+        id: 0.5532957017242564,
+        relativeHeight: 0.0266789627391546,
+        roughness: -0.10651581907940999,
+        rowsCleared: 0.4944378291698683,
+        weightedHeight: 0.003521223515799754
+      };
+
       this.genomes.push(genome);
     }
     this.evaluateNextGenome();
@@ -323,6 +333,20 @@ export default class AIGame extends Game {
       if (e.key === 's') {
         this.speedIndex = (this.speedIndex + 1) % this.speedArr.length;
         this.timeStep = this.speedArr[this.speedIndex];
+      }
+      else if (e.key === 'z') {
+        this.genZero = true;
+        this.genomes = [];
+        this.genomeIndex = -1;
+        this.movesTaken = 0;
+        this.movesLimit = 500;
+        this.timeStep = 90;
+        this.speedIndex = 1;
+        this.generation = 0;
+        this.scrubBoard();
+        let node = document.getElementById('ai-display');
+        node.children[1].innerHTML = (`current generation: ${this.generation}`);
+        this.createInitialPopulation();
       }
     });
   }

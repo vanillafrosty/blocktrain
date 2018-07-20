@@ -123,10 +123,11 @@ var AIGame = function (_Game) {
     _this.genomeIndex = -1;
     _this.movesTaken = 0;
     _this.movesLimit = 500;
+    _this.genZero = false;
     _this.createInitialPopulation();
     _this.timeStep = 90;
     _this.score = 0;
-    _this.generation = 0;
+    _this.generation = 25;
     _this.mutationRate = 0.05;
     _this.mutationStep = 0.2;
     _this.speedArr = [300, 90, 10, 0];
@@ -140,7 +141,7 @@ var AIGame = function (_Game) {
     value: function createInitialPopulation() {
       var genome = void 0;
       for (var i = 0; i < this.populationSize; i++) {
-        genome = {
+        genome = this.genZero ? {
           id: Math.random(),
           rowsCleared: Math.random() - 0.5,
           weightedHeight: Math.random() - 0.5,
@@ -148,7 +149,16 @@ var AIGame = function (_Game) {
           relativeHeight: Math.random() - 0.5,
           holes: Math.random() * 0.5,
           roughness: Math.random() - 0.5
+        } : {
+          cumulativeHeight: -0.5959229477940513,
+          holes: 0.078680173605579,
+          id: 0.5532957017242564,
+          relativeHeight: 0.0266789627391546,
+          roughness: -0.10651581907940999,
+          rowsCleared: 0.4944378291698683,
+          weightedHeight: 0.003521223515799754
         };
+
         this.genomes.push(genome);
       }
       this.evaluateNextGenome();
@@ -450,6 +460,19 @@ var AIGame = function (_Game) {
         if (e.key === 's') {
           _this3.speedIndex = (_this3.speedIndex + 1) % _this3.speedArr.length;
           _this3.timeStep = _this3.speedArr[_this3.speedIndex];
+        } else if (e.key === 'z') {
+          _this3.genZero = true;
+          _this3.genomes = [];
+          _this3.genomeIndex = -1;
+          _this3.movesTaken = 0;
+          _this3.movesLimit = 500;
+          _this3.timeStep = 90;
+          _this3.speedIndex = 1;
+          _this3.generation = 0;
+          _this3.scrubBoard();
+          var node = document.getElementById('ai-display');
+          node.children[1].innerHTML = 'current generation: ' + _this3.generation;
+          _this3.createInitialPopulation();
         }
       });
     }
