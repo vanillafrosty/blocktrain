@@ -118,7 +118,7 @@ var AIGame = function (_Game) {
     var _this = _possibleConstructorReturn(this, (AIGame.__proto__ || Object.getPrototypeOf(AIGame)).call(this, board));
 
     _this.AI = true;
-    _this.populationSize = 6;
+    _this.populationSize = 50;
     _this.genomes = [];
     _this.genomeIndex = -1;
     _this.movesTaken = 0;
@@ -131,7 +131,7 @@ var AIGame = function (_Game) {
     _this.mutationStep = 0.2;
     _this.speedArr = [300, 90, 10, 0];
     _this.speedIndex = 1;
-    _this.powerSteps = 3;
+    _this.powerSteps = 5;
     return _this;
   }
 
@@ -197,7 +197,9 @@ var AIGame = function (_Game) {
         //if bestCurrentMove is not a real move.
         this.realMove(bestCurrentMove, this.currentPiece);
         //draw stuff because we just made the best move
-        this.boardStep();
+        if (this.timeStep > 0) {
+          this.boardStep();
+        }
       }
     }
   }, {

@@ -7,7 +7,7 @@ export default class AIGame extends Game {
   constructor(board) {
     super(board);
     this.AI = true;
-    this.populationSize = 6;
+    this.populationSize = 50;
     this.genomes = [];
     this.genomeIndex = -1;
     this.movesTaken = 0;
@@ -20,7 +20,7 @@ export default class AIGame extends Game {
     this.mutationStep = 0.2;
     this.speedArr = [300, 90, 10, 0];
     this.speedIndex = 1;
-    this.powerSteps = 3;
+    this.powerSteps = 5;
   }
 
 
@@ -81,7 +81,9 @@ export default class AIGame extends Game {
       //if bestCurrentMove is not a real move.
       this.realMove(bestCurrentMove, this.currentPiece);
       //draw stuff because we just made the best move
-      this.boardStep();
+      if (this.timeStep > 0) {
+        this.boardStep();
+      }
     }
   }
 
