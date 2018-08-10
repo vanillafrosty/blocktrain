@@ -277,13 +277,7 @@ var AIGame = function (_Game) {
               holes: board.getHoles(),
               roughness: board.getRoughness()
             };
-            var rating = 0;
-            rating += algorithm.rowsCleared * this.genomes[this.genomeIndex].rowsCleared;
-            rating += algorithm.weightedHeight * this.genomes[this.genomeIndex].weightedHeight;
-            rating += algorithm.cumulativeHeight * this.genomes[this.genomeIndex].cumulativeHeight;
-            rating += algorithm.relativeHeight * this.genomes[this.genomeIndex].relativeHeight;
-            rating += algorithm.holes * this.genomes[this.genomeIndex].holes;
-            rating += algorithm.roughness * this.genomes[this.genomeIndex].roughness;
+            var rating = this.updateRating(algorithm);
             //if the move loses the game, slam its rating
             if (gameOver) {
               rating -= 500;
@@ -297,6 +291,18 @@ var AIGame = function (_Game) {
       this.offset = origOffset;
       this.totalRotations = 0;
       return possibleMoves;
+    }
+  }, {
+    key: 'updateRating',
+    value: function updateRating(algorithm) {
+      var rating = 0;
+      rating += algorithm.rowsCleared * this.genomes[this.genomeIndex].rowsCleared;
+      rating += algorithm.weightedHeight * this.genomes[this.genomeIndex].weightedHeight;
+      rating += algorithm.cumulativeHeight * this.genomes[this.genomeIndex].cumulativeHeight;
+      rating += algorithm.relativeHeight * this.genomes[this.genomeIndex].relativeHeight;
+      rating += algorithm.holes * this.genomes[this.genomeIndex].holes;
+      rating += algorithm.roughness * this.genomes[this.genomeIndex].roughness;
+      return rating;
     }
   }, {
     key: 'multiRotate',

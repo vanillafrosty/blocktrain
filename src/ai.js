@@ -159,13 +159,7 @@ export default class AIGame extends Game {
   					holes: board.getHoles(),
   					roughness: board.getRoughness()
           };
-   				let rating = 0;
-   				rating += algorithm.rowsCleared * this.genomes[this.genomeIndex].rowsCleared;
-   				rating += algorithm.weightedHeight * this.genomes[this.genomeIndex].weightedHeight;
-   				rating += algorithm.cumulativeHeight * this.genomes[this.genomeIndex].cumulativeHeight;
-   				rating += algorithm.relativeHeight * this.genomes[this.genomeIndex].relativeHeight;
-   				rating += algorithm.holes * this.genomes[this.genomeIndex].holes;
-   				rating += algorithm.roughness * this.genomes[this.genomeIndex].roughness;
+   				let rating = this.updateRating(algorithm);
    				//if the move loses the game, slam its rating
    				if (gameOver) {
    					rating -= 500;
@@ -179,6 +173,17 @@ export default class AIGame extends Game {
     this.offset = origOffset;
     this.totalRotations = 0;
     return possibleMoves;
+  }
+
+  updateRating(algorithm) {
+    let rating = 0;
+    rating += algorithm.rowsCleared * this.genomes[this.genomeIndex].rowsCleared;
+    rating += algorithm.weightedHeight * this.genomes[this.genomeIndex].weightedHeight;
+    rating += algorithm.cumulativeHeight * this.genomes[this.genomeIndex].cumulativeHeight;
+    rating += algorithm.relativeHeight * this.genomes[this.genomeIndex].relativeHeight;
+    rating += algorithm.holes * this.genomes[this.genomeIndex].holes;
+    rating += algorithm.roughness * this.genomes[this.genomeIndex].roughness;
+    return rating;
   }
 
   multiRotate(piece, rotations) {
