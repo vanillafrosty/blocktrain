@@ -15,7 +15,7 @@ in a population, increasing their chances of surviving and producing offspring, 
 inherit the advantageous mutation. Eventually, throughout many generations, individuals
 in a population are much more fit to live (or, in this case, to play Tetris).
 
-At a high level:
+### High level overview
 
 * We start with a population of 50 individuals with randomly assigned weights, via createInitialPopulation():
 ```
@@ -29,8 +29,25 @@ At a high level:
    			roughness: Math.random() - 0.5,
       }
 ```
-* We start playing a game of Tetris, using the first individual generated. The game is played by determining the best next move at each step of the game, based on the individual's weights. For example, if the individual has a negative value for its ```rowsCleared``` key, then making the next move will most likely not result in any rows being cleared on the board. 
-* When the current game is over, or when a certain number of moves have been made, the final score is tallied for the current game and assigned as the fitness of the current individual influencing the game. Then, we move on to the next individual in the population, clear the board, and start a new game for that new individual. 
+* We start playing a game of Tetris, using the first individual generated. The game is played by determining the best next move at each step of the game, based on the individual's weights. For example, if the individual has a negative value for its ```rowsCleared``` key, then making the next move will most likely not result in any rows being cleared on the board. Moves are decided upon, made, and then displayed to the user via makeNextMove(); moveIteration() wraps makeNextMove() and adds piece updating functionality when the most recent move has just been made. 
+```  
+moveIteration() {
+    this.offset.y = 0;
+    this.offset.x = 4;
+    this.totalRotations = 0;
+    this.currentPiece = this.nextPiece;
+    this.nextPiece = this.pieces.newPiece();
+    this.makeNextMove();
+  }
+```
+* When the current game is over, or when a certain number of moves have been made, the final score is tallied for the current game and assigned as the fitness of the current individual influencing the game. Then, we move on to the next individual in the population, clear the board, and start a new game for that new individual - this happens via boardIteration():
+```
+  boardIteration() {
+    this.genomes[this.genomeIndex].fitness = this.score;
+    this.scrubBoard();
+    this.evaluateNextGenome();
+  }
+```
 
 ## Gameplay
 Press the arrow keys/WSAD to move the current piece. Up arrow or W will rotate the piece.
