@@ -8,9 +8,9 @@ Made in vanilla JS, HTML5, Canvas, and CSS3.
 ![screenshot](https://i.imgur.com/Vrb97ix.png)
 
 ## Machine learning demo
-There is a demonstration of machine learning using a [genetic algorithm](https://en.wikipedia.org/wiki/Genetic_algorithm). Such an algorithm
-is heavily influenced by the theory of Darwinian evolution, or more specifically, the theory
-of natural selection. Genetic mutations produce favorable advantages to certain individuals
+There is a demonstration of machine learning using a [genetic algorithm](https://en.wikipedia.org/wiki/Genetic_algorithm) (press 'A' before playing to see the demo). 
+
+Such an algorithm is heavily influenced by the theory of Darwinian evolution. Genetic mutations produce favorable advantages to certain individuals
 in a population, increasing their chances of surviving and producing offspring, which then
 inherit the advantageous mutation. Eventually, throughout many generations, individuals
 in a population are much more fit to live (or, in this case, to play Tetris).
@@ -29,7 +29,8 @@ in a population are much more fit to live (or, in this case, to play Tetris).
    			roughness: Math.random() - 0.5,
       }
 ```
-* We start playing a game of Tetris, using the first individual generated. The game is played by determining the best next move at each step of the game, based on the individual's weights. For example, if the individual has a negative value for its ```rowsCleared``` key, then making the next move will most likely not result in any rows being cleared on the board. Moves are decided upon, made, and then displayed to the user via makeNextMove(); moveIteration() wraps makeNextMove() and adds piece updating functionality when the most recent move has just been made. 
+* We start playing a game of Tetris with one individual. The game is played by determining the best next move at each step of the game, based on the current individual's weights. For example, if the individual has a negative value for its ```rowsCleared``` key, then making the next move will most likely not result in any rows being cleared on the board. 
+* Moves are decided upon, made, and then displayed to the user via makeNextMove(); moveIteration() wraps makeNextMove() and adds piece updating functionality when the most recent move has just been made. 
 ```  
 moveIteration() {
     this.offset.y = 0;
@@ -48,6 +49,26 @@ moveIteration() {
     this.evaluateNextGenome();
   }
 ```
+* When we reach the last individual in a generation, we pick the fittest individuals in the population to produce offspring, and the new generation is a mix of all the offspring and their parents. This happens via evolve():
+```
+this.genomes.sort( (a,b) => {
+      return b.fitness - a.fitness;
+    });
+    let fittest = this.genomes.slice(0,Math.floor(this.populationSize/2));
+    let children = [this.genomes[0]];
+    while (children.length < this.populationSize) {
+      children.push(this.makeChild(fittest));
+    }
+    this.genomes = children;
+```
+
+### Results
+* By generation 25 we should expect to see individuals that have an influence on making the next move such that the game score is optimized - in other words, the game is played in such a way that:
+    * Row clears are positively weighted
+    * Holes (i.e. empty spots in the board that exist below a placed piece) are negatively weighted
+    * Etcetera 
+* The machine learning demo begins at generation 25 due to the reason above - we want to provide the user the pleasure of experiencing a skilled Tetris demonstration off the bat. 
+
 
 ## Gameplay
 Press the arrow keys/WSAD to move the current piece. Up arrow or W will rotate the piece.
