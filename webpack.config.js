@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
   context: __dirname,
-  entry: './src/app.js',
+  entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, '.'),
     filename: 'bundle.js'
@@ -13,14 +13,27 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.js?$/,
         exclude: /(node_modules)/,
         use: {
           loader: 'babel-loader',
           query: {
-            presets: ['env', 'react']
+            presets: ['@babel/preset-env']
           }
         },
+      },
+      {
+        test: /\.css?$/,
+        use: ['style-loader', 'css-loader']
+      },
+      {
+        test: /\.(png|jpq|gif|svg|eot|ttf|woff|woff2)$/,
+        use: {
+          loader: 'url-loader',
+          options: {
+            limit: 100000,
+          },
+        }
       }
     ]
   },
