@@ -1,6 +1,8 @@
 # Blocktrain
 Javascript OOP implementation of Tetris game in the browser, with machine learning and a retro aesthetic.
 
+Inspired by TetNet project from https://github.com/IdreesInc/
+
 Made in vanilla JS, HTML5, Canvas, and CSS3.
 
 [Play!](http://dwu.space/blocktrain/)
