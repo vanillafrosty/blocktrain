@@ -11,71 +11,70 @@
   </head>
   <body>
     <div class="game-container">
-      <div class="title">
-        <div class="title-text">Blocktrain</div>
-      </div>
-      <div class="app-container">
-        <div class="sidebar-container">
-          <div class="links">
-            <form class="links-form" action="https://github.com/vanillafrosty">
-              <button class="button-link" type="submit">
-                <i class="icon-social-github"></i>
-              </button>
-            </form>
-            <form class="links-form" action="https://www.linkedin.com/in/daviddwu/">
-              <button class="button-link" type="submit">
-                <i class="icon-social-linkedin"></i>
-              </button>
-            </form>
-            <form class="links-form" action="http://dwu.space">
-              <button class="button-link" type="submit">
-                <i class="icon-user"></i>
-              </button>
-            </form>
-          </div>
-          <div class="sidebar">
-            <audio id="megaman-theme" src="./music/metal-man.mp3">
-              Your browser does not support the <code>audio</code> element.
-            </audio>
-
-            <div class="sidebar-text">Made by David Wu</div>
-          </div>
+        <div class="title-text">
+          Blocktrain
         </div>
-        <div class="canvas-container">
-          <div id="before-game-start">
-            <div>p - play</div>
-            <div>a - AI demo</div>
-          </div>
-          <div id="not-game-over">
-            <div class="game-over-text-heading">
-              <div>Game</div>
-              <div>Over</div>
+        <div class="app-container">
+          <div class="sidebar-container">
+            <div class="links">
+              <form class="links-form" action="https://github.com/vanillafrosty">
+                <button class="button-link" type="submit">
+                  <i class="icon-button icon-social-github"></i>
+                </button>
+              </form>
+              <form class="links-form" action="https://www.linkedin.com/in/daviddwu/">
+                <button class="button-link" type="submit">
+                  <i class="icon-button icon-social-linkedin"></i>
+                </button>
+              </form>
+              <form class="links-form" action="http://dwu.space">
+                <button class="button-link" type="submit">
+                  <i class="icon-button icon-user"></i>
+                </button>
+              </form>
             </div>
-            <div class="game-over-text">r - restart</div>
+            <div class="sidebar">
+              <audio id="megaman-theme" src="./music/metal-man.mp3">
+                Your browser does not support the <code>audio</code> element.
+              </audio>
+  
+              <div class="sidebar-text">Made by David Wu</div>
+            </div>
           </div>
-          <canvas id="canvas"></canvas>
-        </div>
-        <div class="right-sidebar">
-          <div class="next-piece-text">
-            Next Piece
+          <div class="canvas-container">
+            <div id="before-game-start">
+              <div>p - play</div>
+              <div>a - AI demo</div>
+            </div>
+            <div id="not-game-over">
+              <div class="game-over-text-heading">
+                <div>Game</div>
+                <div>Over</div>
+              </div>
+              <div class="game-over-text">r - restart</div>
+            </div>
+            <canvas id="canvas"></canvas>
           </div>
-          <canvas id="next-piece-canvas">
-          </canvas>
-          <div id="controls-container">
-            <div class="sidebar-text">m: music</div>
-            <div class="sidebar-text">p: play</div>
-            <div class="sidebar-text">W,S,A,D or arrow keys: move</div>
-            <div class="sidebar-text">space: drop</div>
-
+          <div class="right-sidebar">
+            <div class="next-piece-text">
+              Next Piece
+            </div>
+            <canvas id="next-piece-canvas">
+            </canvas>
+            <div id="controls-container">
+              <div class="sidebar-text">m: music</div>
+              <div class="sidebar-text">p: play</div>
+              <div class="sidebar-text">W,S,A,D or arrow keys: move</div>
+              <div class="sidebar-text">space: drop</div>
+  
+            </div>
+            <div id="ai-display-none">
+              <div class="sidebar-text">s: change speed</div>
+              <div class="sidebar-text">current generation:</div>
+              <div class="sidebar-text">current genome:</div>
+              <div class="sidebar-text">z: start at gen 0</div>
+            </div>
           </div>
-          <div id="ai-display-none">
-            <div class="sidebar-text">s: change speed</div>
-            <div class="sidebar-text">current generation:</div>
-            <div class="sidebar-text">current genome:</div>
-            <div class="sidebar-text">z: start at gen 0</div>
-          </div>
-        </div>
-
       </div>
     </div>
   </body>
