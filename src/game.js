@@ -193,7 +193,7 @@ export default class Game {
           break;
         case ' ':
           e.preventDefault();
-          if (!this.gameOver) {
+          if (!this.gameOver && this.board.validPos(this.currentPiece.matrix, this.offset)) {
             e.preventDefault();
             this.board.handleDrop(this.currentPiece.matrix, this.offset);
             this.offset.y = 0;
