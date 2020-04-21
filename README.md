@@ -5,7 +5,7 @@ Inspired by TetNet project from https://github.com/IdreesInc/
 
 Made in vanilla JS, HTML5, Canvas, and CSS3.
 
-[Play!](https://vanillafrosty.github.io/blocktrain/)
+[Play!](https://ddwu.me/blocktrain/)
 
 ![screenshot](https://i.imgur.com/Vrb97ix.png)
 
